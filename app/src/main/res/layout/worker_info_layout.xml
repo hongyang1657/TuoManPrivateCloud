@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="@color/colorTuoManBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/title_layout"/>
+
+    <ImageView
+        android:id="@+id/iv_worker_head"
+        android:src="@mipmap/ic_launcher"
+        android:layout_weight="2.5"
+        android:scaleType="center"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@drawable/login_button_bg_username"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="姓名"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_weight="1"
+            android:text="张三"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingRight="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:maxLength="16"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="1"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@color/colorLoginBack"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="电话"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_weight="1"
+            android:text="13545467890"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingRight="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:maxLength="16"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="1"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@color/colorLoginBack"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="编号"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_weight="1"
+            android:text="007"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingRight="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:maxLength="16"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="1"
+        android:clickable="true"
+        android:id="@+id/ll_reset_worker_pwd"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@drawable/login_button_bg_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="重置密码"
+            android:textColor="@color/colorBlueShade"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:src="@mipmap/ic_launcher"
+            android:paddingRight="16dp"
+            android:gravity="center_vertical|end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

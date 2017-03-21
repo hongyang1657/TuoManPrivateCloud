@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorTuoManBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_title_forms"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/tv_switch_month"
+            android:clickable="true"
+            android:text="12月"
+            android:textSize="18sp"
+            android:paddingRight="20dp"
+            android:paddingLeft="10dp"
+            android:gravity="center"
+            android:textColor="@color/colorBlueShade"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_switch_workshop"
+            android:paddingLeft="10dp"
+            android:clickable="true"
+            android:text="1车间"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/colorBlueShade"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:id="@+id/iv_rank"
+            android:src="@mipmap/ic_launcher"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_corner_title"
+        android:text="月产量"
+        android:background="@color/colorLoginBack"
+        android:gravity="center"
+        android:layout_marginBottom="4dp"
+        android:textSize="18sp"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@id/ll_title_forms"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_forms_title"
+        android:background="@color/colorLoginBack"
+        android:layout_toRightOf="@id/tv_corner_title"
+        android:layout_below="@id/ll_title_forms"
+        android:layout_alignBottom="@id/tv_corner_title"
+        android:layout_alignTop="@id/tv_corner_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_forms_production_line"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@id/tv_corner_title"
+        android:layout_below="@id/tv_corner_title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+    <TextView
+        android:clickable="true"
+        android:layout_alignRight="@id/rv_forms_production_line"
+        android:layout_alignLeft="@id/rv_forms_production_line"
+        android:layout_alignTop="@id/rv_forms_production_line"
+        android:layout_alignBottom="@id/rv_forms_production_line"
+        android:background="@color/colorAlpha"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+    <com.liberal.young.tuomanprivatecloud.view.MyFormScrollView
+        android:id="@+id/sv_forms"
+        android:layout_below="@id/tv_corner_title"
+        android:scrollbars="none"
+        android:layout_toRightOf="@id/rv_forms_production_line"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </com.liberal.young.tuomanprivatecloud.view.MyFormScrollView>
+
+</RelativeLayout>

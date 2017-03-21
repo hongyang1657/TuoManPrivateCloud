@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="12"
+    android:background="@color/colorTuoManBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/title_layout"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+    <LinearLayout
+        android:id="@+id/ll_select_picture_from_album"
+        android:clickable="true"
+        android:layout_weight="1"
+        android:background="@color/colorLoginBack"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="从手机相册选择"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:text=""
+            android:layout_weight="1"
+            android:drawableRight="@mipmap/ic_launcher"
+            android:drawablePadding="10dp"
+            android:textColor="@color/colorText"
+            android:gravity="center_vertical|end"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+    <LinearLayout
+        android:id="@+id/ll_take_picture"
+        android:clickable="true"
+        android:layout_weight="1"
+        android:background="@color/colorLoginBack"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="拍一张"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_setting_auto_close"
+            android:text=""
+            android:layout_weight="1"
+            android:drawableRight="@mipmap/ic_launcher"
+            android:drawablePadding="10dp"
+            android:textColor="@color/colorText"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
+</LinearLayout>

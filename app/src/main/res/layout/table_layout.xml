@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/my_title"
+        layout="@layout/title_layout" />
+
+    <RadioGroup
+        android:id="@+id/rg_table_change"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:background="@drawable/custom_light_rg_shape"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/rb_table_day"
+            android:text="日"
+            android:checked="true"
+            android:textColor="@drawable/custom_light_textcolor_selecter"
+            android:gravity="center"
+            android:button="@null"
+            android:background="@drawable/custom_light_button_selecter_left"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:padding="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rb_table_month"
+            android:text="月"
+            android:textColor="@drawable/custom_light_textcolor_selecter"
+            android:background="@drawable/custom_light_button_selecter_right"
+            android:gravity="center"
+            android:button="@null"
+            android:layout_weight="1"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:padding="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/line_chart"
+        android:layout_below="@id/my_title"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp" />
+</LinearLayout>

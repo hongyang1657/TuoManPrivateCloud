@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="70dp">
+
+    <TextView
+        android:id="@+id/tv_production_line_num"
+        android:text="1号线"
+        android:textColor="@color/colorBlueShade"
+        android:ems="1"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:maxLength="4"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:id="@+id/rl_report_form_item_back"
+            android:layout_margin="4dp"
+            android:gravity="center"
+            android:background="@drawable/round_rect_back_shade"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_yield_numb"
+                android:text="100"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/colorWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tv_yield_percent"
+                android:text="90%"
+                android:gravity="center"
+                android:layout_alignLeft="@id/tv_yield_numb"
+                android:layout_alignRight="@id/tv_yield_numb"
+                android:layout_below="@id/tv_yield_numb"
+                android:textSize="14sp"
+                android:textColor="@color/colorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+
+</LinearLayout>

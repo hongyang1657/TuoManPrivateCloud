@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="num">
+        <item>1个</item>
+        <item>2个</item>
+        <item>3个</item>
+        <item>4个</item>
+        <item>5个</item>
+        <item>6个</item>
+        <item>7个</item>
+        <item>8个</item>
+        <item>9个</item>
+        <item>10个</item>
+    </string-array>
+</resources>

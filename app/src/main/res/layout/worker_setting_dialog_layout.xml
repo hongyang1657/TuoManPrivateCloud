@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_worker_setting"
+        android:orientation="horizontal"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/dialog_title_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:text="操作工上限设置"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorTuoManBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:text="授权"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/colorText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <Switch
+            android:id="@+id/sw_worker_empower"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <RelativeLayout
+        android:background="@color/colorWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/spinner_worker_num"
+            android:layout_margin="20dp"
+            android:padding="12dp"
+            android:gravity="center"
+            android:entries="@array/num"
+            android:background="@drawable/round_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_hint"
+            android:clickable="true"
+            android:layout_alignTop="@id/spinner_worker_num"
+            android:layout_alignBottom="@id/spinner_worker_num"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:background="@color/colorTuoManBack"
+        android:layout_width="match_parent"
+        android:layout_height="1px" />
+    <LinearLayout
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:text="取消"
+            android:textColor="@color/colorText"
+            android:clickable="true"
+            android:onClick="secondaryClick"
+            android:background="@drawable/dialog_cancel"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:background="@color/colorTuoManBack"
+            android:layout_width="1px"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_enter"
+            android:text="确定"
+            android:clickable="true"
+            android:onClick="secondaryClick"
+            android:background="@drawable/dialog_enter"
+            android:textColor="@color/colorTuoManBack"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+</LinearLayout>

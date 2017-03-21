@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_client_item"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/tv_client_item"
+        android:layout_below="@id/iv_client_item"
+        android:layout_alignLeft="@id/iv_client_item"
+        android:layout_alignRight="@id/iv_client_item"
+        android:text="公司名称"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/iv_client_delete_select"
+        android:layout_below="@id/tv_client_item"
+        android:visibility="invisible"
+        android:layout_alignLeft="@id/iv_client_item"
+        android:layout_alignRight="@id/iv_client_item"
+        android:src="@mipmap/selecter_off"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_connect_num"
+        android:text="连接数：2"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/colorBlueShade"
+        android:layout_alignRight="@id/iv_client_delete_select"
+        android:layout_alignLeft="@id/iv_client_delete_select"
+        android:layout_below="@id/tv_client_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

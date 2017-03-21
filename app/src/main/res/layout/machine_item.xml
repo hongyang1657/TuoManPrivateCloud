@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="10dp"
+    android:weightSum="6"
+    android:background="@color/colorTuoManBack"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_machine_item"
+        android:layout_weight="1"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_machine_item"
+        android:layout_weight="2"
+        android:text="机器编号"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tv_standard_yield"
+        android:text="4000"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tv_is_machine_on_item"
+        android:layout_weight="1"
+        android:text="已开启"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/colorText"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <ImageView
+        android:id="@+id/iv_select_machine"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:src="@mipmap/selecter_off"
+        android:gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+</LinearLayout>

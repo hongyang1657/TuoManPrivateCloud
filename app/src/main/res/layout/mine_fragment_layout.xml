@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="@color/colorLoginBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/title_mine"
+        layout="@layout/title_layout"/>
+
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <RelativeLayout
+        android:id="@+id/rl_mine_account"
+        android:layout_weight="2"
+        android:background="@color/colorTuoManBack"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <ImageView
+            android:id="@+id/iv_mine_account"
+            android:src="@mipmap/ic_launcher"
+            android:layout_margin="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_admin"
+            android:text="管理员"
+            android:textColor="@color/colorWhite"
+            android:layout_toRightOf="@id/iv_mine_account"
+            android:layout_alignTop="@id/iv_mine_account"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_id"
+            android:text="ID:12345"
+            android:textColor="@color/colorText"
+            android:layout_toRightOf="@id/iv_mine_account"
+            android:layout_below="@id/tv_admin"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/iv_mine_icon"
+            android:src="@mipmap/ic_launcher"
+            android:layout_alignTop="@id/iv_mine_account"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_hehe"
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:id="@+id/tv_user_management"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:text="客户列表"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:background="@color/colorTuoManBack"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:drawablePadding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:id="@+id/tv_user_modifi_pwd"
+        android:layout_weight="1"
+        android:text="修改密码"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:clickable="true"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:background="@color/colorTuoManBack"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:drawablePadding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:id="@+id/tv_user_help"
+        android:layout_weight="1"
+        android:text="帮助反馈"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:background="@color/colorTuoManBack"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:drawablePadding="10dp"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:id="@+id/tv_user_setting"
+        android:layout_weight="1"
+        android:text="设置"
+        android:textColor="@color/colorWhite"
+        android:clickable="true"
+        android:textSize="20sp"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:background="@color/colorTuoManBack"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:drawablePadding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+</LinearLayout>

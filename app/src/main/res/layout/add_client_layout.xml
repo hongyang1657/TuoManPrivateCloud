@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="4"
+    android:background="@color/colorTuoManBack"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include android:id="@+id/title_add"
+        layout="@layout/title_layout"/>
+    <ImageView
+        android:id="@+id/iv_client_head"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:background="@color/colorTuoManBack"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp" />
+    <EditText
+        android:id="@+id/et_first"
+        android:hint="输入客户姓名"
+        android:lines="1"
+        android:maxLength="16"
+        android:textColorHint="@color/colorText"
+        android:background="@drawable/cycle_button_shape"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:gravity="center"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="0.3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp" />
+    <EditText
+        android:id="@+id/et_second"
+        android:hint="输入联系电话"
+        android:textColorHint="@color/colorText"
+        android:lines="1"
+        android:inputType="number"
+        android:maxLength="16"
+        android:background="@drawable/cycle_button_shape"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:gravity="center"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp" />
+    <RelativeLayout
+        android:id="@+id/rl_add_enter"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <Button
+            android:id="@+id/bt_shade"
+            android:background="@drawable/cycle_button_shape_shade"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/bt_up"
+            android:layout_margin="1dp"
+            android:text="下一步"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlueShade"
+            android:background="@drawable/cycle_button_shape_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+</LinearLayout>

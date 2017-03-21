@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TuoManPrivateCloud</string>
+    <string name="et_input_type">0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+</resources>
