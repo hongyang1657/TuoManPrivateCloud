@@ -122,13 +122,12 @@ public class MainActivity extends BaseActivity {
 
     //判断用户的权限
     private void judgeAdmin() {
-        user_type = getIntent().getStringExtra("user_type");
         application = (MyApplication) getApplication();
-        application.setUserLimits(user_type);
+        user_type = application.getUserLimits();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
 
-        switch (getIntent().getStringExtra("user_type")) {
+        switch (user_type) {
             case USER_TYPE_ADMIN:
                 //管理员权限
                 rbMain.setText("客户");

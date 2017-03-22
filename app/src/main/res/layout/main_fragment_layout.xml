@@ -9,6 +9,7 @@
         layout="@layout/title_layout"/>
 
     <LinearLayout
+        android:id="@+id/ll_machine_line_title"
         android:weightSum="6"
         android:padding="10dp"
         android:background="@color/colorLoginBack"

@@ -10,8 +10,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,6 +55,8 @@ public class MainFragment extends Fragment {
     TextView tvTitle;
     @BindView(R.id.rv_machine_list)
     RecyclerView rvClientList;
+    @BindView(R.id.ll_machine_line_title)
+    LinearLayout llMachineLineTitle;
 
     private ClientRecyclerAdapter adapter = null;
     private int itemNum = 30;
@@ -86,31 +86,35 @@ public class MainFragment extends Fragment {
     }
 
     private void initView(View view) {
+        llMachineLineTitle = (LinearLayout) view.findViewById(R.id.ll_machine_line_title);
+        tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        llMachineLineTitle.setVisibility(View.GONE);
+        tvTitle.setText("客户");
         for (int i = 0; i < itemNum; i++) {
             clientNameList.add(i, "客户" + i);
             clientHeadList.add(i, R.mipmap.login_logo_3x);
         }
 
         rvClientList = (RecyclerView) view.findViewById(R.id.rv_machine_list);
-        rvClientList.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
+        rvClientList.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
         //rvClientList.setHasFixedSize(true);
         rvClientList.setItemAnimator(new DefaultItemAnimator());
-        adapter = new ClientRecyclerAdapter(getActivity(),clientHeadList,clientNameList);
+        adapter = new ClientRecyclerAdapter(getActivity(), clientHeadList, clientNameList);
 
 
         adapter.setOnItemClickListener(new ClientRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (isOnDeleteState){
-                    if (!selectList.get(position)){
-                        selectList.set(position,true);
-                    }else {
-                        selectList.set(position,false);
+                if (isOnDeleteState) {
+                    if (!selectList.get(position)) {
+                        selectList.set(position, true);
+                    } else {
+                        selectList.set(position, false);
                     }
                     adapter.selectItemToDelete(selectList);
-                }else {
-                    Toast.makeText(getActivity(), ""+position, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), DetailMachineListActivity.class);
                     startActivity(intent);
                 }
@@ -121,8 +125,8 @@ public class MainFragment extends Fragment {
     }
 
     @Subscribe
-    public void onEventMainThread(MyEventBusFromMainFragment event){
-        if (event.isEnterToDelete()){
+    public void onEventMainThread(MyEventBusFromMainFragment event) {
+        if (event.isEnterToDelete()) {
             adapter.removeItem(2);
         }
     }
@@ -134,7 +138,7 @@ public class MainFragment extends Fragment {
                 if (isOnDeleteState) {
                     Toast.makeText(getActivity(), "取消删除", Toast.LENGTH_SHORT).show();
                     adapter.deleteClient(false);
-                    EventBus.getDefault().post(new MyEventBusFromMainFragment(false,false));
+                    EventBus.getDefault().post(new MyEventBusFromMainFragment(false, false));
                     isOnDeleteState = false;
                     selectList = null;
                     adapter.selectItemToDelete(selectList);
@@ -147,21 +151,21 @@ public class MainFragment extends Fragment {
             case R.id.iv_title_right:
                 if (isOnDeleteState) {
                     Toast.makeText(getActivity(), "全选", Toast.LENGTH_SHORT).show();
-                    for (int i=0;i<itemNum;i++){
+                    for (int i = 0; i < itemNum; i++) {
                         //selectList.remove(i);
-                        selectList.set(i,true);
+                        selectList.set(i, true);
                     }
                     adapter.selectItemToDelete(selectList);
                 } else {
                     Toast.makeText(getActivity(), "删除客户", Toast.LENGTH_SHORT).show();
                     //底部导航栏变为删除按钮
                     adapter.deleteClient(true);
-                    EventBus.getDefault().post(new MyEventBusFromMainFragment(true,false));
+                    EventBus.getDefault().post(new MyEventBusFromMainFragment(true, false));
 
                     //做一个数组
                     selectList = new ArrayList<>();
-                    for (int i=0;i<itemNum;i++){
-                        selectList.add(i,false);
+                    for (int i = 0; i < itemNum; i++) {
+                        selectList.add(i, false);
                     }
 
                     isOnDeleteState = true;

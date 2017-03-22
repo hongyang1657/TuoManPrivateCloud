@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -80,10 +81,10 @@ public class SetCustomLaunchActivity extends BaseActivity {
                 startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
                 break;
             case R.id.ll_take_picture:
-                Intent openCameraIntent = new Intent(
-                        MediaStore.ACTION_IMAGE_CAPTURE);
-                tempUri = Uri.fromFile(new File(Environment
-                        .getExternalStorageDirectory(), "image.jpg"));
+                Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+               // tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "image.jpg"));
+                tempUri = FileProvider.getUriForFile(this, this.getApplicationContext()
+                        .getPackageName() + ".provider", new File(Environment.getExternalStorageDirectory(), "image.jpg"));
                 // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
                 openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
                 startActivityForResult(openCameraIntent, TAKE_PICTURE);

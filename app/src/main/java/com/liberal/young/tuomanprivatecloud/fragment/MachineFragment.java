@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.WarmUpActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
+import com.liberal.young.tuomanprivatecloud.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,9 @@ public class MachineFragment extends Fragment {
     }
 
     private void initView(View view) {
+        tvTitle = (TextView) view.findViewById(R.id.tv_title);
+
+        tvTitle.setText("自动线");
 
         for (int i = 0; i < 20; i++) {
             detailMachineList.add(i, "机床" + i);
@@ -87,6 +91,7 @@ public class MachineFragment extends Fragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
+                startActivity(new Intent(getActivity(), CaptureActivity.class));
                 break;
             case R.id.iv_title_right:
                 break;

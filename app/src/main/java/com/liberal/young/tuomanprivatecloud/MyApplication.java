@@ -29,7 +29,6 @@ public class MyApplication extends Application{
         super.onCreate();
         myApplication = this;
         activities = new LinkedList<>();
-        setUserLimits("0");
     }
 
     public String getUserLimits() {
