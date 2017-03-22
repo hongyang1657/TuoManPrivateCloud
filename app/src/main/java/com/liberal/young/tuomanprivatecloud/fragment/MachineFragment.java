@@ -69,6 +69,7 @@ public class MachineFragment extends Fragment {
     private void initView(View view) {
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
 
+
         tvTitle.setText("自动线");
 
         for (int i = 0; i < 20; i++) {
