@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="4"
+    android:background="@color/colorTuoManBack"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/title_layout"/>
+
+    <TextView
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <EditText
+        android:id="@+id/et_first"
+        android:hint="wifi账号"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:lines="1"
+        android:maxLength="16"
+        android:textColorHint="@color/colorText"
+        android:background="@drawable/cycle_button_shape"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
+        android:layout_weight="0.3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp" />
+    <EditText
+        android:id="@+id/et_second"
+        android:hint="wifi密码"
+        android:inputType="textPassword"
+        android:digits="@string/et_input_type"
+        android:textColorHint="@color/colorText"
+        android:lines="1"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:maxLength="16"
+        android:background="@drawable/cycle_button_shape"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <TextView
+        android:layout_weight="1.6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <RelativeLayout
+        android:id="@+id/rl_add_enter"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_weight="0.4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <Button
+            android:id="@+id/bt_shade"
+            android:background="@drawable/cycle_button_shape_shade"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/bt_up"
+            android:layout_margin="1dp"
+            android:text="开始配置"
+            android:textSize="18sp"
+            android:textColor="@color/colorBlueShade"
+            android:background="@drawable/cycle_button_shape_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,20 +1,13 @@
 package com.liberal.young.tuomanprivatecloud.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,11 +17,11 @@ import android.widget.Toast;
 
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.ImgUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,7 +31,7 @@ import butterknife.OnClick;
  * Created by Administrator on 2017/3/21.
  */
 
-public class SetCustomLaunchActivity extends BaseActivity {
+public class TestRoundHeadCrop extends BaseActivity {
 
 
     @BindView(R.id.iv_title_left)
@@ -64,12 +57,10 @@ public class SetCustomLaunchActivity extends BaseActivity {
 
     protected static final int CHOOSE_PICTURE = 0;
     protected static final int TAKE_PICTURE = 1;
-    private static final int CROP_BIG_PICTURE = 2;
+    private static final int CROP_SMALL_PICTURE = 2;
     protected static Uri tempUri;
     @BindView(R.id.iv_iviv)
     ImageView ivIviv;
-
-    private Intent openCameraIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +87,13 @@ public class SetCustomLaunchActivity extends BaseActivity {
                 startActivityForResult(openAlbumIntent, CHOOSE_PICTURE);
                 break;
             case R.id.ll_take_picture:
-                openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 // tempUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "image.jpg"));
                 tempUri = FileProvider.getUriForFile(this, this.getApplicationContext()
                         .getPackageName() + ".provider", new File(Environment.getExternalStorageDirectory(), "image.jpg"));
                 // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
                 openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
-
-                openTakePhoto();
-
+                startActivityForResult(openCameraIntent, TAKE_PICTURE);
                 break;
         }
     }
@@ -115,62 +104,28 @@ public class SetCustomLaunchActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    Log.i("result", "onActivityResult111: "+data.getData());
-                    Log.i("result", "onActivityResult111: "+tempUri);
-                    startPhotoZoom(data.getData()); // 开始对图片进行裁剪处理
+                    startPhotoZoom(tempUri); // 开始对图片进行裁剪处理
                     break;
                 case CHOOSE_PICTURE:
                     Log.i("result", "onActivityResult: "+data.getData().toString());
                     startPhotoZoom(data.getData()); // 开始对图片进行裁剪处理
                     break;
-                case CROP_BIG_PICTURE:
-
-                    if (data != null) {
-                        Log.i("result", "uri........222");
-                        setImageToView(data); // 让刚才选择裁剪得到的图片显示在界面上
-                        Bitmap bitmap = decodeUriAsBitmap(data.getData());
+                case CROP_SMALL_PICTURE:
+                    if (imageUrl != null) {
+                        Bitmap bitmap = decodeUriAsBitmap(imageUrl);
+                        // 把解析到的位图显示出来
+                        ivIviv.setImageBitmap(bitmap);
+                    }else {
+                        Toast.makeText(this, "imageUrl为空", Toast.LENGTH_SHORT).show();
+                        Bitmap bitmap = decodeUriAsBitmap(tempUri);
                         // 把解析到的位图显示出来
                         ivIviv.setImageBitmap(bitmap);
                     }
-            }
-        }
-    }
+                    if (data != null) {
+                        setImageToView(data); // 让刚才选择裁剪得到的图片显示在界面上
 
-    //android 6.0 以上申请权限的返回结果
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==MY_REQUEST_CODE){
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Now user should be able to use camera
-                startActivityForResult(openCameraIntent, TAKE_PICTURE);
+                    }
             }
-            else {
-                // Your app will not have this permission. Turn off all functions
-                // that require this permission or it will force close like your
-                // original question
-            }
-        }
-    }
-
-    private int MY_REQUEST_CODE = 555;
-    private void openTakePhoto(){
-        /**
-         * 在启动拍照之前最好先判断一下sdcard是否可用
-         */
-        String state = Environment.getExternalStorageState(); //拿到sdcard是否可用的状态码
-        if (state.equals(Environment.MEDIA_MOUNTED)){   //如果可用
-            //申请拍照的权限
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_REQUEST_CODE);
-                }else {
-                    startActivityForResult(openCameraIntent, TAKE_PICTURE);
-                }
-            }
-
-        }else {
-            Toast.makeText(this,"sdcard不可用",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -190,66 +145,42 @@ public class SetCustomLaunchActivity extends BaseActivity {
      *
      * @param uri
      */
+    private Uri imageUrl;
     protected void startPhotoZoom(Uri uri) {
         if (uri == null) {
-            Log.i("result", "The uri is not exist.");
+            Log.i("tag", "The uri is not exist.");
         }
-        Log.i("result", "uri........");
         tempUri = uri;
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         // 设置裁剪
         intent.putExtra("crop", "true");
         // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 9);
-        intent.putExtra("aspectY", 16);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX",900);
-        intent.putExtra("outputY", 1600);
+        intent.putExtra("outputX", 100);
+        intent.putExtra("outputY", 100);
         // 设置为true直接返回bitmap
+        //intent.putExtra("return-data", true);
         intent.putExtra("return-data", false);
         // 上面设为false的时候将MediaStore.EXTRA_OUTPUT关联一个Uri
-        intent.putExtra("output", getTempUri());
+        intent.putExtra("output", imageUrl);
         //intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        Log.i("result", "uri........111");
-        startActivityForResult(intent, CROP_BIG_PICTURE);
-    }
-
-    private Uri getTempUri() {
-        return Uri.fromFile(getTempFile());
-    }
-
-    private File getTempFile() {
-        if (isSDCARDMounted()) {
-
-            File f = new File(Environment.getExternalStorageDirectory(), "bbb.jpg");
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                Toast.makeText(this, "hehe", Toast.LENGTH_LONG).show();
-            }
-            return f;
-        } else {
-            return null;
-        }
-    }
-
-    private boolean isSDCARDMounted() {
-        String status = Environment.getExternalStorageState();
-
-        if (status.equals(Environment.MEDIA_MOUNTED))
-            return true;
-        return false;
+        startActivityForResult(intent, CROP_SMALL_PICTURE);
     }
 
     /**
      * 保存裁剪之后的图片数据
      */
     protected void setImageToView(Intent data) {
-        Bitmap bitmap = decodeUriAsBitmap(data.getData());
-        saveBitmap(bitmap);
+        Bundle extras = data.getExtras();
+        if (extras != null) {
+            Bitmap photo = extras.getParcelable("data");
+            //photo = ImgUtils.toRoundBitmap(photo, tempUri); // 这个时候的图片已经被处理成圆形的了
+            uploadPic(photo);
+        }
     }
 
     private void uploadPic(Bitmap bitmap) {
@@ -257,7 +188,7 @@ public class SetCustomLaunchActivity extends BaseActivity {
         // ... 可以在这里把Bitmap转换成file，然后得到file的url，做文件上传操作
         // 注意这里得到的图片已经是圆形图片了
         // bitmap是没有做个圆形处理的，但已经被裁剪了
-
+        saveBitmap(bitmap);
 
 
 
@@ -278,7 +209,7 @@ public class SetCustomLaunchActivity extends BaseActivity {
         }
         try {
             FileOutputStream out = new FileOutputStream(f);
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            bm.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.flush();
             out.close();
             Log.i("result", "已经保存");

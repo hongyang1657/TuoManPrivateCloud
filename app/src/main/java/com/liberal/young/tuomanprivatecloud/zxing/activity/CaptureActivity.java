@@ -18,11 +18,14 @@ package com.liberal.young.tuomanprivatecloud.zxing.activity;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -77,6 +80,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 	}
 
 	private boolean isHasSurface = false;
+	private int MY_REQUEST_CODE = 555;
+	private SurfaceHolder mholder;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -154,6 +159,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+		mholder = holder;
 		if (holder == null) {
 			Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
 		}
@@ -203,7 +209,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 			return;
 		}
 		try {
-			cameraManager.openDriver(surfaceHolder);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+					requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_REQUEST_CODE);
+				}else {
+					cameraManager.openDriver(surfaceHolder);
+				}
+			}
+
 			// Creating the handler starts the preview, which can also throw a
 			// RuntimeException.
 			if (handler == null) {
@@ -213,12 +226,26 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 			initCrop();
 		} catch (IOException ioe) {
 			Log.w(TAG, ioe);
-			displayFrameworkBugMessageAndExit();
+			//displayFrameworkBugMessageAndExit();
 		} catch (RuntimeException e) {
 			// Barcode Scanner has seen crashes in the wild of this variety:
 			// java.?lang.?RuntimeException: Fail to connect to camera service
 			Log.w(TAG, "Unexpected error initializing camera", e);
-			displayFrameworkBugMessageAndExit();
+			//displayFrameworkBugMessageAndExit();
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode==MY_REQUEST_CODE){
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				// Now user should be able to use camera
+				initCamera(mholder);
+			}
+			else {
+				displayFrameworkBugMessageAndExit();
+			}
 		}
 	}
 

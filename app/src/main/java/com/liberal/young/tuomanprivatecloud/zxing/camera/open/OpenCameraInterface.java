@@ -16,8 +16,11 @@
 
 package com.liberal.young.tuomanprivatecloud.zxing.camera.open;
 
+import android.content.Intent;
 import android.hardware.Camera;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 public class OpenCameraInterface {
 
@@ -55,6 +58,7 @@ public class OpenCameraInterface {
 
 			cameraId = index;
 		}
+
 
 		Camera camera;
 		if (cameraId < numCameras) {

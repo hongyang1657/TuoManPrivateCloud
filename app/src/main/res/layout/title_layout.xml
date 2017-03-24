@@ -10,7 +10,7 @@
         android:orientation="horizontal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:gravity="center_vertical|left"
+        android:gravity="center"
         android:minWidth="80dp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
@@ -25,12 +25,13 @@
         <TextView
             android:id="@+id/tv_title_left"
             android:clickable="true"
+            android:padding="6dp"
             android:visibility="gone"
-            android:padding="10dp"
             android:gravity="center_vertical|left"
-            android:text="left"
-            android:textSize="16sp"
-            android:textColor="@color/colorBlack"
+            android:text="取消"
+            android:background="@drawable/white_box"
+            android:textSize="14sp"
+            android:textColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -41,7 +42,7 @@
         android:clickable="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:gravity="center_vertical|right"
+        android:gravity="center"
         android:minWidth="80dp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
@@ -56,12 +57,13 @@
         <TextView
             android:id="@+id/tv_title_right"
             android:clickable="true"
+            android:padding="6dp"
+            android:gravity="center_vertical"
             android:visibility="gone"
-            android:padding="10dp"
-            android:gravity="center_vertical|right"
-            android:text="right"
-            android:textSize="16sp"
-            android:textColor="@color/colorBlack"
+            android:text="全选"
+            android:textSize="14sp"
+            android:background="@drawable/white_box"
+            android:textColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

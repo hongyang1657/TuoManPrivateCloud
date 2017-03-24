@@ -1,6 +1,5 @@
 package com.liberal.young.tuomanprivatecloud;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -11,9 +10,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.liberal.young.tuomanprivatecloud.activity.BaseActivity;
 import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusFromMainFragment;
+import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
 import com.liberal.young.tuomanprivatecloud.fragment.MachineFragment;
 import com.liberal.young.tuomanprivatecloud.fragment.MainFragment;
 import com.liberal.young.tuomanprivatecloud.fragment.MineFragment;
@@ -80,6 +81,17 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onEventMainThread(MyEventBusFromMainFragment event){
         if (event.isOnDeleteState()){
+            tvDelete.setVisibility(View.VISIBLE);
+        }else {
+            tvDelete.setVisibility(View.GONE);
+        }
+    }
+
+    @Subscribe
+    public void onEventSecondThread(MyEventBusMachineFragment event){
+        tvDelete.setText("开启");
+
+        if (event.isBatching()){
             tvDelete.setVisibility(View.VISIBLE);
         }else {
             tvDelete.setVisibility(View.GONE);
@@ -164,5 +176,6 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.tv_delete)
     public void onClick() {
         EventBus.getDefault().post(new MyEventBusFromMainFragment(true,true));
+        EventBus.getDefault().post(new MyEventBusMachineFragment(true,true));
     }
 }

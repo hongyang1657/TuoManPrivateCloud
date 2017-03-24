@@ -68,7 +68,7 @@ public class DetailMachineListActivity extends BaseActivity {
         MachineRecyclerAdapter adapter = new MachineRecyclerAdapter(this, detailMachineList);
         adapter.setOnItemClickListener(new MachineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(View view, String data) {
+            public void onItemClick(View view, int position) {
                 Intent intent = new Intent(DetailMachineListActivity.this, WarmUpActivity.class);
                 startActivity(intent);
             }
