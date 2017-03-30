@@ -2,8 +2,12 @@ package com.liberal.young.tuomanprivatecloud;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.view.WindowManager;
 
 import com.liberal.young.tuomanprivatecloud.activity.BaseActivity;
+import com.liberal.young.tuomanprivatecloud.activity.LoginActivity;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,11 +22,16 @@ import java.util.Objects;
 
 public class MyApplication extends Application{
 
+
     private static MyApplication myApplication;
     private static List<BaseActivity> activities;
     private static Map<String,Object> intentData = new HashMap<String,Object>();
     private static Map<String,Object> cacheData = new HashMap<String,Object>();
     private String UserLimits;    //设置一个全局的变量，用于判断登录的账号是什么权限
+    private String accessToken;
+    private Context context;
+    private int width;
+    private int height;
 
     @Override
     public void onCreate() {
@@ -31,12 +40,41 @@ public class MyApplication extends Application{
         activities = new LinkedList<>();
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public String getUserLimits() {
         return UserLimits;
     }
 
     public void setUserLimits(String userLimits) {
         UserLimits = userLimits;
+        L.i("用户权限等级："+userLimits);
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+        L.i(accessToken);
+        /*SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
+        sharedPreferences.edit().putString("accessToken",accessToken).commit();*/
+        //L.i("SharedPreferences:"+sharedPreferences.getString("accessToken","hehe"));
     }
 
     /**

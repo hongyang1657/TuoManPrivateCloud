@@ -101,6 +101,11 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
         notifyItemRemoved(position);
     }
 
+    public void getNotify(List<String> clientNameList,List<Integer> clientHeadList){
+        this.clientHeadList = clientHeadList;
+        this.clientNameList = clientNameList;
+        notifyDataSetChanged();
+    }
 
 
     class ClientViewHolder extends RecyclerView.ViewHolder{

@@ -80,6 +80,7 @@ public class DetailMachineListActivity extends BaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
+                finish();
                 break;
             case R.id.iv_title_right:
                 break;

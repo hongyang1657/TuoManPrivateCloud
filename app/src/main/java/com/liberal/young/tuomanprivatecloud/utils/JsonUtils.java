@@ -1,6 +1,5 @@
 package com.liberal.young.tuomanprivatecloud.utils;
 
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +13,8 @@ import java.util.Calendar;
 
 public class JsonUtils {
 
-    public static String login(String username,String password){
+
+    public static String login(String username,String password,String method,String token){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
 
@@ -22,18 +22,146 @@ public class JsonUtils {
             data.put("username",username);
             data.put("password",password);
 
-            object.put("method","login");
-            object.put("version","1.0");
-            object.put("client",2);
+            object.put("method",method);
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
             object.put("time",getTimeStamp());
-            object.put("token","");
+            object.put("token",token);
             object.put("data",data);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        L.i("login："+object.toString());
         return object.toString();
+    }
+
+    //创建并添加客户
+    public static String createUser(String username,String password,String phone,String token,int roleId){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("username",username);
+            data.put("password",password);
+            data.put("phone",phone);
+            data.put("roleId",roleId);       //创建客户的等级
+
+
+            object.put("method","createUser");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("添加客户json："+object.toString());
+        return object.toString();
+    }
+
+    //分页查找
+    public static String pageSearch(int pageNum,int pageSize,String method,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("pageNum",pageNum);
+            data.put("pageSize",pageSize);
+
+
+            object.put("method",method);
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("分页查找json："+object.toString());
+        return object.toString();
+    }
+
+    //删除用户
+    public static String deleteUser(int id,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("id",id);
+
+            object.put("method","deleteUser");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("删除客户json："+object.toString());
+        return object.toString();
+    }
+
+    public static String getToken(String result){
+        String token = null;
+        JSONObject objResult = null;
+        try {
+            JSONObject object = new JSONObject(result);
+            objResult = new JSONObject();
+            objResult = object.getJSONObject("result");
+
+            return objResult.getString("accessToken");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static int getRole(String result){
+        String token = null;
+        JSONObject objResult = null;
+        try {
+            JSONObject object = new JSONObject(result);
+            objResult = new JSONObject();
+            objResult = object.getJSONObject("result");
+
+            return objResult.getInt("role");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static int getCode(String result){
+        String token = null;
+        JSONObject object = null;
+        int code = -1;
+        try {
+            object = new JSONObject(result);
+            code = object.getInt("code");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    public static String getMsg(String result){
+        String token = null;
+        JSONObject object = null;
+        String code = "";
+        try {
+            object = new JSONObject(result);
+            code = object.getString("msg");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return code;
     }
 
     //获取时间戳 xxxx年xx月xx日

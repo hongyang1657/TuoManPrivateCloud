@@ -87,6 +87,7 @@ public class ManageClientDetailActivity extends BaseActivity {
         WindowManager wm = this.getWindowManager();
         width = wm.getDefaultDisplay().getWidth();
         height = wm.getDefaultDisplay().getHeight();
+        tvManageClientDetailName.setText(getIntent().getStringExtra("clientName"));
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_manage_client_detail_warm_time_slot, R.id.ll_manage_client_detail_auto_close_time, R.id.ll_manage_client_detail_worker_max_num})

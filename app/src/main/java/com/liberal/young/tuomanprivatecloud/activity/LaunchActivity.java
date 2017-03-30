@@ -11,15 +11,29 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.liberal.young.tuomanprivatecloud.MainActivity;
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/3/13.
@@ -29,14 +43,37 @@ public class LaunchActivity extends BaseActivity {
 
     @BindView(R.id.iv_launch)
     ImageView ivLaunch;
+
+    private int width;
+    private int height;
+
+    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
+    private static final String url = "http://115.29.172.223:8080/machine/api";
+    private MyApplication application;
+
+    private SharedPreferences sharedPreferences;
+    private String isCanLogin;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
-                    Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
-                    startActivity(intent);
+                    if (isCanLogin.equals("")||isCanLogin==null){
+                        Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else {
+                        doHttpLogin(sharedPreferences.getString("username",""),sharedPreferences.getString("password",""));
+                    }
+                    break;
+                case 2:
+                    Toast.makeText(LaunchActivity.this, "网络连接失败，请检查网络后重新登录", Toast.LENGTH_LONG).show();
+                    Message m = new Message();
+                    m.what = 3;
+                    handler.sendMessageDelayed(m,5000);
+                    break;
+                case 3:
                     finish();
                     break;
                 default:
@@ -54,6 +91,14 @@ public class LaunchActivity extends BaseActivity {
     }
 
     private void initView() {
+        application = (MyApplication) getApplication();
+        WindowManager wm = this.getWindowManager();
+        width = wm.getDefaultDisplay().getWidth();
+        height = wm.getDefaultDisplay().getHeight();
+        application.setWidth(width);
+        application.setHeight(height);
+        sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
+        isCanLogin = sharedPreferences.getString("username","");
 
         String path= Environment.getExternalStorageDirectory()+"/abc.jpg";
         File mFile=new File(path);
@@ -66,6 +111,61 @@ public class LaunchActivity extends BaseActivity {
 
         Message message = new Message();
         message.what = 1;
-        handler.sendMessageDelayed(message, 3000);
+        handler.sendMessageDelayed(message, 1000);
+
+    }
+
+    private void doHttpLogin(final String username, final String password){
+        if (username==null||password==null||username.equals("")||password.equals("")){
+            Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(JSON, JsonUtils.login(username,password,"login",""));
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.i("hy_debug_message", "onFailure: "+e.toString());
+                    Message message = new Message();
+                    message.what = 2;
+                    handler.sendMessage(message);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String res = response.body().string();
+                    Log.i("hy_debug_message", "onResponse: "+res);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i("hy_debug_message", "onResponse: "+res);
+                            Toast.makeText(LaunchActivity.this, res, Toast.LENGTH_SHORT).show();
+                            if (JsonUtils.getCode(res)==0){        //登录操作成功
+                                application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
+                                application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
+                                //用户名密码存在本地
+                                SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
+                                sharedPreferences.edit().putString("username",username).putString("password",password).commit();
+
+                                Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                //登录有问题
+                                Toast.makeText(LaunchActivity.this, "错误码："+JsonUtils.getCode(res)+" 错误信息："+JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 }

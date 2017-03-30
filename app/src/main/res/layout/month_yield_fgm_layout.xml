@@ -39,4 +39,44 @@
         android:layout_margin="12dp"
         android:layout_width="match_parent"
         android:layout_height="1dp" />
+
+    <TextView
+        android:text="月产量(件)："
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:gravity="center"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:textColor="@color/colorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:text="节能运行时间（小时）："
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:gravity="center"
+        android:drawableRight="@mipmap/ic_launcher"
+        android:textColor="@color/colorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:weightSum="3"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <lecho.lib.hellocharts.view.ColumnChartView
+            android:id="@+id/colume_chart"
+            android:layout_weight="2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp" />
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
 </LinearLayout>

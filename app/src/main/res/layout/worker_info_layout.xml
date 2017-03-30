@@ -42,6 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
         <TextView
+            android:id="@+id/tv_worker_name"
             android:layout_weight="1"
             android:text="张三"
             android:textColor="@color/colorWhite"
@@ -77,6 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
         <TextView
+            android:id="@+id/tv_worker_phone"
             android:layout_weight="1"
             android:text="13545467890"
             android:textColor="@color/colorWhite"
@@ -112,6 +114,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
         <TextView
+            android:id="@+id/tv_worker_number"
             android:layout_weight="1"
             android:text="007"
             android:textColor="@color/colorWhite"

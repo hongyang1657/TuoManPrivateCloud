@@ -19,6 +19,7 @@
         android:layout_alignLeft="@id/iv_client_item"
         android:layout_alignRight="@id/iv_client_item"
         android:text="公司名称"
+        android:lines="1"
         android:textSize="16sp"
         android:gravity="center"
         android:textColor="@color/colorWhite"
@@ -37,6 +38,7 @@
     <TextView
         android:id="@+id/tv_connect_num"
         android:text="连接数：2"
+        android:lines="1"
         android:textSize="12sp"
         android:gravity="center"
         android:textColor="@color/colorBlueShade"

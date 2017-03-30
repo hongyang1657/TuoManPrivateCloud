@@ -1,8 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:background="@drawable/round_corner_back"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <TextView
+            android:text="找回密码"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:textColor="@color/colorLoginBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_username"
+            android:hint="输入用户名"
+            android:textColor="@color/colorLoginBack"
+            android:textSize="16sp"
+            android:textColorHint="@color/colorText"
+            android:background="@drawable/round_box"
+            android:padding="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:lines="1"
+            android:singleLine="true"
+            android:maxLength="16"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:weightSum="3"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/et_phone_num"
+                android:hint="输入绑定的手机号"
+                android:layout_weight="2"
+                android:textColor="@color/colorLoginBack"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:textColorHint="@color/colorText"
+                android:background="@drawable/round_box_left"
+                android:padding="10dp"
+                android:layout_marginLeft="16dp"
+                android:lines="1"
+                android:maxLength="16"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tv_get_security_code"
+                android:clickable="true"
+                android:text="获取验证码"
+                android:lines="1"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:textColor="@color/colorWhite"
+                android:padding="10dp"
+                android:layout_weight="1"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/cycle_button_right_yanzheng"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/et_security_code"
+            android:hint="输入验证码"
+            android:textColor="@color/colorLoginBack"
+            android:textSize="16sp"
+            android:textColorHint="@color/colorText"
+            android:background="@drawable/round_box"
+            android:padding="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:lines="1"
+            android:singleLine="true"
+            android:maxLength="16"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/bt_send"
+            android:text="提交"
+            android:textSize="16sp"
+            android:paddingLeft="100dp"
+            android:paddingRight="100dp"
+            android:layout_margin="20dp"
+            android:textColor="@color/colorWhite"
+            android:background="@drawable/cycle_button_shape_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

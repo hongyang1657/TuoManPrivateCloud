@@ -72,6 +72,7 @@ public class TableQueryActivity extends BaseActivity {
         FragmentTransaction transaction = fm.beginTransaction();
         switch (view.getId()) {
             case R.id.iv_title_left:
+                finish();
                 break;
             case R.id.iv_title_right:
                 break;

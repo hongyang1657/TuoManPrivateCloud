@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.WarmUpActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
-import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusFromMainFragment;
 import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
 import com.liberal.young.tuomanprivatecloud.zxing.activity.CaptureActivity;
 

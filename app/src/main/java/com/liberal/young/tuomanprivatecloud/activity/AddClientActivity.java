@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 
 import butterknife.BindView;
@@ -53,6 +54,7 @@ public class AddClientActivity extends BaseActivity {
 
     private String clientName = null;
     private String clientPhoneNumber = null;
+    private MyApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,13 @@ public class AddClientActivity extends BaseActivity {
 
 
     private void initView() {
-        tvTitle.setText("添加客户");
+        application = (MyApplication) getApplication();
+        String userLimit = application.getUserLimits();
+        if (userLimit.equals("1")||userLimit.equals("2")){
+            tvTitle.setText("添加客户");
+        }else if (userLimit.equals("3")||userLimit.equals("4")){
+            tvTitle.setText("添加操作工");
+        }
         ivTitleRight.setVisibility(View.GONE);
     }
 
@@ -93,6 +101,7 @@ public class AddClientActivity extends BaseActivity {
             intent.putExtra("clientName",clientName);
             intent.putExtra("clientPhoneNumber",clientPhoneNumber);
             startActivity(intent);
+            finish();
         }
     }
 }

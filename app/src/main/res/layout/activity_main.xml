@@ -6,15 +6,19 @@
     android:layout_height="match_parent"
     tools:context="com.liberal.young.tuomanprivatecloud.MainActivity">
 
+
+
     <RadioGroup
         android:id="@+id/rg_main"
         android:orientation="horizontal"
         android:weightSum="3"
         android:background="@color/colorSilver"
         android:gravity="center"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <RadioButton
             android:id="@+id/rb_main"
@@ -48,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
     </RadioGroup>
+
     <TextView
         android:id="@+id/tv_delete"
         android:visibility="gone"
@@ -62,6 +67,7 @@
         android:layout_height="wrap_content" />
     <FrameLayout
         android:id="@+id/fl_blank"
+        android:background="@color/colorAlpha"
         android:layout_above="@id/rg_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

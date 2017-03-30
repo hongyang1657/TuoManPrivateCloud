@@ -21,11 +21,13 @@ public class ManageClientBaseAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
     private List<String> mClientNameList;
+    private List<String> mClientPhoneList;
 
-    public ManageClientBaseAdapter(Context context,List<String> mClientNameList){
+    public ManageClientBaseAdapter(Context context,List<String> mClientNameList,List<String> mClientPhoneList){
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.mClientNameList = mClientNameList;
+        this.mClientPhoneList = mClientPhoneList;
     }
 
     @Override
@@ -57,8 +59,13 @@ public class ManageClientBaseAdapter extends BaseAdapter {
         }
         holder = (ViewHolder) convertView.getTag();
         holder.tvClientName.setText(mClientNameList.get(position));
-
+        holder.tvClientPhoneNumber.setText(mClientPhoneList.get(position));
         return convertView;
+    }
+
+    public void getDataNotify(List<String> mClientNameList,List<String> mClientPhoneList){
+        this.mClientNameList = mClientNameList;
+        this.mClientPhoneList = mClientPhoneList;
     }
 
     class ViewHolder{

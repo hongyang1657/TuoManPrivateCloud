@@ -37,6 +37,12 @@ public class WorkerInfoActivity extends BaseActivity {
     ImageView ivWorkerHead;
     @BindView(R.id.ll_reset_worker_pwd)
     LinearLayout llResetWorkerPwd;
+    @BindView(R.id.tv_worker_name)
+    TextView tvWorkerName;
+    @BindView(R.id.tv_worker_phone)
+    TextView tvWorkerPhone;
+    @BindView(R.id.tv_worker_number)
+    TextView tvWorkerNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,8 @@ public class WorkerInfoActivity extends BaseActivity {
     private void initView() {
         tvTitle.setText("操作工信息");
         ivTitleRight.setVisibility(View.GONE);
+        tvWorkerName.setText(getIntent().getStringExtra("workerName"));
+        tvWorkerPhone.setText(getIntent().getStringExtra("workerPhone"));
 
     }
 

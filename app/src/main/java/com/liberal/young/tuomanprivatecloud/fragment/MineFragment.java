@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.activity.LoginActivity;
 import com.liberal.young.tuomanprivatecloud.activity.ManageClientActivity;
 import com.liberal.young.tuomanprivatecloud.activity.ModifiPwdActivity;
 import com.liberal.young.tuomanprivatecloud.activity.SettingActivity;
@@ -23,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
+ * com.liberal.young.tuomanprivatecloud.fragment.MineFragment
  * Created by Administrator on 2017/3/10.
  */
 
@@ -86,11 +88,12 @@ public class MineFragment extends Fragment {
         tvTitle.setText("我的");
         tvTitle.setTextColor(getResources().getColor(R.color.colorBlueShade));
         application = (MyApplication) getActivity().getApplication();
-        if (application.getUserLimits().equals("1")) {    //管理员
+        String userLimits = application.getUserLimits();
+        if (userLimits.equals("1")||userLimits.equals("2")) {     //管理员
             tvUserManagement.setText("客户列表");
-        } else if (application.getUserLimits().equals("2")) {
+        } else if (userLimits.equals("3")||userLimits.equals("4")) {     //客户
             tvUserManagement.setText("操作工管理");
-        } else if (application.getUserLimits().equals("3")) {
+        } else if (userLimits.equals("5")) {
             tvHehe.setVisibility(View.GONE);
             tvUserManagement.setVisibility(View.GONE);
         }
@@ -115,8 +118,23 @@ public class MineFragment extends Fragment {
                 break;
             case R.id.tv_user_setting:
                 Intent intent1 = new Intent(getActivity(), SettingActivity.class);
-                startActivity(intent1);
+                startActivityForResult(intent1,100);
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==-1){
+            switch (requestCode){
+                case 100:
+                    Intent intentOut = new Intent(getActivity(),LoginActivity.class);
+                    startActivity(intentOut);
+                    getActivity().finish();
+                    System.gc();
+                    break;
+            }
         }
     }
 }
