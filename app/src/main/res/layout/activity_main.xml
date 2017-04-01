@@ -26,9 +26,9 @@
             android:text="客户"
             android:checked="true"
             android:textColor="@drawable/main_textcolor_selecter"
-            android:drawableTop="@mipmap/ic_launcher"
+            android:drawableTop="@mipmap/auto_line_main_active"
             android:button="@null"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
         <RadioButton
@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:text="查询"
             android:textColor="@drawable/main_textcolor_selecter"
-            android:drawableTop="@mipmap/ic_launcher"
+            android:drawableTop="@mipmap/search_main"
             android:button="@null"
             android:gravity="center"
             android:layout_width="wrap_content"

@@ -3,10 +3,8 @@ package com.liberal.young.tuomanprivatecloud.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -18,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hiflying.smartlink.OnSmartLinkListener;
+import com.hiflying.smartlink.SmartLinkedModule;
+import com.hiflying.smartlink.v3.SnifferSmartLinker;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.AddClientActivity;
@@ -115,6 +116,7 @@ public class MainFragment extends Fragment {
     }
 
     private void initView(View view) {
+
         client = new OkHttpClient();
         application = (MyApplication) getActivity().getApplication();
         llMachineLineTitle = (LinearLayout) view.findViewById(R.id.ll_machine_line_title);
@@ -275,6 +277,7 @@ public class MainFragment extends Fragment {
         switch (requestCode){
             case REQUEST_CODE_ADD_CLIENT:
                 doHttpPageSearch();
+                L.i("直接返回");
                 adapter.getNotify(clientNameList,clientHeadList);
                 break;
         }

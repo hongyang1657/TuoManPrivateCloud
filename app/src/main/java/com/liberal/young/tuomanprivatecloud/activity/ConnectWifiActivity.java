@@ -8,8 +8,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.hiflying.smartlink.OnSmartLinkListener;
+import com.hiflying.smartlink.SmartLinkedModule;
+import com.hiflying.smartlink.v3.SnifferSmartLinker;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,8 +71,38 @@ public class ConnectWifiActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bt_up:
-
+                configWIFI();
                 break;
+        }
+    }
+
+    private void configWIFI(){
+        try {
+            SnifferSmartLinker snifferSmartLinker = SnifferSmartLinker.getInstence();
+            snifferSmartLinker.start(this,etSecond.getText().toString(),etFirst.getText().toString());
+            snifferSmartLinker.setOnSmartLinkListener(new OnSmartLinkListener() {
+                @Override
+                public void onLinked(SmartLinkedModule smartLinkedModule) {
+                    L.i("onLinked-------ip地址："+smartLinkedModule.getIp());
+                    L.i("onLinked-------mac地址："+smartLinkedModule.getMac());
+
+                    Toast.makeText(ConnectWifiActivity.this, "mac地址："+smartLinkedModule.getMac()
+                            +"       ip地址："+smartLinkedModule.getIp(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCompleted() {
+                    L.i("onCompleted-------------完成配置--------------");
+                }
+
+                @Override
+                public void onTimeOut() {
+                    L.i("onTimeOut------------配置超时---------------");
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

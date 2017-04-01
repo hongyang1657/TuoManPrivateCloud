@@ -53,11 +53,12 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     RecyclerView rvRecycler;
     private MyFormScrollView svForms;
 
-    private List<String> mDatas;
     private HomeAdapter mAdapter;
-
-    private List<String> lineList;
-    private List<String> dateList;
+    private List<String> mDatas;      //填充的数据数组
+    private List<String> lineList;   //生产线数组
+    private List<String> dateList;   //日期数组
+    private int linesNum = 18;    //生产线数量
+    private int dayDate = 23;    //dayOfMonth
 
     public QueryFragment() {
 
@@ -75,16 +76,20 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     }
 
     private void initData() {
-        mDatas = new ArrayList<String>();
-        for (int i = 0; i < 18*30; i++) {
+        mDatas = new ArrayList<>();
+        for (int i = 0; i < linesNum*dayDate; i++) {
             mDatas.add("" +i);
         }
         lineList = new ArrayList<>();
-        for (int i = 0; i < 18; i++) {
-            lineList.add(i + "号线");
+        for (int i = 0; i < linesNum; i++) {
+            if (i==0){
+                lineList.add("全线");
+            }else {
+                lineList.add(i + "号线");
+            }
         }
         dateList = new ArrayList<>();
-        for (int i = 1;i < 31; i++){
+        for (int i = 1;i <= dayDate; i++){
             dateList.add(i+"日");
         }
 
@@ -96,7 +101,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
 
         //三个RecyclerView
         rvRecycler = (RecyclerView) view.findViewById(R.id.rv_recycler);
-        rvRecycler.setLayoutManager(new StaggeredGridLayoutManager(18, StaggeredGridLayoutManager.HORIZONTAL));
+        rvRecycler.setLayoutManager(new StaggeredGridLayoutManager(linesNum, StaggeredGridLayoutManager.HORIZONTAL));
         rvRecycler.setAdapter(mAdapter = new HomeAdapter());
 
         rvFormsProductionLine = (RecyclerView) view.findViewById(R.id.rv_forms_production_line);
@@ -150,6 +155,11 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         public void onBindViewHolder(FormsViewHolder holder, int position) {
             holder.tvYield.setText(mDatas.get(position));
             holder.tvPercent.setText("" + position);
+            if (position+1>linesNum*(dayDate-1)){
+                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
+            }else {
+                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
+            }
         }
 
 

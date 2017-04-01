@@ -37,4 +37,12 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/zxing.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile files('libs/hiflying-iots-android-smartlink7.0.2.jar')
+    compile files('libs/Lark7618SDK_noudp1606031910_0101.jar')
+    compile files('libs/libEsptouch_v0.3.3.4_3.jar')
+    compile files('libs/libForEElink.jar')
+    compile files('libs/LSFSK_1.0.jar')
+    compile files('libs/OneShotConfig.jar')
+    compile files('libs/simpleconfigwizardlib.jar')
+    compile files('libs/hiflying-iots-android-smartlink-7.0.3.jar')
 }

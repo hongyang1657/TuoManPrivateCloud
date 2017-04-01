@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -108,9 +110,67 @@ public class ManageClientDetailActivity extends BaseActivity {
         }
     }
 
+    private Switch swTimeImpower;
+    private TimePicker tpWarmTime;
+    private TextView tvCancel0;
+    private TextView tvEnter0;
+    private TextView tvHint0;
+    private RadioButton rbStartTime;
+    private RadioButton rbEndTime;
+    private int checkedItem = 1;
     private void initWarmTimeslotDialog(){
-        /*dialogWarmTimeSlot = new Dialog(this,R.style.CustomDialog);
-        viewWarmTimeSlot = LayoutInflater.from(this).inflate(R.layout.)*/
+        if (dialogWarmTimeSlot==null){
+            dialogWarmTimeSlot = new Dialog(this,R.style.CustomDialog);
+            viewWarmTimeSlot = LayoutInflater.from(this).inflate(R.layout.warm_time_dialog_layout,null);
+            swTimeImpower = (Switch) viewWarmTimeSlot.findViewById(R.id.sw_auto_close);
+            tpWarmTime = (TimePicker) viewWarmTimeSlot.findViewById(R.id.tp_auto_close);
+            rbStartTime = (RadioButton) viewWarmTimeSlot.findViewById(R.id.rb_start_time);
+            rbEndTime = (RadioButton) viewWarmTimeSlot.findViewById(R.id.rb_end_time);
+            rbStartTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkedItem = 1;
+                }
+            });
+            rbEndTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkedItem = 2;
+                }
+            });
+            tpWarmTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                @Override
+                public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                    if (checkedItem==1){
+                        rbStartTime.setText(getTimePickerTime());
+                    }else if (checkedItem==2){
+                        rbEndTime.setText(getTimePickerTime());
+                    }
+                }
+            });
+            tvCancel0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_cancel);
+            tvEnter0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_enter);
+            tvHint0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_hint);
+            tvCancel0.setOnClickListener(onclickListener);
+            tvEnter0.setOnClickListener(onclickListener);
+            swTimeImpower.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (swTimeImpower.isChecked()){
+                        tvHint0.setVisibility(View.VISIBLE);
+                    }else {
+                        tvHint0.setVisibility(View.GONE);
+                    }
+                }
+            });
+            dialogWarmTimeSlot.setContentView(viewWarmTimeSlot);
+            dialogWarmTimeSlot.setCanceledOnTouchOutside(true);
+            WindowManager.LayoutParams params = dialogWarmTimeSlot.getWindow().getAttributes();
+            params.width = (int) (width*0.9);
+            Window mWindow = dialogWarmTimeSlot.getWindow();
+            mWindow.setGravity(Gravity.CENTER);
+        }
+        dialogWarmTimeSlot.show();
     }
 
     private Switch swAutoCloseImpower;
@@ -124,6 +184,7 @@ public class ManageClientDetailActivity extends BaseActivity {
             viewAutoClose = LayoutInflater.from(this).inflate(R.layout.auto_close_time_dialog_layout,null);
             swAutoCloseImpower = (Switch) viewAutoClose.findViewById(R.id.sw_auto_close);
             tpAutoClose = (TimePicker) viewAutoClose.findViewById(R.id.tp_auto_close);
+
             tvCancel1 = (TextView) viewAutoClose.findViewById(R.id.tv_cancel);
             tvEnter1 = (TextView) viewAutoClose.findViewById(R.id.tv_enter);
             tvHint1 = (TextView) viewAutoClose.findViewById(R.id.tv_hint);
@@ -133,9 +194,9 @@ public class ManageClientDetailActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     if (swAutoCloseImpower.isChecked()){
-                        tvHint1.setVisibility(View.GONE);
-                    }else {
                         tvHint1.setVisibility(View.VISIBLE);
+                    }else {
+                        tvHint1.setVisibility(View.GONE);
                     }
                 }
             });
@@ -170,9 +231,9 @@ public class ManageClientDetailActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     if (swWorkerImpower.isChecked()){
-                        tvhint.setVisibility(View.GONE);
-                    }else {
                         tvhint.setVisibility(View.VISIBLE);
+                    }else {
+                        tvhint.setVisibility(View.GONE);
                     }
                 }
             });
@@ -225,6 +286,7 @@ public class ManageClientDetailActivity extends BaseActivity {
                     }
                     if (dialogWarmTimeSlot!=null&&dialogWarmTimeSlot.isShowing()){
                         dialogWarmTimeSlot.dismiss();
+
                     }
 
                     break;
@@ -249,5 +311,25 @@ public class ManageClientDetailActivity extends BaseActivity {
             strMin = String.valueOf(min);
         }
         tvManageClientAutoCloseTime.setText(strHour+":"+strMin);
+    }
+
+    //设置时间
+    private String getTimePickerTime(){
+        int hour = tpWarmTime.getCurrentHour();
+        int min = tpWarmTime.getCurrentMinute();
+        String strHour = "";
+        String strMin = "";
+        if (hour<10){
+            strHour = "0"+hour;
+        }else {
+            strHour = String.valueOf(hour);
+        }
+        if (min<10){
+            strMin = "0"+min;
+        }else {
+            strMin = String.valueOf(min);
+        }
+
+        return strHour+":"+strMin;
     }
 }

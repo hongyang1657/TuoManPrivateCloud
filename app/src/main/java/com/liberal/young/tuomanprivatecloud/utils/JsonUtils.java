@@ -108,6 +108,60 @@ public class JsonUtils {
         return object.toString();
     }
 
+    //发送验证码
+    public static String sendCode(String username,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("username",username);
+
+            object.put("method","sendCode");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("发送验证码json："+object.toString());
+        return object.toString();
+    }
+
+    //修改密码
+    public static String changePassword(String methed,String username,String password,String newPassword,String code,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+
+            if (!code.equals("")){
+                data.put("username",username);
+                data.put("password",newPassword);
+                data.put("code",code);
+            }else {
+                data.put("password",password);
+                data.put("newPassword",newPassword);
+            }
+
+            object.put("method",methed);
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("修改密码json："+object.toString());
+        return object.toString();
+    }
+
+    //----------------------------------------------------------------------
+
     public static String getToken(String result){
         String token = null;
         JSONObject objResult = null;
@@ -123,6 +177,7 @@ public class JsonUtils {
         }
     }
 
+
     public static int getRole(String result){
         String token = null;
         JSONObject objResult = null;
@@ -131,7 +186,7 @@ public class JsonUtils {
             objResult = new JSONObject();
             objResult = object.getJSONObject("result");
 
-            return objResult.getInt("role");
+            return objResult.getInt("roleId");
         } catch (JSONException e) {
             e.printStackTrace();
             return -1;
@@ -162,6 +217,20 @@ public class JsonUtils {
             e.printStackTrace();
         }
         return code;
+    }
+
+    //获取公司编号id
+    public static int getCompanyId(String result){
+        String token = null;
+        JSONObject object = null;
+        int companyId = -1;
+        try {
+            object = new JSONObject(result);
+            companyId = object.getInt("companyId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return companyId;
     }
 
     //获取时间戳 xxxx年xx月xx日

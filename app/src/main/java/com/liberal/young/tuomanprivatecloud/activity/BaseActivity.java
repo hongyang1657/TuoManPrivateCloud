@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gizwits.gizwifisdk.listener.GizWifiSDKListener;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
@@ -29,6 +30,7 @@ import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 public class BaseActivity extends Activity{
     protected ProgressDialog waitDialog;
     public static BaseActivity activity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

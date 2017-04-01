@@ -77,6 +77,8 @@ public class MyApplication extends Application{
         //L.i("SharedPreferences:"+sharedPreferences.getString("accessToken","hehe"));
     }
 
+
+
     /**
      * 获取application
      *

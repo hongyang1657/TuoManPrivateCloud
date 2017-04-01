@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.gizwits.gizwifisdk.api.GizWifiSDK;
 import com.liberal.young.tuomanprivatecloud.MainActivity;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
@@ -64,7 +65,7 @@ public class LaunchActivity extends BaseActivity {
                         startActivity(intent);
                         finish();
                     }else {
-                        doHttpLogin(sharedPreferences.getString("username",""),sharedPreferences.getString("password",""));
+                        doHttpLogin(sharedPreferences.getString("accessToken",""));
                     }
                     break;
                 case 2:
@@ -87,6 +88,7 @@ public class LaunchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.launch_layout);
         ButterKnife.bind(this);
+        GizWifiSDK.sharedInstance().startWithAppID(this,"4fcf0fbfd053476c9f81f347cae32570");
         initView();
     }
 
@@ -98,7 +100,7 @@ public class LaunchActivity extends BaseActivity {
         application.setWidth(width);
         application.setHeight(height);
         sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
-        isCanLogin = sharedPreferences.getString("username","");
+        isCanLogin = sharedPreferences.getString("accessToken","");
 
         String path= Environment.getExternalStorageDirectory()+"/abc.jpg";
         File mFile=new File(path);
@@ -112,17 +114,17 @@ public class LaunchActivity extends BaseActivity {
         Message message = new Message();
         message.what = 1;
         handler.sendMessageDelayed(message, 1000);
-
     }
 
-    private void doHttpLogin(final String username, final String password){
-        if (username==null||password==null||username.equals("")||password.equals("")){
+    //根据accessToken来登录
+    private void doHttpLogin(final String accessToken){
+        if (accessToken==null||accessToken.equals("")){
             Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }else {
             OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(JSON, JsonUtils.login(username,password,"login",""));
+            RequestBody body = RequestBody.create(JSON, JsonUtils.login("","","login",accessToken));
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -150,17 +152,15 @@ public class LaunchActivity extends BaseActivity {
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
-                                //用户名密码存在本地
-                                SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
-                                sharedPreferences.edit().putString("username",username).putString("password",password).commit();
-
                                 Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }else {
                                 //登录有问题
                                 Toast.makeText(LaunchActivity.this, "错误码："+JsonUtils.getCode(res)+" 错误信息："+JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
-
+                                Intent intent = new Intent(LaunchActivity.this,LoginActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         }
                     });

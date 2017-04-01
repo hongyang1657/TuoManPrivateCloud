@@ -3,7 +3,10 @@ package com.liberal.young.tuomanprivatecloud.activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.utils.L;
 
+import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -191,6 +195,12 @@ public class SettingActivity extends BaseActivity {
                         Log.i("hy_debug_message", "onResponse:注销： "+res);
                         SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
                         sharedPreferences.edit().clear().commit();
+                        String path= Environment.getExternalStorageDirectory()+"/abc.jpg";
+                        File mFile=new File(path);
+                        //若该文件存在
+                        if (mFile.exists()) {
+                            mFile.delete();
+                        }
                     }
                 });
             }

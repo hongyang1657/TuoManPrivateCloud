@@ -22,6 +22,8 @@ import com.liberal.young.tuomanprivatecloud.MainActivity;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,13 +59,32 @@ public class LoginActivity extends BaseActivity {
     TextView tvLoginForget;
     @BindView(R.id.iv_login_button)
     ImageView ivLoginButton;
+    private WaitingDialog waitingDialog;
 
     public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
     private static final String url = "http://115.29.172.223:8080/machine/api";
     private MyApplication application;
-    private int width;
-    private int height;
 
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    int time = (int) msg.obj;
+                    tvGetCode.setText("("+time+")");
+                    tvGetCode.setClickable(false);
+                    L.i(""+time);
+                    if (time==0){
+                        tvGetCode.setText("重新发送");
+                        tvGetCode.setClickable(true);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +94,15 @@ public class LoginActivity extends BaseActivity {
         initView();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
     private void initView() {
         application = (MyApplication) getApplication();
-
+        waitingDialog = new WaitingDialog(this,application,false);
     }
 
 
@@ -87,6 +114,7 @@ public class LoginActivity extends BaseActivity {
                 break;
             case R.id.iv_login_button:
                 //登录的网络请求
+                waitingDialog.waiting();
                 doHttpLogin(tvLoginName.getText().toString(),tvLoginPwd.getText().toString());
                 break;
         }
@@ -95,8 +123,9 @@ public class LoginActivity extends BaseActivity {
     private Dialog findPwdDialog = null;
     private View view = null;
     private EditText etUsername;
-    private EditText etPhoneNum;
     private EditText etSecurityCode;
+    private EditText etNewPassword;
+    private EditText etCheckNewPassword;
     private TextView tvGetCode;
     private Button btSend;
     private void initFindPwdDialog(){
@@ -104,7 +133,8 @@ public class LoginActivity extends BaseActivity {
             findPwdDialog = new Dialog(this,R.style.CustomDialog);
             view = LayoutInflater.from(this).inflate(R.layout.find_pwd_dialog_layout,null);
             etUsername = (EditText) view.findViewById(R.id.et_username);
-            etPhoneNum = (EditText) view.findViewById(R.id.et_phone_num);
+            etNewPassword = (EditText) view.findViewById(R.id.et_new_pwd);
+            etCheckNewPassword = (EditText) view.findViewById(R.id.et_enter_new_pwd);
             etSecurityCode = (EditText) view.findViewById(R.id.et_security_code);
             tvGetCode = (TextView) view.findViewById(R.id.tv_get_security_code);
             btSend = (Button) view.findViewById(R.id.bt_send);
@@ -112,12 +142,32 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     //获取验证码
+                    if (etUsername.getText().toString().equals("")){
+                        Toast.makeText(LoginActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+                        waitingDialog.waiting();
+                        sendCode(etUsername.getText().toString());
+
+                    }
                 }
             });
             btSend.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //验证信息，跳转到修改密码页面
+                    //发送修改密码命令
+                    if (etUsername.getText().toString().equals("")||etSecurityCode.getText().toString().equals("")){
+                        Toast.makeText(LoginActivity.this, "用户名或验证码不能为空", Toast.LENGTH_SHORT).show();
+                    }else {
+                        if (!etNewPassword.getText().toString().equals(etCheckNewPassword.getText().toString())){
+                            Toast.makeText(LoginActivity.this, "确认密码不一致，请重新输入", Toast.LENGTH_SHORT).show();
+                        }else {
+                            if (etNewPassword.getText().toString().length()<6){
+                                Toast.makeText(LoginActivity.this, "密码不能小于6位数", Toast.LENGTH_SHORT).show();
+                            }else {
+                                changePassword(etUsername.getText().toString(),etNewPassword.getText().toString(),etSecurityCode.getText().toString());
+                            }
+                        }
+                    }
 
                 }
             });
@@ -128,6 +178,7 @@ public class LoginActivity extends BaseActivity {
             Window mWindow = findPwdDialog.getWindow();
             mWindow.setGravity(Gravity.CENTER);
         }
+        tvGetCode.setClickable(true);
         findPwdDialog.show();
     }
 
@@ -147,6 +198,13 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Log.i("hy_debug_message", "onFailure: "+e.toString());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            waitingDialog.stopWaiting();
+                            Toast.makeText(LoginActivity.this, "登录失败，请检查网络后重新登录", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
@@ -164,7 +222,7 @@ public class LoginActivity extends BaseActivity {
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
                                 //用户名密码存在本地
                                 SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
-                                sharedPreferences.edit().putString("username",username).putString("password",password).commit();
+                                sharedPreferences.edit().putString("accessToken",JsonUtils.getToken(res)).commit();
 
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
@@ -173,12 +231,107 @@ public class LoginActivity extends BaseActivity {
                                 //登录有问题
                                 Toast.makeText(LoginActivity.this, "错误码："+JsonUtils.getCode(res)+" 错误信息："+JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
                             }
+                            waitingDialog.stopWaiting();
                         }
                     });
                 }
             });
         }
     }
+
+    //发送验证码
+    private void sendCode(String username){
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON,JsonUtils.sendCode(username,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                        Toast.makeText(LoginActivity.this, "请检查网络后重试", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                Log.i("hy_debug_message", "onResponse: "+res);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (JsonUtils.getCode(res)==0){
+                            //已经发送验证码，等待接收
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    super.run();
+                                    for (int i=60;i>-1;i--){
+                                        try {
+                                            sleep(1000);
+                                            Message msg = new Message();
+                                            msg.what = 1;
+                                            msg.obj = i;
+                                            handler.sendMessage(msg);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }.start();
+                        }
+                        waitingDialog.stopWaiting();
+                    }
+                });
+            }
+        });
+    }
+
+    //修改密码
+    private void changePassword(String username,String newPassword,String code){
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON,JsonUtils.changePassword("changePassword",username,"",newPassword,code,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                Log.i("hy_debug_message", "onResponse: "+res);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (JsonUtils.getCode(res)==0){
+                            //修改密码成功
+                            Toast.makeText(LoginActivity.this, "修改密码成功，请重新登录", Toast.LENGTH_SHORT).show();
+                            findPwdDialog.dismiss();
+                        }else {
+                            Toast.makeText(LoginActivity.this, "错误："+JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
 }
 
 

@@ -9,6 +9,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,18 +21,28 @@ import android.widget.Toast;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.WarmUpActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
+import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
 import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
+import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
+import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.zxing.activity.CaptureActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * 陀曼的客户登录后加载的生产线界面
@@ -67,6 +78,9 @@ public class MachineFragment extends Fragment {
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
     private boolean isBatching = false;        //是否正在批量处理
     private int itemNum = 20;
+
+    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
+    private static final String url = "http://115.29.172.223:8080/machine/api";
 
     public MachineFragment() {
     }
@@ -183,6 +197,7 @@ public class MachineFragment extends Fragment {
                 }
             });
             popWnd = new PopupWindow(getActivity());
+            popWnd.setOutsideTouchable(true);
             popWnd.setContentView(contentView);
             popWnd.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
             popWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -193,5 +208,42 @@ public class MachineFragment extends Fragment {
             popWnd.showAsDropDown(llTitleRight, 0, 0, Gravity.RIGHT);
         }
     }
+
+    /*private void doHttpPageSearch(){
+        RequestBody body = RequestBody.create(JSON, JsonUtils.);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                Log.i("hy_debug_message", "onResponse: "+res);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+                        JsonResponse jsonResponse = jsonParseUtil.parsePageSearchJson();
+                        dataLength = jsonResponse.getResult().size();
+
+                        for (int i = 0; i< dataLength; i++){
+                            clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
+                            clientHeadList.add(i,R.mipmap.login_logo_3x);
+                            clientId.add(i,jsonResponse.getResult().get(i).getId());
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+    }*/
 
 }
