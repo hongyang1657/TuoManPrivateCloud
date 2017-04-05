@@ -15,6 +15,7 @@ import com.liberal.young.tuomanprivatecloud.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.formatter.ColumnChartValueFormatter;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
@@ -35,6 +36,7 @@ public class MonthYieldFragment extends Fragment{
     private ColumnChartData data;
     private TextView tvMonthYield;
     private int[] temp = {100,200,100,60,130};
+    private int[] runTimeOnMonth = {120,130,153,100,90};
 
     @Nullable
     @Override
@@ -54,21 +56,22 @@ public class MonthYieldFragment extends Fragment{
         columnChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(columnChartView.getMaximumViewport());
         v.top = 260;
-        v.right = 6;
+        v.right = 10;
         v.bottom = 0;
         columnChartView.setZoomEnabled(true);
         columnChartView.setZoomType(ZoomType.HORIZONTAL);
         columnChartView.setZoomLevel(2f, 4f, 4f);
-        columnChartView.setMaxZoom(4f);
+        columnChartView.setMaxZoom(14f);
         columnChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         columnChartView.setMaximumViewport(v);
         columnChartView.setCurrentViewport(v);
 
-        int []colors=new int[]{Color.RED,Color.BLUE,Color.YELLOW,Color.BLACK};
+        int[] colors=new int[]{Color.RED,Color.BLUE,Color.YELLOW,Color.BLACK};
         //columnChartView.setYRangeColors(colors);
         //columnChartView.setYAxisRange(50);
         List<Column> columns = new ArrayList<Column>();
-        List<SubcolumnValue> values;
+        List<SubcolumnValue> values = null;
+        List<SubcolumnValue> values1 = null;
         List<AxisValue> mvalues = new ArrayList<>();
 
         for (int i = 0; i <= 250; i += 50) {
@@ -78,12 +81,17 @@ public class MonthYieldFragment extends Fragment{
             mvalues.add(value);
         }
         for (int i = 0; i < temp.length; ++i) {
-            values = new ArrayList<SubcolumnValue>();
-            values.add(new SubcolumnValue(temp[i], Color.LTGRAY));
+            values = new ArrayList<>();
+            values1 = new ArrayList<>();
+            values.add(new SubcolumnValue(temp[i], getResources().getColor(R.color.colorTuomanRed)));
+            values1.add(new SubcolumnValue(runTimeOnMonth[i],getResources().getColor(R.color.colorBlueShade)));
             Column column = new Column(values);
+            Column column1 = new Column(values1);
+
             //column.setHasLabels(hasLabels);
             //column.setHasLabelsOnlyForSelected(hasLabelForSelected);
             columns.add(column);
+            columns.add(column1);
         }
         data = new ColumnChartData(columns);
             Axis axisX = new Axis();

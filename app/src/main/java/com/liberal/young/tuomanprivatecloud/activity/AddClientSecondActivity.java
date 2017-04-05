@@ -86,12 +86,13 @@ public class AddClientSecondActivity extends BaseActivity {
     private void initView() {
         myApplication = (MyApplication) getApplication();
         userLimit = myApplication.getUserLimits();
+        ivTitleLeft.setImageResource(R.mipmap.back);
+        ivTitleRight.setVisibility(View.GONE);
         if (userLimit.equals("1")||userLimit.equals("2")){
             tvTitle.setText("添加客户");
         }else if (userLimit.equals("3")||userLimit.equals("4")){
             tvTitle.setText("添加操作工");
         }
-        ivTitleRight.setVisibility(View.GONE);
         Intent intent = getIntent();
         clientName = intent.getStringExtra("clientName");
         clientPhoneNumber = intent.getStringExtra("clientPhoneNumber");

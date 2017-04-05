@@ -82,6 +82,8 @@ public class ManageClientActivity extends BaseActivity {
     }
 
     private void initView() {
+        ivTitleLeft.setImageResource(R.mipmap.back);
+        ivTitleRight.setImageResource(R.mipmap.add_title);
         application = (MyApplication) getApplication();
         userLimit = application.getUserLimits();
         lvManageClient = (ListView) findViewById(R.id.lv_manage_client);

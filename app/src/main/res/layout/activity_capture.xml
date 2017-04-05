@@ -5,6 +5,7 @@
     android:background="@android:color/transparent"
     android:orientation="vertical" >
 
+
     <SurfaceView
         android:id="@+id/capture_preview"
         android:layout_width="match_parent"
@@ -28,7 +29,7 @@
             android:layout_height="200dp"
             android:layout_below="@id/capture_mask_top"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/qr_code_bg" >
+            android:background="@mipmap/screen" >
 
             <ImageView
                 android:id="@+id/capture_scan_line"
@@ -69,4 +70,5 @@
             android:background="@drawable/shadow" />
     </RelativeLayout>
 
+    <!--<include layout="@layout/title_layout"/>-->
 </RelativeLayout>

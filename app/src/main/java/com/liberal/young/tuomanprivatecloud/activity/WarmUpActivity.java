@@ -59,11 +59,12 @@ public class WarmUpActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.warm_up_layout);
         ButterKnife.bind(this);
-        setTitle("22222", true, MyConstant.TITLE_TYPE_IMG, R.mipmap.play_3x, true, MyConstant.TITLE_TYPE_IMG, R.mipmap.play_3x);  //设置当前activity的title
+        setTitle("22222", true, MyConstant.TITLE_TYPE_IMG, R.mipmap.back, true, MyConstant.TITLE_TYPE_IMG, R.mipmap.more_title);  //设置当前activity的title
         initView();
     }
 
     private void initView() {
+        ivTitleLeft.setImageResource(R.mipmap.back);
         application = (MyApplication) getApplication();
         String userLimits = application.getUserLimits();
         if (userLimits.equals("1")||userLimits.equals("2")){           //陀曼管理员：只能看到机器开关状态

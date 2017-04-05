@@ -37,8 +37,6 @@ public class MineFragment extends Fragment {
     TextView tvAdmin;
     @BindView(R.id.tv_id)
     TextView tvId;
-    @BindView(R.id.iv_mine_icon)
-    ImageView ivMineIcon;
     @BindView(R.id.rl_mine_account)
     RelativeLayout rlMineAccount;
     @BindView(R.id.tv_user_management)

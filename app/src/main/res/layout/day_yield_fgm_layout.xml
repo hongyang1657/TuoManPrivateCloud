@@ -62,7 +62,7 @@
         android:textSize="14sp"
         android:padding="12dp"
         android:gravity="center"
-        android:drawableRight="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/red_line"
         android:textColor="@color/colorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -72,26 +72,29 @@
         android:textSize="14sp"
         android:padding="12dp"
         android:gravity="center"
-        android:drawableRight="@mipmap/ic_launcher"
+        android:drawableRight="@mipmap/blue_line"
         android:textColor="@color/colorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <LinearLayout
         android:orientation="vertical"
-        android:weightSum="2"
+        android:weightSum="2.2"
         android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
         android:layout_height="match_parent">
 
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/line_chart_yield"
             android:layout_weight="1"
             android:clickable="true"
+            android:background="@mipmap/red_back"
             android:layout_width="wrap_content"
             android:layout_height="0dp" />
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/line_chart_run_time"
-            android:layout_weight="1"
+            android:layout_weight="1.2"
             android:clickable="true"
+            android:background="@mipmap/blue_back"
             android:layout_width="wrap_content"
             android:layout_height="0dp" />
     </LinearLayout>

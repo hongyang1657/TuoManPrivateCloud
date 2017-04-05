@@ -98,6 +98,7 @@ public class SettingActivity extends BaseActivity {
         application = (MyApplication) getApplication();
         ivTitleRight.setVisibility(View.GONE);
         tvTitle.setText("设置");
+        ivTitleLeft.setImageResource(R.mipmap.back);
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_setting_warm_time_zone, R.id.ll_setting_auto_close, R.id.ll_setting_worker_num, R.id.ll_custom_launch_page, R.id.ll_unbind_phone, R.id.ll_app_promotion, R.id.ll_logout})

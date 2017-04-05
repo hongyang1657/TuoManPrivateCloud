@@ -53,7 +53,7 @@ public class DetailMachineListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_machine_list_layout);
         ButterKnife.bind(this);
-        setTitle("自动线", true, MyConstant.TITLE_TYPE_IMG, R.mipmap.ic_launcher, true, MyConstant.TITLE_TYPE_IMG, R.mipmap.ic_launcher);
+        setTitle("自动线", true, MyConstant.TITLE_TYPE_IMG, R.mipmap.back, false, MyConstant.TITLE_TYPE_IMG, R.mipmap.ic_launcher);
         initView();
 
     }

@@ -74,6 +74,7 @@ public class AddClientActivity extends BaseActivity {
             tvTitle.setText("添加操作工");
         }
         ivTitleRight.setVisibility(View.GONE);
+        ivTitleLeft.setImageResource(R.mipmap.back);
     }
 
     @OnClick({R.id.iv_title_left, R.id.iv_client_head, R.id.bt_up})

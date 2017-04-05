@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-
     android:gravity="center"
     android:layout_width="wrap_content"
     android:layout_height="70dp">
@@ -23,7 +22,7 @@
             android:id="@+id/rl_report_form_item_back"
             android:layout_margin="4dp"
             android:gravity="center"
-            android:background="@drawable/round_rect_back_shade"
+            android:background="@mipmap/month_yield_back"
             android:layout_width="0dp"
             android:layout_height="match_parent">
 

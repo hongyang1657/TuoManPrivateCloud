@@ -35,6 +35,8 @@ import okhttp3.Response;
 public class ModifiPwdActivity extends BaseActivity {
 
 
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final String url = "http://115.29.172.223:8080/machine/api";
     @BindView(R.id.iv_title_left)
     ImageView ivTitleLeft;
     @BindView(R.id.tv_title_left)
@@ -55,15 +57,10 @@ public class ModifiPwdActivity extends BaseActivity {
     EditText etSecond;
     @BindView(R.id.et_third)
     EditText etThird;
-    @BindView(R.id.bt_shade)
-    Button btShade;
     @BindView(R.id.bt_up)
     Button btUp;
     @BindView(R.id.rl_add_enter)
     RelativeLayout rlAddEnter;
-
-    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
     private MyApplication application;
 
 
@@ -79,6 +76,7 @@ public class ModifiPwdActivity extends BaseActivity {
         application = (MyApplication) getApplication();
         tvTitle.setText("修改密码");
         ivTitleRight.setVisibility(View.GONE);
+        ivTitleLeft.setImageResource(R.mipmap.back);
     }
 
     @OnClick({R.id.iv_title_left, R.id.bt_up})
@@ -91,21 +89,21 @@ public class ModifiPwdActivity extends BaseActivity {
                 String oldPassword = etFirst.getText().toString();
                 String newPassword = etSecond.getText().toString();
                 String enterPassword = etThird.getText().toString();
-                if (oldPassword.equals("")||newPassword.equals("")||enterPassword.equals("")){
+                if (oldPassword.equals("") || newPassword.equals("") || enterPassword.equals("")) {
                     Toast.makeText(this, "密码不能为空,请重新输入", Toast.LENGTH_SHORT).show();
-                }else if (!newPassword.equals(enterPassword)){
+                } else if (!newPassword.equals(enterPassword)) {
                     Toast.makeText(this, "确定密码不正确,请重新输入", Toast.LENGTH_SHORT).show();
-                }else {
-                    changePassword(oldPassword,newPassword);
+                } else {
+                    changePassword(oldPassword, newPassword);
                 }
                 break;
         }
     }
 
     //修改密码
-    private void changePassword(String oldPassword,String newPassword){
+    private void changePassword(String oldPassword, String newPassword) {
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, JsonUtils.changePassword("updatePassword","",oldPassword,newPassword,"",application.getAccessToken()));
+        RequestBody body = RequestBody.create(JSON, JsonUtils.changePassword("updatePassword", "", oldPassword, newPassword, "", application.getAccessToken()));
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -114,23 +112,23 @@ public class ModifiPwdActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                Log.i("hy_debug_message", "onFailure: " + e.toString());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
-                Log.i("hy_debug_message", "onResponse: "+res);
+                Log.i("hy_debug_message", "onResponse: " + res);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (JsonUtils.getCode(res)==0){
+                        if (JsonUtils.getCode(res) == 0) {
                             //修改密码成功
                             Toast.makeText(ModifiPwdActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
                             finish();
-                        }else {
-                            Toast.makeText(ModifiPwdActivity.this, "错误："+JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ModifiPwdActivity.this, "错误：" + JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

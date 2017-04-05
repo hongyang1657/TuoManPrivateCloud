@@ -73,6 +73,7 @@ public class TestRoundHeadCrop extends BaseActivity {
     private void initView() {
         tvTitle.setText("自定义启动页");
         ivTitleRight.setVisibility(View.GONE);
+        ivTitleLeft.setImageResource(R.mipmap.back);
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_select_picture_from_album, R.id.ll_take_picture})

@@ -59,6 +59,9 @@ public class TableQueryActivity extends BaseActivity {
     }
 
     private void initView() {
+        tvTitle.setText("几号线，几车间");
+        ivTitleLeft.setImageResource(R.mipmap.back);
+        ivTitleRight.setImageResource(R.mipmap.more_title);
         FragmentManager fm = getFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         dayYieldFragment = new DayYieldFragment();

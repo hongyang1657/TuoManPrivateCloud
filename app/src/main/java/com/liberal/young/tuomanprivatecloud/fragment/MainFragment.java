@@ -16,9 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hiflying.smartlink.OnSmartLinkListener;
-import com.hiflying.smartlink.SmartLinkedModule;
-import com.hiflying.smartlink.v3.SnifferSmartLinker;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.AddClientActivity;
@@ -120,9 +117,15 @@ public class MainFragment extends Fragment {
         client = new OkHttpClient();
         application = (MyApplication) getActivity().getApplication();
         llMachineLineTitle = (LinearLayout) view.findViewById(R.id.ll_machine_line_title);
+        ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
+        ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
+        tvTitleLeft = (TextView) view.findViewById(R.id.tv_title_left);
+        tvTitleRight = (TextView) view.findViewById(R.id.tv_title_right);
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         llMachineLineTitle.setVisibility(View.GONE);
         tvTitle.setText("客户");
+        ivTitleLeft.setImageResource(R.mipmap.add_title);
+        ivTitleRight.setImageResource(R.mipmap.delete);
 
         doHttpPageSearch();
 
@@ -208,6 +211,10 @@ public class MainFragment extends Fragment {
             for (int i = 0;i<selectList.size();i++){
                 if (selectList.get(i)){
                     adapter.removeItem(i);
+                    ivTitleLeft.setVisibility(View.VISIBLE);
+                    ivTitleRight.setVisibility(View.VISIBLE);
+                    tvTitleLeft.setVisibility(View.GONE);
+                    tvTitleRight.setVisibility(View.GONE);
                     final int finalI = i;
                     new Thread(){
                         @Override
@@ -227,17 +234,12 @@ public class MainFragment extends Fragment {
         }
     }
 
-    @OnClick({R.id.iv_title_left, R.id.iv_title_right})
+    @OnClick({R.id.iv_title_left, R.id.iv_title_right, R.id.tv_title_left, R.id.tv_title_right})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
                 if (isOnDeleteState) {
-                    Toast.makeText(getActivity(), "取消删除", Toast.LENGTH_SHORT).show();
-                    adapter.deleteClient(false);
-                    EventBus.getDefault().post(new MyEventBusFromMainFragment(false, false));
-                    isOnDeleteState = false;
-                    selectList = null;
-                    adapter.selectItemToDelete(selectList);
+
                 } else {
                     Toast.makeText(getActivity(), "添加客户", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), AddClientActivity.class);
@@ -246,17 +248,16 @@ public class MainFragment extends Fragment {
                 break;
             case R.id.iv_title_right:
                 if (isOnDeleteState) {
-                    Toast.makeText(getActivity(), "全选", Toast.LENGTH_SHORT).show();
-                    for (int i = 0; i < clientNameList.size(); i++) {
-                        //selectList.remove(i);
-                        selectList.set(i, true);
-                    }
-                    adapter.selectItemToDelete(selectList);
+
                 } else {
                     Toast.makeText(getActivity(), "删除客户", Toast.LENGTH_SHORT).show();
                     //底部导航栏变为删除按钮
                     adapter.deleteClient(true);
                     EventBus.getDefault().post(new MyEventBusFromMainFragment(true, false));
+                    ivTitleLeft.setVisibility(View.GONE);
+                    ivTitleRight.setVisibility(View.GONE);
+                    tvTitleLeft.setVisibility(View.VISIBLE);
+                    tvTitleRight.setVisibility(View.VISIBLE);
 
                     //做一个数组
                     selectList = new ArrayList<>();
@@ -266,7 +267,26 @@ public class MainFragment extends Fragment {
 
                     isOnDeleteState = true;
                 }
-
+                break;
+            case R.id.tv_title_left:
+                tvTitleLeft.setVisibility(View.GONE);
+                tvTitleRight.setVisibility(View.GONE);
+                ivTitleLeft.setVisibility(View.VISIBLE);
+                ivTitleRight.setVisibility(View.VISIBLE);
+                Toast.makeText(getActivity(), "取消删除", Toast.LENGTH_SHORT).show();
+                adapter.deleteClient(false);
+                EventBus.getDefault().post(new MyEventBusFromMainFragment(false, false));
+                isOnDeleteState = false;
+                selectList = null;
+                adapter.selectItemToDelete(selectList);
+                break;
+            case R.id.tv_title_right:
+                Toast.makeText(getActivity(), "全选", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < clientNameList.size(); i++) {
+                    //selectList.remove(i);
+                    selectList.set(i, true);
+                }
+                adapter.selectItemToDelete(selectList);
                 break;
         }
     }
@@ -314,7 +334,7 @@ public class MainFragment extends Fragment {
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(i,R.mipmap.login_logo_3x);
+                            clientHeadList.add(i,R.mipmap.head);
                             clientId.add(i,jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
@@ -352,7 +372,7 @@ public class MainFragment extends Fragment {
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(R.mipmap.login_logo_3x);
+                            clientHeadList.add(R.mipmap.head);
                             clientId.add(jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
@@ -385,7 +405,7 @@ public class MainFragment extends Fragment {
                     @Override
                     public void run() {
                         doHttpPageSearch();
-                        adapter.getNotify(clientNameList,clientHeadList);
+                        //adapter.getNotify(clientNameList,clientHeadList);
 
                         adapter.deleteClient(false);
                         EventBus.getDefault().post(new MyEventBusFromMainFragment(false, false));

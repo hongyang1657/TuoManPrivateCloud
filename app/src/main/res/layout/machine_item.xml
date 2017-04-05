@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/iv_machine_item"
         android:layout_weight="1"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/machine_off"
         android:layout_width="0dp"
         android:layout_height="wrap_content" />
     <TextView
@@ -46,7 +46,7 @@
         android:id="@+id/iv_select_machine"
         android:layout_weight="1"
         android:visibility="gone"
-        android:src="@mipmap/selecter_off"
+        android:src="@mipmap/machine_select_off"
         android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="match_parent" />

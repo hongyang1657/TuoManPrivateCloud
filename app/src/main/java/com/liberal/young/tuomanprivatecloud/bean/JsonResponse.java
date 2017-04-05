@@ -11,10 +11,20 @@ public class JsonResponse {
     private String msg;
     private List<JsonResult> result;
 
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * Sets code.
+     *
+     * @param code the code
+     */
     public void setCode(int code) {
         this.code = code;
     }

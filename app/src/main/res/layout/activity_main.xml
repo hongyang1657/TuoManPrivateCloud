@@ -13,6 +13,7 @@
         android:orientation="horizontal"
         android:weightSum="3"
         android:background="@color/colorSilver"
+        android:padding="6dp"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,31 +26,43 @@
             android:layout_weight="1"
             android:text="客户"
             android:checked="true"
+            android:visibility="gone"
             android:textColor="@drawable/main_textcolor_selecter"
-            android:drawableTop="@mipmap/auto_line_main_active"
+            android:drawableTop="@drawable/client_main_selecter"
             android:button="@null"
             android:gravity="center_horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <RadioButton
+            android:id="@+id/rb_auto_line"
+            android:layout_weight="1"
+            android:text="自动线"
+            android:checked="true"
+            android:textColor="@drawable/main_textcolor_selecter"
+            android:drawableTop="@drawable/auto_line_selecter"
+            android:button="@null"
+            android:gravity="center_horizontal"
+            android:layout_width="0dp"
             android:layout_height="match_parent" />
         <RadioButton
             android:id="@+id/rb_search"
             android:layout_weight="1"
             android:text="查询"
             android:textColor="@drawable/main_textcolor_selecter"
-            android:drawableTop="@mipmap/search_main"
+            android:drawableTop="@drawable/search_main_selecter"
             android:button="@null"
             android:gravity="center"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent" />
         <RadioButton
             android:id="@+id/rb_mine"
             android:layout_weight="1"
             android:text="我的"
             android:textColor="@drawable/main_textcolor_selecter"
-            android:drawableTop="@mipmap/ic_launcher"
+            android:drawableTop="@drawable/mine_main_selecter"
             android:button="@null"
             android:gravity="center"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent" />
     </RadioGroup>
 

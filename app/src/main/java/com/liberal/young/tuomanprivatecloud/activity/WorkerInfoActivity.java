@@ -56,6 +56,7 @@ public class WorkerInfoActivity extends BaseActivity {
     private void initView() {
         tvTitle.setText("操作工信息");
         ivTitleRight.setVisibility(View.GONE);
+        ivTitleLeft.setImageResource(R.mipmap.back);
         tvWorkerName.setText(getIntent().getStringExtra("workerName"));
         tvWorkerPhone.setText(getIntent().getStringExtra("workerPhone"));
 

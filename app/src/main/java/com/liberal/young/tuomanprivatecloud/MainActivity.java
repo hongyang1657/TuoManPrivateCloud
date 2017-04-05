@@ -1,13 +1,10 @@
 package com.liberal.young.tuomanprivatecloud;
 
-import android.app.Application;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,6 +47,8 @@ public class MainActivity extends BaseActivity {
     FrameLayout flBlank;
     @BindView(R.id.tv_delete)
     TextView tvDelete;
+    @BindView(R.id.rb_auto_line)
+    RadioButton rbAutoLine;
 
     private MyApplication application;
     private MainFragment mainFragment = null;
@@ -83,73 +82,73 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-
         judgeAdmin();   //判断用户权限
 
     }
 
     @Subscribe
-    public void onEventMainThread(MyEventBusFromMainFragment event){
+    public void onEventMainThread(MyEventBusFromMainFragment event) {
         L.i("MyEventBusFromMainFragment------------------");
         tvDelete.setText("删除");
-        if (event.isOnDeleteState()){
+        if (event.isOnDeleteState()) {
             tvDelete.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             tvDelete.setVisibility(View.GONE);
         }
     }
 
     @Subscribe
-    public void onEventSecondThread(MyEventBusMachineFragment event){
+    public void onEventSecondThread(MyEventBusMachineFragment event) {
         L.i("MyEventBusMachineFragment------------------");
         tvDelete.setText("开启");
-        if (event.isBatching()){
+        if (event.isBatching()) {
             tvDelete.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             tvDelete.setVisibility(View.GONE);
         }
     }
 
-    @OnClick({R.id.rb_main, R.id.rb_search, R.id.rb_mine})
+
+    @OnClick({R.id.rb_main, R.id.rb_search, R.id.rb_mine,R.id.rb_auto_line})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rb_main:
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction1 = fragmentManager.beginTransaction();
-                if (user_type.equals("1")||user_type.equals("2")) {
-                    if (queryFragment!=null){
+                FragmentTransaction transaction1 = fm.beginTransaction();
+                    if (queryFragment != null) {
                         transaction1.hide(queryFragment);
                     }
-                    if (mineFragment!=null){
+                    if (mineFragment != null) {
                         transaction1.hide(mineFragment);
                     }
-                    if (machineFragment!=null){
+                    if (machineFragment != null) {
                         transaction1.hide(machineFragment);
                     }
                     transaction1.show(mainFragment);
-                } else if (user_type.equals("3") || user_type.equals("4")||user_type.equals("5") ) {
-                    if (queryFragment!=null){
-                        transaction1.hide(queryFragment);
-                    }
-                    if (mineFragment!=null){
-                        transaction1.hide(mineFragment);
-                    }
-                    if (mainFragment!=null){
-                        transaction1.hide(mainFragment);
-                    }
-                    transaction1.show(machineFragment);
-                }
                 transaction1.commit();
+                break;
+            case R.id.rb_auto_line:
+                FragmentTransaction transaction4 = fm.beginTransaction();
+                if (queryFragment != null) {
+                    transaction4.hide(queryFragment);
+                }
+                if (mineFragment != null) {
+                    transaction4.hide(mineFragment);
+                }
+                if (mainFragment != null) {
+                    transaction4.hide(mainFragment);
+                }
+                transaction4.show(machineFragment);
+                transaction4.commit();
                 break;
             case R.id.rb_search:
                 FragmentTransaction transaction2 = fm.beginTransaction();
-                if (mainFragment!=null){
+                if (mainFragment != null) {
                     transaction2.hide(mainFragment);
                 }
-                if (mineFragment!=null){
+                if (mineFragment != null) {
                     transaction2.hide(mineFragment);
                 }
-                if (machineFragment!=null){
+                if (machineFragment != null) {
                     transaction2.hide(machineFragment);
                 }
                 transaction2.show(queryFragment);
@@ -157,13 +156,13 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.rb_mine:
                 FragmentTransaction transaction3 = fm.beginTransaction();
-                if (machineFragment!=null){
+                if (machineFragment != null) {
                     transaction3.hide(machineFragment);
                 }
-                if (mainFragment!=null){
+                if (mainFragment != null) {
                     transaction3.hide(mainFragment);
                 }
-                if (queryFragment!=null){
+                if (queryFragment != null) {
                     transaction3.hide(queryFragment);
                 }
                 transaction3.show(mineFragment);
@@ -183,45 +182,55 @@ public class MainActivity extends BaseActivity {
 
         switch (user_type) {
             case USER_TYPE_SUPER_ADMIN:        //超级管理员
-                rbMain.setText("客户");
+                rbMain.setVisibility(View.VISIBLE);
+                rbMain.setChecked(true);
+                rbAutoLine.setVisibility(View.GONE);
                 mainFragment = new MainFragment();
-                transaction.replace(R.id.fl_blank,queryFragment);
-                transaction.add(R.id.fl_blank,mineFragment);
-                transaction.add(R.id.fl_blank,mainFragment);
+                transaction.replace(R.id.fl_blank, queryFragment);
+                transaction.add(R.id.fl_blank, mineFragment);
+                transaction.add(R.id.fl_blank, mainFragment);
                 transaction.commit();
                 rbSearch.setClickable(false);
                 break;
             case USER_TYPE_ADMIN:            //管理员权限
                 mainFragment = new MainFragment();
-                rbMain.setText("客户");
+                rbMain.setVisibility(View.VISIBLE);
+                rbMain.setChecked(true);
+                rbAutoLine.setVisibility(View.GONE);
                 rbSearch.setClickable(false);
-                transaction.replace(R.id.fl_blank,queryFragment);
-                transaction.add(R.id.fl_blank,mineFragment);
-                transaction.add(R.id.fl_blank,mainFragment);
+                transaction.replace(R.id.fl_blank, queryFragment);
+                transaction.add(R.id.fl_blank, mineFragment);
+                transaction.add(R.id.fl_blank, mainFragment);
                 transaction.commit();
                 break;
             case USER_TYPE_CLIENT_MAIN:      //超级客户权限
-                rbMain.setText("自动线");
+                rbMain.setVisibility(View.GONE);
+                rbAutoLine.setVisibility(View.VISIBLE);
+                rbAutoLine.setChecked(true);
                 machineFragment = new MachineFragment();
-                transaction.replace(R.id.fl_blank,queryFragment);
-                transaction.add(R.id.fl_blank,mineFragment);
-                transaction.add(R.id.fl_blank,machineFragment);
+                transaction.replace(R.id.fl_blank, queryFragment);
+                transaction.add(R.id.fl_blank, mineFragment);
+                transaction.add(R.id.fl_blank, machineFragment);
                 transaction.commit();
                 break;
             case USER_TYPE_CLIENT_SECOND:     //普通客户权限
-                rbMain.setText("自动线");
+                rbMain.setVisibility(View.GONE);
+                rbAutoLine.setVisibility(View.VISIBLE);
+                rbAutoLine.setChecked(true);
                 machineFragment = new MachineFragment();
-                transaction.replace(R.id.fl_blank,queryFragment);
-                transaction.add(R.id.fl_blank,mineFragment);
-                transaction.add(R.id.fl_blank,machineFragment);
+                transaction.replace(R.id.fl_blank, queryFragment);
+                transaction.add(R.id.fl_blank, mineFragment);
+                transaction.add(R.id.fl_blank, machineFragment);
                 transaction.commit();
                 break;
             case USER_TYPE_CLIENT_WORKER:      //操作工权限
-                rbMain.setText("自动线");
+                rbMain.setVisibility(View.GONE);
+                rbAutoLine.setVisibility(View.VISIBLE);
+                rbAutoLine.setChecked(true);
                 machineFragment = new MachineFragment();
-                transaction.replace(R.id.fl_blank,queryFragment);
-                transaction.add(R.id.fl_blank,mineFragment);
-                transaction.add(R.id.fl_blank,machineFragment);
+                transaction.replace(R.id.fl_blank, queryFragment);
+                transaction.add(R.id.fl_blank, mineFragment);
+                transaction.add(R.id.fl_blank, machineFragment);
                 transaction.commit();
                 break;
             default:
@@ -233,16 +242,16 @@ public class MainActivity extends BaseActivity {
     //删除按钮监听
     @OnClick(R.id.tv_delete)
     public void onClick() {
-        if (user_type.equals("1")||user_type.equals("2")){
-            EventBus.getDefault().post(new MyEventBusFromMainFragment(true,true));
-        }else {
-            EventBus.getDefault().post(new MyEventBusMachineFragment(true,true));
+        if (user_type.equals("1") || user_type.equals("2")) {
+            EventBus.getDefault().post(new MyEventBusFromMainFragment(true, true));
+        } else {
+            EventBus.getDefault().post(new MyEventBusMachineFragment(true, true));
         }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode==event.KEYCODE_BACK){
+        if (keyCode == event.KEYCODE_BACK) {
             exit();
             return false;
         }
@@ -250,7 +259,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private boolean isExit = false;
-    private Handler mhandler = new Handler(){
+    private Handler mhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -258,12 +267,12 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    private void exit(){
-        if (!isExit){
+    private void exit() {
+        if (!isExit) {
             isExit = true;
             Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-            mhandler.sendMessageDelayed(new Message(),2000);
-        }else if (isExit){
+            mhandler.sendMessageDelayed(new Message(), 2000);
+        } else if (isExit) {
             //广播，关闭所有activity资源，退出程序
             MyApplication.quiteApplication();
         }

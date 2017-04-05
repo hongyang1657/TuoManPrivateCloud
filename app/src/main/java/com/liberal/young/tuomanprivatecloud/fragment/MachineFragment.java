@@ -110,7 +110,10 @@ public class MachineFragment extends Fragment {
 
     private void initView(View view) {
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
-
+        ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
+        ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
+        ivTitleRight.setImageResource(R.mipmap.more_title);
+        ivTitleLeft.setImageResource(R.mipmap.add_title);
 
         tvTitle.setText("自动线");
 

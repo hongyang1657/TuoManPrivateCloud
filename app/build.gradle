@@ -8,10 +8,14 @@ android {
         applicationId "com.liberal.young.tuomanprivatecloud"
         minSdkVersion 15
         targetSdkVersion 25
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -19,6 +23,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -37,7 +42,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.2.0'
     compile files('libs/zxing.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile files('libs/hiflying-iots-android-smartlink7.0.2.jar')
     compile files('libs/Lark7618SDK_noudp1606031910_0101.jar')
     compile files('libs/libEsptouch_v0.3.3.4_3.jar')
     compile files('libs/libForEElink.jar')

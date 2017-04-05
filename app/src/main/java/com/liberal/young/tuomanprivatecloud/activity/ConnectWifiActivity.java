@@ -61,7 +61,7 @@ public class ConnectWifiActivity extends BaseActivity {
     }
 
     private void initView() {
-
+        ivTitleLeft.setImageResource(R.mipmap.back);
     }
 
     @OnClick({R.id.iv_title_left, R.id.bt_up})

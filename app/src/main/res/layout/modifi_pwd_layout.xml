@@ -82,17 +82,12 @@
         android:layout_height="0dp">
 
         <Button
-            android:id="@+id/bt_shade"
-            android:background="@drawable/cycle_button_shape_shade"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <Button
             android:id="@+id/bt_up"
             android:layout_margin="1dp"
             android:text="确定"
             android:textSize="18sp"
             android:textColor="@color/colorBlueShade"
-            android:background="@drawable/cycle_button_shape_back"
+            android:background="@mipmap/wifi_button_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </RelativeLayout>

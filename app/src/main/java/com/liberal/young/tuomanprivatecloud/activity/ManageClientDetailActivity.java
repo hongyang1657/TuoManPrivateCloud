@@ -86,6 +86,7 @@ public class ManageClientDetailActivity extends BaseActivity {
     }
 
     private void initView() {
+        ivTitleLeft.setImageResource(R.mipmap.back);
         WindowManager wm = this.getWindowManager();
         width = wm.getDefaultDisplay().getWidth();
         height = wm.getDefaultDisplay().getHeight();

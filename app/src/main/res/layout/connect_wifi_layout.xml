@@ -16,7 +16,7 @@
     <EditText
         android:id="@+id/et_first"
         android:hint="wifi账号"
-        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableLeft="@mipmap/wifi_name"
         android:lines="1"
         android:singleLine="true"
         android:maxLength="16"
@@ -44,7 +44,7 @@
         android:lines="1"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:drawableLeft="@mipmap/ic_launcher"
+        android:drawableLeft="@mipmap/wifi_password"
         android:maxLength="16"
         android:background="@drawable/cycle_button_shape"
         android:layout_marginLeft="30dp"
@@ -67,17 +67,12 @@
         android:layout_height="0dp">
 
         <Button
-            android:id="@+id/bt_shade"
-            android:background="@drawable/cycle_button_shape_shade"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <Button
             android:id="@+id/bt_up"
             android:layout_margin="1dp"
             android:text="开始配置"
             android:textSize="18sp"
             android:textColor="@color/colorBlueShade"
-            android:background="@drawable/cycle_button_shape_back"
+            android:background="@mipmap/wifi_button_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </RelativeLayout>

@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/iv_worker_head"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/head_big"
         android:layout_weight="2.5"
         android:scaleType="center"
         android:layout_width="match_parent"
@@ -155,7 +155,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <ImageView
-            android:src="@mipmap/ic_launcher"
+            android:src="@mipmap/jiantou"
             android:paddingRight="16dp"
             android:gravity="center_vertical|end"
             android:layout_width="wrap_content"
