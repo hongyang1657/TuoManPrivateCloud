@@ -15,12 +15,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.gizwits.gizwifisdk.api.GizWifiSDK;
 import com.liberal.young.tuomanprivatecloud.MainActivity;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
-import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,8 +47,6 @@ public class LaunchActivity extends BaseActivity {
     private int width;
     private int height;
 
-    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
     private MyApplication application;
 
     private SharedPreferences sharedPreferences;
@@ -88,7 +85,6 @@ public class LaunchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.launch_layout);
         ButterKnife.bind(this);
-        GizWifiSDK.sharedInstance().startWithAppID(this,"4fcf0fbfd053476c9f81f347cae32570");
         initView();
     }
 
@@ -124,9 +120,9 @@ public class LaunchActivity extends BaseActivity {
             finish();
         }else {
             OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(JSON, JsonUtils.login("","","login",accessToken));
+            RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.login("","","login",accessToken));
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(MyConstant.SERVER_URL)
                     .post(body)
                     .build();
             Call call = client.newCall(request);
@@ -152,6 +148,9 @@ public class LaunchActivity extends BaseActivity {
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
+                                application.setUsername(JsonUtils.getUsername(res));
+                                application.setUserHeadUrl(JsonUtils.getHeadUrl(res));
+                                application.setCompanyId(JsonUtils.getCompanyId(res));
                                 Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

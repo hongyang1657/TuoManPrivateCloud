@@ -44,4 +44,6 @@ public class JsonResponse {
     public void setResult(List<JsonResult> result) {
         this.result = result;
     }
+
+
 }

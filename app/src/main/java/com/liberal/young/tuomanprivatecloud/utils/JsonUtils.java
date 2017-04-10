@@ -1,10 +1,12 @@
 package com.liberal.young.tuomanprivatecloud.utils;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * 生成json数据的工具类
@@ -14,6 +16,7 @@ import java.util.Calendar;
 public class JsonUtils {
 
 
+    //登录或注销
     public static String login(String username,String password,String method,String token){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
@@ -87,12 +90,17 @@ public class JsonUtils {
     }
 
     //删除用户
-    public static String deleteUser(int id,String token){
+    public static String deleteUser(List<Integer> idList, String token){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
 
         try {
-            data.put("id",id);
+            for (int i=0;i<idList.size();i++){
+                array.put(idList.get(i));
+                L.i("hahahahha:"+idList.get(i));
+            }
+            data.put("id",array);
 
             object.put("method","deleteUser");
             object.put("version","1.0");      //版本号
@@ -120,7 +128,7 @@ public class JsonUtils {
             object.put("version","1.0");      //版本号
             object.put("client",2);        //表示android端
             object.put("time",getTimeStamp());
-            object.put("token",token);
+            object.put("token","");
             object.put("data",data);
 
         } catch (JSONException e) {
@@ -159,6 +167,147 @@ public class JsonUtils {
         L.i("修改密码json："+object.toString());
         return object.toString();
     }
+
+    /**
+     * //机床更新
+     * Update machine string.
+     *
+     * @param machineId     the machine id
+     * @param userTop       the user top
+     * @param closeTime     the close time
+     * @param operableStart the operable start
+     * @param operableEnd   the operable end
+     * @param token         the token
+     * @return the string
+     */
+    public static String updateMachine(int machineId,int userTop,String closeTime,String operableStart,String operableEnd,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("machineId",machineId);
+            data.put("userTop",userTop);
+            data.put("closeTime",closeTime);
+            data.put("operableStart",operableStart);
+            data.put("operableEnd",operableEnd);
+
+            object.put("method","updateMachine");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("更新机床数据json："+object.toString());
+        return object.toString();
+    }
+
+
+    /**
+     * 根据公司分页查找机床
+     * Page by company string.
+     *
+     * @param companyId the company id
+     * @param pageNum   the page num
+     * @param pageSize  the page size
+     * @param token     the token
+     * @return the string
+     */
+    public static String pageByCompany(int companyId,int pageNum,int pageSize,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("companyId",companyId);
+            data.put("pageNum",pageNum);
+            data.put("pageSize",pageSize);
+
+
+            object.put("method","pageByCompany");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("根据公司分页查找机床json："+object.toString());
+        return object.toString();
+    }
+
+
+    /**
+     * 按操作工查找生产线
+     * Page by staff string.
+     *
+     * @param companyId the company id
+     * @param pageNum   the page num
+     * @param pageSize  the page size
+     * @param token     the token
+     * @return the string
+     */
+    public static String pageByStaff(int companyId,int pageNum,int pageSize,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("pageNum",pageNum);
+            data.put("pageSize",pageSize);
+
+
+            object.put("method","pageByStaff");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("按操作工查找生产线json："+object.toString());
+        return object.toString();
+    }
+
+
+
+    /**
+     * //修改用户权限
+     * Update role string.
+     *
+     * @param id     the id
+     * @param roleId the role id 修改后的权限id
+     * @param token  the token
+     * @return the string
+     */
+    public static String updateRole(int id,int roleId,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("id",id);
+            data.put("roleId",roleId);
+
+
+            object.put("method","updateRole");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("按操作工查找生产线json："+object.toString());
+        return object.toString();
+    }
+
 
     //----------------------------------------------------------------------
 
@@ -219,14 +368,48 @@ public class JsonUtils {
         return code;
     }
 
+    //获取用户名
+    public static String getUsername(String result){
+        String token = null;
+        JSONObject objResult = null;
+        try {
+            JSONObject object = new JSONObject(result);
+            objResult = new JSONObject();
+            objResult = object.getJSONObject("result");
+
+            return objResult.getString("username");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    //获取用户头像
+    public static String getHeadUrl(String result){
+        String token = null;
+        JSONObject objResult = null;
+        try {
+            JSONObject object = new JSONObject(result);
+            objResult = new JSONObject();
+            objResult = object.getJSONObject("result");
+
+            return objResult.getString("logo");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     //获取公司编号id
     public static int getCompanyId(String result){
         String token = null;
         JSONObject object = null;
+        JSONObject objResult = null;
         int companyId = -1;
         try {
             object = new JSONObject(result);
-            companyId = object.getInt("companyId");
+            objResult = object.getJSONObject("result");
+            companyId = objResult.getInt("companyId");
         } catch (JSONException e) {
             e.printStackTrace();
         }

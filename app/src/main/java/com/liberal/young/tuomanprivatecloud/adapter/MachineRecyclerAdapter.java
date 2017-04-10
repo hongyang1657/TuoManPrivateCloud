@@ -46,11 +46,11 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
             holder.ivSelectMachine.setVisibility(View.VISIBLE);
             holder.tvIsMachineOn.setVisibility(View.GONE);
             if (selectList!=null&&selectList.get(position)){
-                holder.ivSelectMachine.setImageResource(R.mipmap.selecter_on);
+                holder.ivSelectMachine.setImageResource(R.mipmap.machine_select_on);
             }else if (selectList!=null&&!selectList.get(position)){
-                holder.ivSelectMachine.setImageResource(R.mipmap.selecter_off);
+                holder.ivSelectMachine.setImageResource(R.mipmap.machine_select_off);
             }else {
-                holder.ivSelectMachine.setImageResource(R.mipmap.selecter_off);
+                holder.ivSelectMachine.setImageResource(R.mipmap.machine_select_off);
             }
         }else {
             holder.ivSelectMachine.setVisibility(View.GONE);

@@ -13,8 +13,10 @@ import android.widget.Toast;
 import com.hiflying.smartlink.OnSmartLinkListener;
 import com.hiflying.smartlink.SmartLinkedModule;
 import com.hiflying.smartlink.v3.SnifferSmartLinker;
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,12 +47,12 @@ public class ConnectWifiActivity extends BaseActivity {
     EditText etFirst;
     @BindView(R.id.et_second)
     EditText etSecond;
-    @BindView(R.id.bt_shade)
-    Button btShade;
     @BindView(R.id.bt_up)
     Button btUp;
     @BindView(R.id.rl_add_enter)
     RelativeLayout rlAddEnter;
+
+    private WaitingDialog waitingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,42 +64,57 @@ public class ConnectWifiActivity extends BaseActivity {
 
     private void initView() {
         ivTitleLeft.setImageResource(R.mipmap.back);
+        ivTitleRight.setImageResource(R.mipmap.wifi_help);
+        tvTitle.setText("智能配置");
+        waitingDialog = new WaitingDialog(this, (MyApplication) getApplication(),"正在连接，请稍后",false);
     }
 
-    @OnClick({R.id.iv_title_left, R.id.bt_up})
+    @OnClick({R.id.iv_title_left, R.id.bt_up, R.id.iv_title_right})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
                 finish();
                 break;
+            case R.id.iv_title_right:
+
+                break;
             case R.id.bt_up:
                 configWIFI();
+                waitingDialog.waiting();
                 break;
         }
     }
 
-    private void configWIFI(){
+    private void configWIFI() {
         try {
             SnifferSmartLinker snifferSmartLinker = SnifferSmartLinker.getInstence();
-            snifferSmartLinker.start(this,etSecond.getText().toString(),etFirst.getText().toString());
+            snifferSmartLinker.start(this, etSecond.getText().toString(), etFirst.getText().toString());
             snifferSmartLinker.setOnSmartLinkListener(new OnSmartLinkListener() {
+
                 @Override
                 public void onLinked(SmartLinkedModule smartLinkedModule) {
-                    L.i("onLinked-------ip地址："+smartLinkedModule.getIp());
-                    L.i("onLinked-------mac地址："+smartLinkedModule.getMac());
+                    L.i("onLinked-------ip地址：" + smartLinkedModule.getIp());
+                    L.i("onLinked-------mac地址：" + smartLinkedModule.getMac());
+                    L.i("onLinked-------id：" + smartLinkedModule.getId());
+                    L.i("onLinked-------Mid：" + smartLinkedModule.getMid());
+                    L.i("onLinked-------ModuleIP：" + smartLinkedModule.getModuleIP());
 
-                    Toast.makeText(ConnectWifiActivity.this, "mac地址："+smartLinkedModule.getMac()
-                            +"       ip地址："+smartLinkedModule.getIp(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConnectWifiActivity.this, "mac地址：" + smartLinkedModule.getMac()
+                            + "       ip地址：" + smartLinkedModule.getIp(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onCompleted() {
                     L.i("onCompleted-------------完成配置--------------");
+                    waitingDialog.stopWaiting();
+                    Toast.makeText(ConnectWifiActivity.this, "完成配置", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onTimeOut() {
                     L.i("onTimeOut------------配置超时---------------");
+                    waitingDialog.stopWaiting();
+                    Toast.makeText(ConnectWifiActivity.this, "配置超时", Toast.LENGTH_SHORT).show();
                 }
             });
 

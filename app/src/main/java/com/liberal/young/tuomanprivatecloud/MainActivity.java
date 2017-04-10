@@ -2,12 +2,15 @@ package com.liberal.young.tuomanprivatecloud;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -45,10 +48,14 @@ public class MainActivity extends BaseActivity {
     RelativeLayout activityMain;
     @BindView(R.id.fl_blank)
     FrameLayout flBlank;
-    @BindView(R.id.tv_delete)
-    TextView tvDelete;
     @BindView(R.id.rb_auto_line)
     RadioButton rbAutoLine;
+    @BindView(R.id.iv_delete)
+    ImageView ivDelete;
+    @BindView(R.id.tv_delete)
+    TextView tvDelete;
+    @BindView(R.id.ll_delete)
+    LinearLayout llDelete;
 
     private MyApplication application;
     private MainFragment mainFragment = null;
@@ -56,7 +63,7 @@ public class MainActivity extends BaseActivity {
     private MineFragment mineFragment = null;
     private QueryFragment queryFragment = null;
 
-    private static String user_type;
+    private String user_type;
     private static final String USER_TYPE_SUPER_ADMIN = "1";         //超级管理员
     private static final String USER_TYPE_ADMIN = "2";         //管理员
     private static final String USER_TYPE_CLIENT_MAIN = "3";         //超级客户
@@ -90,10 +97,12 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(MyEventBusFromMainFragment event) {
         L.i("MyEventBusFromMainFragment------------------");
         tvDelete.setText("删除");
+        ivDelete.setImageResource(R.mipmap.delete);
         if (event.isOnDeleteState()) {
-            tvDelete.setVisibility(View.VISIBLE);
+            llDelete.setVisibility(View.VISIBLE);
+
         } else {
-            tvDelete.setVisibility(View.GONE);
+            llDelete.setVisibility(View.GONE);
         }
     }
 
@@ -101,29 +110,30 @@ public class MainActivity extends BaseActivity {
     public void onEventSecondThread(MyEventBusMachineFragment event) {
         L.i("MyEventBusMachineFragment------------------");
         tvDelete.setText("开启");
+        ivDelete.setImageResource(R.mipmap.machine_open_lots);
         if (event.isBatching()) {
-            tvDelete.setVisibility(View.VISIBLE);
+            llDelete.setVisibility(View.VISIBLE);
         } else {
-            tvDelete.setVisibility(View.GONE);
+            llDelete.setVisibility(View.GONE);
         }
     }
 
 
-    @OnClick({R.id.rb_main, R.id.rb_search, R.id.rb_mine,R.id.rb_auto_line})
+    @OnClick({R.id.rb_main, R.id.rb_search, R.id.rb_mine, R.id.rb_auto_line})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rb_main:
                 FragmentTransaction transaction1 = fm.beginTransaction();
-                    if (queryFragment != null) {
-                        transaction1.hide(queryFragment);
-                    }
-                    if (mineFragment != null) {
-                        transaction1.hide(mineFragment);
-                    }
-                    if (machineFragment != null) {
-                        transaction1.hide(machineFragment);
-                    }
-                    transaction1.show(mainFragment);
+                if (queryFragment != null) {
+                    transaction1.hide(queryFragment);
+                }
+                if (mineFragment != null) {
+                    transaction1.hide(mineFragment);
+                }
+                if (machineFragment != null) {
+                    transaction1.hide(machineFragment);
+                }
+                transaction1.show(mainFragment);
                 transaction1.commit();
                 break;
             case R.id.rb_auto_line:
@@ -180,6 +190,11 @@ public class MainActivity extends BaseActivity {
         queryFragment = new QueryFragment();
         mineFragment = new MineFragment();
 
+        if (user_type==null){
+            SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
+            user_type = sharedPreferences.getString("userLimits","");
+        }
+        L.i("zmhuis-------------------------:"+user_type);
         switch (user_type) {
             case USER_TYPE_SUPER_ADMIN:        //超级管理员
                 rbMain.setVisibility(View.VISIBLE);
@@ -240,11 +255,11 @@ public class MainActivity extends BaseActivity {
     }
 
     //删除按钮监听
-    @OnClick(R.id.tv_delete)
+    @OnClick(R.id.ll_delete)
     public void onClick() {
         if (user_type.equals("1") || user_type.equals("2")) {
             EventBus.getDefault().post(new MyEventBusFromMainFragment(true, true));
-        } else {
+        } else if (user_type.equals("3") || user_type.equals("4") || user_type.equals("5")){
             EventBus.getDefault().post(new MyEventBusMachineFragment(true, true));
         }
     }
@@ -277,4 +292,5 @@ public class MainActivity extends BaseActivity {
             MyApplication.quiteApplication();
         }
     }
+
 }

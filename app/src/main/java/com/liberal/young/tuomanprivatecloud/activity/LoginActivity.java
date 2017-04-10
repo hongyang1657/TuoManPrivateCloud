@@ -23,6 +23,7 @@ import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
 import org.json.JSONException;
@@ -61,8 +62,6 @@ public class LoginActivity extends BaseActivity {
     ImageView ivLoginButton;
     private WaitingDialog waitingDialog;
 
-    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
     private MyApplication application;
 
     private Handler handler = new Handler(){
@@ -102,7 +101,7 @@ public class LoginActivity extends BaseActivity {
 
     private void initView() {
         application = (MyApplication) getApplication();
-        waitingDialog = new WaitingDialog(this,application,false);
+        waitingDialog = new WaitingDialog(this,application,"正在登录",false);
     }
 
 
@@ -188,9 +187,9 @@ public class LoginActivity extends BaseActivity {
 
         }else {
             OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(JSON,JsonUtils.login(username,password,"login",""));
+            RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.login(username,password,"login",""));
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(MyConstant.SERVER_URL)
                     .post(body)
                     .build();
             Call call = client.newCall(request);
@@ -220,7 +219,10 @@ public class LoginActivity extends BaseActivity {
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
-                                //用户名密码存在本地
+                                application.setUsername(JsonUtils.getUsername(res));
+                                application.setUserHeadUrl(JsonUtils.getHeadUrl(res));
+                                application.setCompanyId(JsonUtils.getCompanyId(res));
+                                //用户token存在本地
                                 SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
                                 sharedPreferences.edit().putString("accessToken",JsonUtils.getToken(res)).commit();
 
@@ -242,9 +244,9 @@ public class LoginActivity extends BaseActivity {
     //发送验证码
     private void sendCode(String username){
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON,JsonUtils.sendCode(username,application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.sendCode(username,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -299,9 +301,9 @@ public class LoginActivity extends BaseActivity {
     //修改密码
     private void changePassword(String username,String newPassword,String code){
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON,JsonUtils.changePassword("changePassword",username,"",newPassword,code,application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.changePassword("changePassword",username,"",newPassword,code,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);

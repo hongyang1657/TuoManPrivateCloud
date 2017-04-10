@@ -4,15 +4,17 @@
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="150dp">
 
     <ImageView
         android:id="@+id/iv_client_item"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:src="@mipmap/head"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="80dp"
+        android:layout_height="80dp" />
 
 
     <TextView
@@ -23,6 +25,7 @@
         android:text="公司名称"
         android:lines="1"
         android:textSize="16sp"
+        android:padding="4dp"
         android:gravity="center"
         android:textColor="@color/colorWhite"
         android:layout_width="wrap_content"
@@ -33,7 +36,7 @@
         android:visibility="invisible"
         android:layout_alignLeft="@id/iv_client_item"
         android:layout_alignRight="@id/iv_client_item"
-        android:src="@mipmap/selecter_off"
+        android:src="@mipmap/delete_select_off"
         android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

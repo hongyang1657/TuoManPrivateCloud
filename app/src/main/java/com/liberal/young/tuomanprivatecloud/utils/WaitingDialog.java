@@ -27,18 +27,19 @@ public class WaitingDialog {
     private ImageView ivWaitingRotate;
     private TextView tvWaitingContent;
     private TextView tvCancel;
-    public WaitingDialog(Context context,MyApplication application,boolean isHaveCancel){
+    public WaitingDialog(Context context,MyApplication application,String content,boolean isHaveCancel){
         if (myWaitingDialog==null){
             myWaitingDialog = new Dialog(context, R.style.CustomDialog);
             view = LayoutInflater.from(context).inflate(R.layout.waiting_dialog_layout,null);
             ivWaitingRotate = (ImageView) view.findViewById(R.id.iv_waiting_rotate);
             tvWaitingContent = (TextView) view.findViewById(R.id.tv_waiting_content);
             tvCancel = (TextView) view.findViewById(R.id.tv_cancel_wating);
-            ObjectAnimator objectAnimator = new ObjectAnimator().ofFloat(ivWaitingRotate,"rotation",0f,-360f).setDuration(500);
+            ObjectAnimator objectAnimator = new ObjectAnimator().ofFloat(ivWaitingRotate,"rotation",0f,360f).setDuration(2000);
             LinearInterpolator ll = new LinearInterpolator();    //线性动画（匀速）
             objectAnimator.setRepeatCount(-1);
             objectAnimator.setInterpolator(ll);
             objectAnimator.start();
+            tvWaitingContent.setText(content);
             if (!isHaveCancel){
                 tvCancel.setVisibility(View.GONE);
             }

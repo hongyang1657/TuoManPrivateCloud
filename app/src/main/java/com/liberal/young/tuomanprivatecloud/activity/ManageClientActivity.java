@@ -18,6 +18,7 @@ import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
 import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,14 +62,13 @@ public class ManageClientActivity extends BaseActivity {
     private static final int ADD_WORKER = 1;
     private static final int ADD_CLIENT = 2;
     private ManageClientBaseAdapter adapter;
-    private List<String> mClientNameList;
+    private List<String> mClientNameList = new ArrayList<>();
     private List<String> mClientPhoneList = new ArrayList<>();
+    private List<Integer> mUserIdList = new ArrayList<>();
     private int dataLength = 0;
     private String userLimit;
 
     private MyApplication application;
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
 
     private boolean isScrollToBottom;
     private static final int PAGE_ITEM_NUMBER = 12;      //一页加载的item数
@@ -87,7 +87,7 @@ public class ManageClientActivity extends BaseActivity {
         application = (MyApplication) getApplication();
         userLimit = application.getUserLimits();
         lvManageClient = (ListView) findViewById(R.id.lv_manage_client);
-        mClientNameList = new ArrayList<>();
+
 
         if (userLimit.equals("1")||userLimit.equals("2")){
             doHttpPageSearch("pageSearchCustomer");
@@ -153,6 +153,7 @@ public class ManageClientActivity extends BaseActivity {
             if (userLimit.equals("1")||userLimit.equals("2")){
                 Intent intent = new Intent(ManageClientActivity.this,ManageClientDetailActivity.class);
                 intent.putExtra("clientName",mClientNameList.get(position));
+                intent.putExtra("id",mUserIdList.get(position));
                 startActivity(intent);
             }else if (userLimit.equals("3")||userLimit.equals("4")){
                 Intent intent = new Intent(ManageClientActivity.this,WorkerInfoActivity.class);
@@ -183,9 +184,9 @@ public class ManageClientActivity extends BaseActivity {
         mClientNameList = new ArrayList<>();
         mClientPhoneList = new ArrayList<>();
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, JsonUtils.pageSearch(1,PAGE_ITEM_NUMBER,methed,application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageSearch(1,PAGE_ITEM_NUMBER,methed,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -210,6 +211,7 @@ public class ManageClientActivity extends BaseActivity {
                         for (int i = 0; i< dataLength; i++){
                             mClientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
                             mClientPhoneList.add(i,jsonResponse.getResult().get(i).getPhone());
+                            mUserIdList.add(i,jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -221,9 +223,9 @@ public class ManageClientActivity extends BaseActivity {
     //上拉加载更多数据
     private void addHttpPage(int page,String methed){
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, JsonUtils.pageSearch(page,PAGE_ITEM_NUMBER,methed,application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageSearch(page,PAGE_ITEM_NUMBER,methed,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -248,6 +250,7 @@ public class ManageClientActivity extends BaseActivity {
                         for (int i = 0; i< dataLength; i++){
                             mClientNameList.add(jsonResponse.getResult().get(i).getUsername());
                             mClientPhoneList.add(jsonResponse.getResult().get(i).getPhone());
+                            mUserIdList.add(jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
                     }

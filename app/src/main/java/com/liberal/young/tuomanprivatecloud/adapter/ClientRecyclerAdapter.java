@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.CircleTransformPicasso;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -22,12 +24,12 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     private Context context;
     private LayoutInflater inflater;
     private List<String> clientNameList;
-    private List<Integer> clientHeadList;
+    private List<String> clientHeadList;
     private boolean toDeleteClient = false;
     private List<Boolean> selectList;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public ClientRecyclerAdapter(Context context,List<Integer> clientHeadList, List<String> clientNameList) {
+    public ClientRecyclerAdapter(Context context,List<String> clientHeadList, List<String> clientNameList) {
         inflater = LayoutInflater.from(context);
         this.clientHeadList = clientHeadList;
         this.clientNameList = clientNameList;
@@ -45,18 +47,23 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     @Override
     public void onBindViewHolder(ClientViewHolder holder, int position) {
         holder.tvClientName.setText(clientNameList.get(position));
-        holder.ivClientHead.setImageResource(clientHeadList.get(position));
+        Picasso.with(context).load(clientHeadList.get(position))
+                .transform(new CircleTransformPicasso())
+                .placeholder(R.mipmap.head)
+                .error(R.mipmap.head).into(holder.ivClientHead);
         if (toDeleteClient){
             holder.ivClientDelete.setVisibility(View.VISIBLE);
+            holder.tvConnectNum.setVisibility(View.INVISIBLE);
             if (selectList!=null&&selectList.get(position)){
-                holder.ivClientDelete.setImageResource(R.mipmap.selecter_on);
+                holder.ivClientDelete.setImageResource(R.mipmap.delete_select_on);
             }else if (selectList!=null&&!selectList.get(position)){
-                holder.ivClientDelete.setImageResource(R.mipmap.selecter_off);
+                holder.ivClientDelete.setImageResource(R.mipmap.delete_select_off);
             }else {
-                holder.ivClientDelete.setImageResource(R.mipmap.selecter_off);
+                holder.ivClientDelete.setImageResource(R.mipmap.delete_select_off);
             }
         }else {
             holder.ivClientDelete.setVisibility(View.INVISIBLE);
+            holder.tvConnectNum.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setTag(position);          //设置item点击传出的数据
@@ -89,7 +96,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
 
     //添加item
     public void addItem(int position){
-        clientHeadList.add(position,R.mipmap.login_logo_3x);
+        clientHeadList.add(position,"");
         clientNameList.add(position,"添加项");
         notifyItemInserted(position);      //产生动画的刷新
     }
@@ -101,7 +108,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
         notifyItemRemoved(position);
     }
 
-    public void getNotify(List<String> clientNameList,List<Integer> clientHeadList){
+    public void getNotify(List<String> clientNameList,List<String> clientHeadList){
         this.clientHeadList = clientHeadList;
         this.clientNameList = clientNameList;
         notifyDataSetChanged();
@@ -111,6 +118,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     class ClientViewHolder extends RecyclerView.ViewHolder{
         ImageView ivClientHead;
         TextView tvClientName;
+        TextView tvConnectNum;
         ImageView ivClientDelete;
 
 
@@ -118,6 +126,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
             super(itemView);
             ivClientHead = (ImageView) itemView.findViewById(R.id.iv_client_item);
             tvClientName = (TextView) itemView.findViewById(R.id.tv_client_item);
+            tvConnectNum = (TextView) itemView.findViewById(R.id.tv_connect_num);
             ivClientDelete = (ImageView) itemView.findViewById(R.id.iv_client_delete_select);
         }
     }

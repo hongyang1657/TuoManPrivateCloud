@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 
 import java.io.IOException;
 
@@ -35,8 +36,6 @@ import okhttp3.Response;
 public class ModifiPwdActivity extends BaseActivity {
 
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
     @BindView(R.id.iv_title_left)
     ImageView ivTitleLeft;
     @BindView(R.id.tv_title_left)
@@ -103,9 +102,9 @@ public class ModifiPwdActivity extends BaseActivity {
     //修改密码
     private void changePassword(String oldPassword, String newPassword) {
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, JsonUtils.changePassword("updatePassword", "", oldPassword, newPassword, "", application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.changePassword("updatePassword", "", oldPassword, newPassword, "", application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);

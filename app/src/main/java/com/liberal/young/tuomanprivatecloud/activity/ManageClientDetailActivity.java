@@ -1,34 +1,46 @@
 package com.liberal.young.tuomanprivatecloud.activity;
 
 import android.app.Dialog;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/3/20.
@@ -67,6 +79,10 @@ public class ManageClientDetailActivity extends BaseActivity {
     TextView tvManageClientWorkerMaxNum;
     @BindView(R.id.ll_manage_client_detail_worker_max_num)
     LinearLayout llManageClientDetailWorkerMaxNum;
+    @BindView(R.id.sw_manage_client_impower)
+    Switch swManageClientImpower;
+    @BindView(R.id.ll_manage_client_impower)
+    LinearLayout llManageClientImpower;
 
     private Dialog dialogWarmTimeSlot = null;
     private Dialog dialogAutoClose = null;
@@ -76,6 +92,9 @@ public class ManageClientDetailActivity extends BaseActivity {
     private View viewWorkerMaxNum = null;
     private int width;
     private int height;
+    private MyApplication application;
+    private static int userId;
+    private WaitingDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,19 +104,35 @@ public class ManageClientDetailActivity extends BaseActivity {
         initView();
     }
 
+    private boolean isImpower = false;
     private void initView() {
+        application = (MyApplication) getApplication();
         ivTitleLeft.setImageResource(R.mipmap.back);
-        WindowManager wm = this.getWindowManager();
-        width = wm.getDefaultDisplay().getWidth();
-        height = wm.getDefaultDisplay().getHeight();
+        ivTitleRight.setVisibility(View.GONE);
+        tvTitle.setText("客户管理");
+        width = application.getWidth();
+        height = application.getHeight();
         tvManageClientDetailName.setText(getIntent().getStringExtra("clientName"));
+        userId = getIntent().getIntExtra("id",-1);
+        swManageClientImpower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    isImpower = true;
+                }else {
+                    isImpower = false;
+                }
+            }
+        });
+        dialog = new WaitingDialog(this,application,"",false);
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_manage_client_detail_warm_time_slot, R.id.ll_manage_client_detail_auto_close_time, R.id.ll_manage_client_detail_worker_max_num})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
-                finish();
+                //返回上一页面时，弹出是否保存设置dialog
+                initSaveDialog();
                 break;
             case R.id.ll_manage_client_detail_warm_time_slot:
                 initWarmTimeslotDialog();
@@ -111,137 +146,109 @@ public class ManageClientDetailActivity extends BaseActivity {
         }
     }
 
-    private Switch swTimeImpower;
     private TimePicker tpWarmTime;
     private TextView tvCancel0;
     private TextView tvEnter0;
-    private TextView tvHint0;
     private RadioButton rbStartTime;
     private RadioButton rbEndTime;
     private int checkedItem = 1;
-    private void initWarmTimeslotDialog(){
-        if (dialogWarmTimeSlot==null){
-            dialogWarmTimeSlot = new Dialog(this,R.style.CustomDialog);
-            viewWarmTimeSlot = LayoutInflater.from(this).inflate(R.layout.warm_time_dialog_layout,null);
-            swTimeImpower = (Switch) viewWarmTimeSlot.findViewById(R.id.sw_auto_close);
+    private String startTime;
+    private String endTime;
+
+    private void initWarmTimeslotDialog() {
+        if (dialogWarmTimeSlot == null) {
+            dialogWarmTimeSlot = new Dialog(this, R.style.CustomDialog);
+            viewWarmTimeSlot = LayoutInflater.from(this).inflate(R.layout.warm_time_dialog_layout, null);
             tpWarmTime = (TimePicker) viewWarmTimeSlot.findViewById(R.id.tp_auto_close);
+            tvCancel0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_cancel);
+            tvEnter0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_enter);
             rbStartTime = (RadioButton) viewWarmTimeSlot.findViewById(R.id.rb_start_time);
             rbEndTime = (RadioButton) viewWarmTimeSlot.findViewById(R.id.rb_end_time);
+            rbStartTime.setBackgroundResource(R.color.colorBule);
+            rbEndTime.setBackgroundResource(R.color.colorWhite);
             rbStartTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     checkedItem = 1;
+                    rbStartTime.setBackgroundResource(R.color.colorBule);
+                    rbEndTime.setBackgroundResource(R.color.colorWhite);
                 }
             });
             rbEndTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     checkedItem = 2;
+                    rbEndTime.setBackgroundResource(R.color.colorBule);
+                    rbStartTime.setBackgroundResource(R.color.colorWhite);
                 }
             });
             tpWarmTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                    if (checkedItem==1){
-                        rbStartTime.setText(getTimePickerTime());
-                    }else if (checkedItem==2){
-                        rbEndTime.setText(getTimePickerTime());
+                    if (checkedItem == 1) {
+                        startTime = getTimePickerTime();
+                        rbStartTime.setText(startTime);
+                    } else if (checkedItem == 2) {
+                        endTime = getTimePickerTime();
+                        rbEndTime.setText(endTime);
                     }
                 }
             });
-            tvCancel0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_cancel);
-            tvEnter0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_enter);
-            tvHint0 = (TextView) viewWarmTimeSlot.findViewById(R.id.tv_hint);
+
             tvCancel0.setOnClickListener(onclickListener);
             tvEnter0.setOnClickListener(onclickListener);
-            swTimeImpower.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (swTimeImpower.isChecked()){
-                        tvHint0.setVisibility(View.VISIBLE);
-                    }else {
-                        tvHint0.setVisibility(View.GONE);
-                    }
-                }
-            });
             dialogWarmTimeSlot.setContentView(viewWarmTimeSlot);
             dialogWarmTimeSlot.setCanceledOnTouchOutside(true);
             WindowManager.LayoutParams params = dialogWarmTimeSlot.getWindow().getAttributes();
-            params.width = (int) (width*0.9);
+            params.width = (int) (width * 0.9);
             Window mWindow = dialogWarmTimeSlot.getWindow();
             mWindow.setGravity(Gravity.CENTER);
         }
         dialogWarmTimeSlot.show();
     }
 
-    private Switch swAutoCloseImpower;
     private TimePicker tpAutoClose;
     private TextView tvCancel1;
     private TextView tvEnter1;
-    private TextView tvHint1;
-    private void initAutoCloseTimeDialog(){
-        if (dialogAutoClose==null){
-            dialogAutoClose = new Dialog(this,R.style.CustomDialog);
-            viewAutoClose = LayoutInflater.from(this).inflate(R.layout.auto_close_time_dialog_layout,null);
-            swAutoCloseImpower = (Switch) viewAutoClose.findViewById(R.id.sw_auto_close);
+
+    private void initAutoCloseTimeDialog() {
+        if (dialogAutoClose == null) {
+            dialogAutoClose = new Dialog(this, R.style.CustomDialog);
+            viewAutoClose = LayoutInflater.from(this).inflate(R.layout.auto_close_time_dialog_layout, null);
             tpAutoClose = (TimePicker) viewAutoClose.findViewById(R.id.tp_auto_close);
 
             tvCancel1 = (TextView) viewAutoClose.findViewById(R.id.tv_cancel);
             tvEnter1 = (TextView) viewAutoClose.findViewById(R.id.tv_enter);
-            tvHint1 = (TextView) viewAutoClose.findViewById(R.id.tv_hint);
             tvCancel1.setOnClickListener(onclickListener);
             tvEnter1.setOnClickListener(onclickListener);
-            swAutoCloseImpower.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (swAutoCloseImpower.isChecked()){
-                        tvHint1.setVisibility(View.VISIBLE);
-                    }else {
-                        tvHint1.setVisibility(View.GONE);
-                    }
-                }
-            });
             dialogAutoClose.setContentView(viewAutoClose);
             dialogAutoClose.setCanceledOnTouchOutside(true);
             WindowManager.LayoutParams params = dialogAutoClose.getWindow().getAttributes();
-            params.width = (int) (width*0.9);
+            params.width = (int) (width * 0.9);
             Window mWindow = dialogAutoClose.getWindow();
             mWindow.setGravity(Gravity.CENTER);
         }
         dialogAutoClose.show();
     }
 
-    private Switch swWorkerImpower;
     private Spinner spinnerWorkerNum;
     private TextView tvCancel;
     private TextView tvEnter;
-    private TextView tvhint;
     private int workerNumber = 0;
-    private void initWorkerMaxNumDialog(){
-        if (dialogWorkerMaxNum==null){
-            dialogWorkerMaxNum = new Dialog(this,R.style.CustomDialog);
-            viewWorkerMaxNum = LayoutInflater.from(this).inflate(R.layout.worker_setting_dialog_layout,null);
-            swWorkerImpower = (Switch) viewWorkerMaxNum.findViewById(R.id.sw_worker_empower);
+
+    private void initWorkerMaxNumDialog() {
+        if (dialogWorkerMaxNum == null) {
+            dialogWorkerMaxNum = new Dialog(this, R.style.CustomDialog);
+            viewWorkerMaxNum = LayoutInflater.from(this).inflate(R.layout.worker_setting_dialog_layout, null);
             spinnerWorkerNum = (Spinner) viewWorkerMaxNum.findViewById(R.id.spinner_worker_num);
             tvCancel = (TextView) viewWorkerMaxNum.findViewById(R.id.tv_cancel);
             tvEnter = (TextView) viewWorkerMaxNum.findViewById(R.id.tv_enter);
-            tvhint = (TextView) viewWorkerMaxNum.findViewById(R.id.tv_hint);
             tvCancel.setOnClickListener(onclickListener);
             tvEnter.setOnClickListener(onclickListener);
-            swWorkerImpower.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (swWorkerImpower.isChecked()){
-                        tvhint.setVisibility(View.VISIBLE);
-                    }else {
-                        tvhint.setVisibility(View.GONE);
-                    }
-                }
-            });
             spinnerWorkerNum.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    workerNumber = position+1;
+                    workerNumber = position + 1;
                 }
 
                 @Override
@@ -253,7 +260,7 @@ public class ManageClientDetailActivity extends BaseActivity {
             dialogWorkerMaxNum.setContentView(viewWorkerMaxNum);
             dialogWorkerMaxNum.setCanceledOnTouchOutside(true);
             WindowManager.LayoutParams params = dialogWorkerMaxNum.getWindow().getAttributes();
-            params.width = (int) (width*0.9);
+            params.width = (int) (width * 0.9);
             Window mWindow = dialogWorkerMaxNum.getWindow();
             mWindow.setGravity(Gravity.CENTER);
         }
@@ -264,30 +271,30 @@ public class ManageClientDetailActivity extends BaseActivity {
     View.OnClickListener onclickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.tv_cancel:
-                    if (dialogWorkerMaxNum!=null&&dialogWorkerMaxNum.isShowing()){
+                    if (dialogWorkerMaxNum != null && dialogWorkerMaxNum.isShowing()) {
                         dialogWorkerMaxNum.dismiss();
                     }
-                    if (dialogAutoClose!=null&&dialogAutoClose.isShowing()){
+                    if (dialogAutoClose != null && dialogAutoClose.isShowing()) {
                         dialogAutoClose.dismiss();
                     }
-                    if (dialogWarmTimeSlot!=null&&dialogWarmTimeSlot.isShowing()){
+                    if (dialogWarmTimeSlot != null && dialogWarmTimeSlot.isShowing()) {
                         dialogWarmTimeSlot.dismiss();
                     }
                     break;
                 case R.id.tv_enter:
-                    if (dialogWorkerMaxNum!=null&&dialogWorkerMaxNum.isShowing()){
+                    if (dialogWorkerMaxNum != null && dialogWorkerMaxNum.isShowing()) {
                         dialogWorkerMaxNum.dismiss();
-                        tvManageClientWorkerMaxNum.setText(workerNumber+"个");
+                        tvManageClientWorkerMaxNum.setText(workerNumber + "个");
                     }
-                    if (dialogAutoClose!=null&&dialogAutoClose.isShowing()){
+                    if (dialogAutoClose != null && dialogAutoClose.isShowing()) {
                         dialogAutoClose.dismiss();
                         setAutoCloseTime();
                     }
-                    if (dialogWarmTimeSlot!=null&&dialogWarmTimeSlot.isShowing()){
+                    if (dialogWarmTimeSlot != null && dialogWarmTimeSlot.isShowing()) {
                         dialogWarmTimeSlot.dismiss();
-
+                        tvManageClientSelectWarmTime.setText(startTime+" ~ "+endTime);
                     }
 
                     break;
@@ -295,42 +302,137 @@ public class ManageClientDetailActivity extends BaseActivity {
         }
     };
 
+    //是否保存提示框
+    private Dialog ExitDialog = null;
+    private View view = null;
+    private TextView tvHintContent;
+    private TextView tvCancelSave;
+    private TextView tvEnterSave;
+    private void initSaveDialog(){
+        if (ExitDialog==null){
+            ExitDialog = new Dialog(this,R.style.CustomDialog);
+            view = LayoutInflater.from(this).inflate(R.layout.my_alert_dialog,null);
+            tvHintContent = (TextView) view.findViewById(R.id.tv_hint_content);
+            tvCancelSave = (TextView) view.findViewById(R.id.tv_cancel);
+            tvEnterSave = (TextView) view.findViewById(R.id.tv_enter);
+            tvCancelSave.setOnClickListener(clickListener);
+            tvEnterSave.setOnClickListener(clickListener);
+            tvHintContent.setText("是否保存当前设置");
+
+            ExitDialog.setContentView(view);
+            ExitDialog.setCanceledOnTouchOutside(true);
+            WindowManager.LayoutParams params = ExitDialog.getWindow().getAttributes();
+            params.width = (int) (application.getWidth()*0.9);
+            Window mWindow = ExitDialog.getWindow();
+            mWindow.setGravity(Gravity.CENTER);
+        }
+        ExitDialog.show();
+    }
+
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.tv_cancel:
+                    ExitDialog.dismiss();
+                    break;
+                case R.id.tv_enter:
+                    //保存并返回上一activity
+                    ExitDialog.dismiss();
+                    if (isImpower){
+                        doHttpSave(3);
+                    }else {
+                        doHttpSave(4);
+                    }
+                    dialog.waiting();
+                    break;
+            }
+        }
+    };
+
+    //修改用户权限
+    private void doHttpSave(int roleId){
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.updateRole(userId,roleId,application.getAccessToken()));  //注销账号
+        Request request = new Request.Builder()
+                .url(MyConstant.SERVER_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure:修改权限： "+e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.stopWaiting();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("hy_debug_message", "onResponse:修改权限： "+res);
+
+                        dialog.stopWaiting();
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == event.KEYCODE_BACK) {
+            //返回上一页面时，弹出是否保存设置dialog
+            initSaveDialog();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     //得到自动关闭的时间并设置
-    private void setAutoCloseTime(){
+    private void setAutoCloseTime() {
         int hour = tpAutoClose.getCurrentHour();
         int min = tpAutoClose.getCurrentMinute();
         String strHour = "";
         String strMin = "";
-        if (hour<10){
-            strHour = "0"+hour;
-        }else {
+        if (hour < 10) {
+            strHour = "0" + hour;
+        } else {
             strHour = String.valueOf(hour);
         }
-        if (min<10){
-            strMin = "0"+min;
-        }else {
+        if (min < 10) {
+            strMin = "0" + min;
+        } else {
             strMin = String.valueOf(min);
         }
-        tvManageClientAutoCloseTime.setText(strHour+":"+strMin);
+        tvManageClientAutoCloseTime.setText(strHour + ":" + strMin);
     }
 
     //设置时间
-    private String getTimePickerTime(){
+    private String getTimePickerTime() {
         int hour = tpWarmTime.getCurrentHour();
         int min = tpWarmTime.getCurrentMinute();
         String strHour = "";
         String strMin = "";
-        if (hour<10){
-            strHour = "0"+hour;
-        }else {
+        if (hour < 10) {
+            strHour = "0" + hour;
+        } else {
             strHour = String.valueOf(hour);
         }
-        if (min<10){
-            strMin = "0"+min;
-        }else {
+        if (min < 10) {
+            strMin = "0" + min;
+        } else {
             strMin = String.valueOf(min);
         }
 
-        return strHour+":"+strMin;
+        return strHour + ":" + strMin;
     }
 }

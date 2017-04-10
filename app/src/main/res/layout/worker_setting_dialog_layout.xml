@@ -19,23 +19,11 @@
             android:text="操作工上限设置"
             android:layout_weight="1"
             android:textSize="18sp"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textColor="@color/colorTuoManBack"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
-        <TextView
-            android:text="授权"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:textColor="@color/colorText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <Switch
-            android:id="@+id/sw_worker_empower"
-            android:padding="8dp"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+
     </LinearLayout>
     <RelativeLayout
         android:background="@color/colorWhite"
@@ -50,16 +38,8 @@
             android:background="@drawable/round_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_hint"
-            android:clickable="true"
-            android:layout_alignTop="@id/spinner_worker_num"
-            android:layout_alignBottom="@id/spinner_worker_num"
-            android:padding="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
 
+    </RelativeLayout>
 
     <TextView
         android:background="@color/colorTuoManBack"

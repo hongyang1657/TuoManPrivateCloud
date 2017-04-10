@@ -17,6 +17,8 @@ public class JsonResult {
     private int roleId;
     private int companyId;
     private String credentialsSalt;
+    private int link;
+    private String logo;
 
     public int getId() {
         return id;
@@ -104,5 +106,21 @@ public class JsonResult {
 
     public void setCredentialsSalt(String credentialsSalt) {
         this.credentialsSalt = credentialsSalt;
+    }
+
+    public int getLink() {
+        return link;
+    }
+
+    public void setLink(int link) {
+        this.link = link;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 }

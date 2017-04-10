@@ -25,7 +25,7 @@
     <application
         android:allowBackup="true"
         android:name=".MyApplication"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/tuoman_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/TuoManTheme">
@@ -57,6 +57,7 @@
         <activity android:name=".activity.ModifiPwdActivity"/>
         <activity android:name=".activity.SetCustomLaunchActivity"/>
         <activity android:name=".activity.WorkerInfoActivity"/>
+        <activity android:name=".activity.ConnectWifiActivity"/>
 
         <activity
             android:name=".zxing.activity.CaptureActivity"

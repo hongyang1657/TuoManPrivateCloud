@@ -17,6 +17,7 @@
     <RelativeLayout
         android:id="@+id/rl_mine_account"
         android:layout_weight="2"
+        android:clickable="true"
         android:background="@color/colorTuoManBack"
         android:gravity="center_vertical"
         android:layout_width="match_parent"
@@ -25,13 +26,15 @@
         <ImageView
             android:id="@+id/iv_mine_account"
             android:src="@mipmap/head_big"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
+            android:scaleType="centerInside"
+            android:layout_margin="14dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
         <TextView
             android:id="@+id/tv_admin"
             android:text="管理员"
+            android:textSize="18sp"
+            android:gravity="center"
             android:textColor="@color/colorWhite"
             android:layout_toRightOf="@id/iv_mine_account"
             android:layout_alignTop="@id/iv_mine_account"
@@ -43,6 +46,8 @@
             android:text="ID:12345"
             android:textColor="@color/colorText"
             android:layout_toRightOf="@id/iv_mine_account"
+            android:gravity="center"
+            android:layout_alignBottom="@id/iv_mine_account"
             android:layout_below="@id/tv_admin"
             android:padding="4dp"
             android:layout_width="wrap_content"

@@ -20,51 +20,24 @@
             android:text="自动关闭时间"
             android:layout_weight="1"
             android:textSize="18sp"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textColor="@color/colorTuoManBack"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
-        <TextView
-            android:text="授权"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:textColor="@color/colorText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <Switch
-            android:id="@+id/sw_auto_close"
-            android:padding="8dp"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+
     </LinearLayout>
     <RelativeLayout
         android:background="@color/colorWhite"
         android:layout_width="match_parent"
+        android:gravity="center"
         android:layout_height="wrap_content">
-        <!--<Spinner
-            android:id="@+id/spinner_auto_close_time"
-            android:layout_margin="20dp"
-            android:padding="12dp"
-            android:gravity="center"
-            android:entries="@array/num"
-            android:background="@drawable/round_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />-->
 
         <TimePicker
             android:id="@+id/tp_auto_close"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         </TimePicker>
-        <TextView
-            android:id="@+id/tv_hint"
-            android:clickable="true"
-            android:layout_alignTop="@id/tp_auto_close"
-            android:layout_alignBottom="@id/tp_auto_close"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </RelativeLayout>
 
 

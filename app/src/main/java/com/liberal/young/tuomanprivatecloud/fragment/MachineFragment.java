@@ -18,13 +18,17 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.activity.ConnectWifiActivity;
 import com.liberal.young.tuomanprivatecloud.activity.WarmUpActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
 import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
 import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
 import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 import com.liberal.young.tuomanprivatecloud.zxing.activity.CaptureActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,6 +44,7 @@ import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -78,9 +83,10 @@ public class MachineFragment extends Fragment {
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
     private boolean isBatching = false;        //是否正在批量处理
     private int itemNum = 20;
+    private OkHttpClient client;
+    private WaitingDialog waitingDialog;
+    private MyApplication application;
 
-    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
 
     public MachineFragment() {
     }
@@ -109,14 +115,18 @@ public class MachineFragment extends Fragment {
     }
 
     private void initView(View view) {
+        application = (MyApplication) getActivity().getApplication();
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
         ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
         ivTitleRight.setImageResource(R.mipmap.more_title);
         ivTitleLeft.setImageResource(R.mipmap.add_title);
-
+        client = new OkHttpClient();
+        waitingDialog = new WaitingDialog(getActivity(),application,"",false);
+        waitingDialog.waiting();
         tvTitle.setText("自动线");
 
+        doHttpSearchMachine();
         for (int i = 0; i < itemNum; i++) {
             detailMachineList.add(i, "机床" + i);
         }
@@ -146,7 +156,8 @@ public class MachineFragment extends Fragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
-                startActivity(new Intent(getActivity(), CaptureActivity.class));
+                //startActivity(new Intent(getActivity(), CaptureActivity.class));
+                startActivity(new Intent(getActivity(), ConnectWifiActivity.class));
                 break;
             case R.id.iv_title_right:
                 initPopWindow();
@@ -174,7 +185,6 @@ public class MachineFragment extends Fragment {
     }
 
     private PopupWindow popWnd = null;
-
     private void initPopWindow() {
         if (popWnd == null) {
             View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_layout, null);
@@ -212,10 +222,11 @@ public class MachineFragment extends Fragment {
         }
     }
 
-    /*private void doHttpPageSearch(){
-        RequestBody body = RequestBody.create(JSON, JsonUtils.);
+    private int dataLength;
+    private void doHttpSearchMachine(){
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany(application.getCompanyId(),1,itemNum,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -223,30 +234,37 @@ public class MachineFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("hy_debug_message", "onFailure: "+e.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
-                Log.i("hy_debug_message", "onResponse: "+res);
+                Log.i("hy_debug_message", "onResponse机床: "+res);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+                        waitingDialog.stopWaiting();
+                        /*JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
                         JsonResponse jsonResponse = jsonParseUtil.parsePageSearchJson();
                         dataLength = jsonResponse.getResult().size();
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(i,R.mipmap.login_logo_3x);
+                            clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
                             clientId.add(i,jsonResponse.getResult().get(i).getId());
                         }
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();*/
                     }
                 });
             }
         });
-    }*/
+    }
 
 }

@@ -16,6 +16,7 @@ import com.liberal.young.tuomanprivatecloud.MainActivity;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 
 import java.io.IOException;
 
@@ -71,8 +72,6 @@ public class AddClientSecondActivity extends BaseActivity {
 
     private MyApplication myApplication;
     private String userLimit;
-    private static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,10 +130,10 @@ public class AddClientSecondActivity extends BaseActivity {
     //创建客户或操作工
     private void doAddClientHttp(int roleId){
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON, JsonUtils.createUser(clientName,clientPwd,
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.createUser(clientName,clientPwd,
                 clientPhoneNumber,myApplication.getAccessToken(),roleId));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);

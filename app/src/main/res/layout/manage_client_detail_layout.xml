@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/iv_manage_client_detail_head"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/head_big"
         android:layout_weight="3"
         android:scaleType="center"
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp" />
     <LinearLayout
-        android:id="@+id/ll_manage_client_detail_warm_time_slot"
+        android:id="@+id/ll_manage_client_impower"
         android:layout_weight="1"
         android:clickable="true"
         android:orientation="horizontal"
@@ -38,6 +38,39 @@
         android:gravity="center_vertical"
         android:layout_marginBottom="1px"
         android:background="@drawable/login_button_bg_username"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="授权"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <Switch
+            android:id="@+id/sw_manage_client_impower"
+            android:layout_weight="1"
+            android:paddingRight="16dp"
+            android:drawablePadding="6dp"
+            android:lines="1"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_manage_client_detail_warm_time_slot"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@color/colorLoginBack"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
@@ -54,12 +87,12 @@
         <TextView
             android:id="@+id/tv_manage_client_select_warm_time"
             android:layout_weight="1"
-            android:text="已设定1个时间段"
+            android:text=""
             android:textColor="@color/colorText"
             android:textSize="14sp"
             android:paddingRight="16dp"
             android:drawablePadding="6dp"
-            android:drawableRight="@mipmap/ic_launcher"
+            android:drawableRight="@mipmap/jiantou"
             android:textColorHint="@color/colorText"
             android:lines="1"
             android:maxLength="16"
@@ -93,12 +126,12 @@
         <TextView
             android:id="@+id/tv_manage_client_auto_close_time"
             android:layout_weight="1"
-            android:text="19:25"
+            android:text=""
             android:textColor="@color/colorText"
             android:textSize="14sp"
             android:paddingRight="16dp"
             android:drawablePadding="6dp"
-            android:drawableRight="@mipmap/ic_launcher"
+            android:drawableRight="@mipmap/jiantou"
             android:textColorHint="@color/colorText"
             android:lines="1"
             android:maxLength="16"
@@ -132,12 +165,12 @@
         <TextView
             android:id="@+id/tv_manage_client_worker_max_num"
             android:layout_weight="1"
-            android:text="3个"
+            android:text="1个"
             android:textColor="@color/colorText"
             android:textSize="14sp"
             android:paddingRight="16dp"
             android:drawablePadding="6dp"
-            android:drawableRight="@mipmap/ic_launcher"
+            android:drawableRight="@mipmap/jiantou"
             android:textColorHint="@color/colorText"
             android:lines="1"
             android:maxLength="16"

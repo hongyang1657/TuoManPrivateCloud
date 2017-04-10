@@ -49,5 +49,5 @@
         android:src="@mipmap/machine_select_off"
         android:gravity="center"
         android:layout_width="0dp"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

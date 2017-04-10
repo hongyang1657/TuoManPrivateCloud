@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -20,23 +21,11 @@
             android:text="自动关闭时间"
             android:layout_weight="1"
             android:textSize="18sp"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textColor="@color/colorTuoManBack"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
-        <TextView
-            android:text="授权"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:textColor="@color/colorText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <Switch
-            android:id="@+id/sw_auto_close"
-            android:padding="8dp"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+
     </LinearLayout>
     <LinearLayout
         android:weightSum="2"
@@ -61,52 +50,49 @@
         android:id="@+id/rg_warm_time"
         android:weightSum="2"
         android:background="@color/colorWhite"
-        android:paddingTop="40dp"
-        android:paddingBottom="40dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <RadioButton
             android:id="@+id/rb_start_time"
-            android:text="12:20"
+            android:text="00:00"
             android:textSize="26sp"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
             android:textColor="@color/colorTuoManBack"
             android:gravity="center"
             android:layout_weight="1"
             android:button="@null"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
         <RadioButton
             android:id="@+id/rb_end_time"
-            android:text="15:30"
+            android:text="00:00"
             android:textSize="26sp"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
             android:textColor="@color/colorTuoManBack"
             android:gravity="center"
             android:layout_weight="1"
             android:button="@null"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
     </RadioGroup>
 
     <RelativeLayout
         android:background="@color/colorWhite"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TimePicker
             android:id="@+id/tp_auto_close"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         </TimePicker>
-        <TextView
-            android:id="@+id/tv_hint"
-            android:clickable="true"
-            android:layout_alignTop="@id/tp_auto_close"
-            android:layout_alignBottom="@id/tp_auto_close"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+
     </RelativeLayout>
 
 

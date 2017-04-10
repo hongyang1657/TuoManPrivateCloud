@@ -26,6 +26,8 @@ import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusFromMainFrag
 import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,24 +75,23 @@ public class MainFragment extends Fragment {
     LinearLayout llMachineLineTitle;
 
     private static final int REQUEST_CODE_ADD_CLIENT = 1;
-    private static final int PAGE_ITEM_NUMBER = 12;      //一页加载的item数
+    private static final int PAGE_ITEM_NUMBER = 15;      //一页加载的item数
 
 
     private ClientRecyclerAdapter adapter = null;
     private int dataLength = 0;
     private List<String> clientNameList = new ArrayList<>();
-    private List<Integer> clientHeadList = new ArrayList<>();
+    private List<String> clientHeadList = new ArrayList<>();
     private List<Integer> clientId= new ArrayList<>();
     private boolean isOnDeleteState = false;      //是否正在删除客户
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
 
-    public static final MediaType JSON=MediaType.parse("application/json; charset=utf-8");
-    private static final String url = "http://115.29.172.223:8080/machine/api";
     private MyApplication application;
     private View view;
 
     private boolean isScrollToBottom;
     private OkHttpClient client;
+    private WaitingDialog waitingDialog;
 
     public MainFragment() {
 
@@ -113,7 +114,6 @@ public class MainFragment extends Fragment {
     }
 
     private void initView(View view) {
-
         client = new OkHttpClient();
         application = (MyApplication) getActivity().getApplication();
         llMachineLineTitle = (LinearLayout) view.findViewById(R.id.ll_machine_line_title);
@@ -125,8 +125,9 @@ public class MainFragment extends Fragment {
         llMachineLineTitle.setVisibility(View.GONE);
         tvTitle.setText("客户");
         ivTitleLeft.setImageResource(R.mipmap.add_title);
-        ivTitleRight.setImageResource(R.mipmap.delete);
-
+        ivTitleRight.setImageResource(R.mipmap.delete_client);
+        waitingDialog = new WaitingDialog(getActivity(),application,"",false);
+        waitingDialog.waiting();
         doHttpPageSearch();
 
 
@@ -205,32 +206,36 @@ public class MainFragment extends Fragment {
 
     }
 
+    private List<Integer> deleteIDList = new ArrayList<>();
+    private List<Integer> deletePositionList = new ArrayList<>();
     @Subscribe
     public void onEventMainThread(MyEventBusFromMainFragment event) {
         if (event.isEnterToDelete()) {
             for (int i = 0;i<selectList.size();i++){
+                L.i("选择删除的："+selectList.get(i));
                 if (selectList.get(i)){
-                    adapter.removeItem(i);
+                    deletePositionList.add(i);
                     ivTitleLeft.setVisibility(View.VISIBLE);
                     ivTitleRight.setVisibility(View.VISIBLE);
                     tvTitleLeft.setVisibility(View.GONE);
                     tvTitleRight.setVisibility(View.GONE);
-                    final int finalI = i;
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            super.run();
-                            try {
-                                sleep(1000);
-                                deleteUser(finalI);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.start();
+                    deleteIDList.add(clientId.get(i));  //需要删除的用户id
 
                 }
             }
+            waitingDialog.waiting();
+            new Thread(){
+                @Override
+                public void run() {
+                    super.run();
+                    try {
+                        sleep(1000);
+                        deleteUser();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
     }
 
@@ -296,6 +301,7 @@ public class MainFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_ADD_CLIENT:
+                waitingDialog.waiting();
                 doHttpPageSearch();
                 L.i("直接返回");
                 adapter.getNotify(clientNameList,clientHeadList);
@@ -308,9 +314,9 @@ public class MainFragment extends Fragment {
         clientHeadList = new ArrayList<>();
         clientId = new ArrayList<>();
 
-        RequestBody body = RequestBody.create(JSON, JsonUtils.pageSearch(1,PAGE_ITEM_NUMBER,"pageSearchCustomer",application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageSearch(1,PAGE_ITEM_NUMBER,"pageSearchCustomer",application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -318,6 +324,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("hy_debug_message", "onFailure: "+e.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                    }
+                });
             }
 
             @Override
@@ -328,13 +340,14 @@ public class MainFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        waitingDialog.stopWaiting();
                         JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
                         JsonResponse jsonResponse = jsonParseUtil.parsePageSearchJson();
                         dataLength = jsonResponse.getResult().size();
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(i,R.mipmap.head);
+                            clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
                             clientId.add(i,jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
@@ -346,9 +359,10 @@ public class MainFragment extends Fragment {
 
     //上拉加载更多数据
     private void addHttpPage(int page){
-        RequestBody body = RequestBody.create(JSON, JsonUtils.pageSearch(page,PAGE_ITEM_NUMBER,"pageSearchCustomer",application.getAccessToken()));
+        waitingDialog.waiting();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageSearch(page,PAGE_ITEM_NUMBER,"pageSearchCustomer",application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -356,6 +370,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("hy_debug_message", "onFailure: "+e.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                    }
+                });
             }
 
             @Override
@@ -366,13 +386,14 @@ public class MainFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        waitingDialog.stopWaiting();
                         JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
                         JsonResponse jsonResponse = jsonParseUtil.parsePageSearchJson();
                         dataLength = jsonResponse.getResult().size();
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(R.mipmap.head);
+                            clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
                             clientId.add(jsonResponse.getResult().get(i).getId());
                         }
                         adapter.notifyDataSetChanged();
@@ -383,10 +404,10 @@ public class MainFragment extends Fragment {
     }
 
     //删除客户
-    private void deleteUser(final int position){
-        RequestBody body = RequestBody.create(JSON, JsonUtils.deleteUser(clientId.get(position),application.getAccessToken()));
+    private void deleteUser(){
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.deleteUser(deleteIDList,application.getAccessToken()));
         Request request = new Request.Builder()
-                .url(url)
+                .url(MyConstant.SERVER_URL)
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -394,6 +415,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("hy_debug_message", "onFailure: "+e.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                    }
+                });
             }
 
             @Override
@@ -404,15 +431,17 @@ public class MainFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        doHttpPageSearch();
-                        //adapter.getNotify(clientNameList,clientHeadList);
-
+                        if (JsonUtils.getCode(res)!=0){
+                            Toast.makeText(getActivity(), "操作失败", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+                        }
+                        waitingDialog.stopWaiting();
                         adapter.deleteClient(false);
                         EventBus.getDefault().post(new MyEventBusFromMainFragment(false, false));
                         isOnDeleteState = false;
                         selectList = null;
                         adapter.selectItemToDelete(selectList);
-
                     }
                 });
             }

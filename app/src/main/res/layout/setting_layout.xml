@@ -9,99 +9,108 @@
     <include layout="@layout/title_layout"/>
 
     <LinearLayout
-        android:id="@+id/ll_setting_warm_time_zone"
-        android:clickable="true"
-        android:layout_weight="1"
-        android:background="@color/colorLoginBack"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:orientation="horizontal"
+        android:layout_weight="4"
+        android:weightSum="4"
+        android:id="@+id/ll_custom_setting"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp">
-
-        <TextView
-            android:text="预热可操作时间"
-            android:textColor="@color/colorWhite"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/tv_setting_warm_time_zone"
-            android:text="已设置三个时间段"
+        <LinearLayout
+            android:id="@+id/ll_setting_warm_time_zone"
+            android:clickable="true"
             android:layout_weight="1"
-            android:drawableRight="@mipmap/jiantou"
-            android:drawablePadding="10dp"
-            android:textColor="@color/colorText"
-            android:gravity="center_vertical|end"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="2dp" />
-    <LinearLayout
-        android:id="@+id/ll_setting_auto_close"
-        android:clickable="true"
-        android:layout_weight="1"
-        android:background="@color/colorLoginBack"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp">
+            android:background="@color/colorLoginBack"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
+            <TextView
+                android:text="预热可操作时间"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/tv_setting_warm_time_zone"
+                android:text=""
+                android:layout_weight="1"
+                android:drawableRight="@mipmap/jiantou"
+                android:drawablePadding="10dp"
+                android:textColor="@color/colorText"
+                android:gravity="center_vertical|end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
         <TextView
-            android:text="自动关闭时间"
-            android:textColor="@color/colorWhite"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/tv_setting_auto_close"
-            android:text="18：00"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+        <LinearLayout
+            android:id="@+id/ll_setting_auto_close"
+            android:clickable="true"
             android:layout_weight="1"
-            android:drawableRight="@mipmap/jiantou"
-            android:drawablePadding="10dp"
-            android:textColor="@color/colorText"
-            android:gravity="center_vertical|end"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="2dp" />
-    <LinearLayout
-        android:id="@+id/ll_setting_worker_num"
-        android:clickable="true"
-        android:layout_weight="1"
-        android:background="@color/colorLoginBack"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp">
+            android:background="@color/colorLoginBack"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
+            <TextView
+                android:text="自动关闭时间"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/tv_setting_auto_close"
+                android:text="00：00"
+                android:layout_weight="1"
+                android:drawableRight="@mipmap/jiantou"
+                android:drawablePadding="10dp"
+                android:textColor="@color/colorText"
+                android:gravity="center_vertical|end"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
         <TextView
-            android:text="操作工上限"
-            android:textColor="@color/colorWhite"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-        <TextView
-            android:id="@+id/tv_setting_worker_num"
-            android:text="3个"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+        <LinearLayout
+            android:id="@+id/ll_setting_worker_num"
+            android:clickable="true"
             android:layout_weight="1"
-            android:drawableRight="@mipmap/jiantou"
-            android:drawablePadding="10dp"
-            android:textColor="@color/colorText"
-            android:gravity="center_vertical|end"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:background="@color/colorLoginBack"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:text="操作工上限"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/tv_setting_worker_num"
+                android:text="1个"
+                android:layout_weight="1"
+                android:drawableRight="@mipmap/jiantou"
+                android:drawablePadding="10dp"
+                android:textColor="@color/colorText"
+                android:gravity="center_vertical|end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
     </LinearLayout>
-    <TextView
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
+
     <LinearLayout
         android:id="@+id/ll_custom_launch_page"
         android:clickable="true"

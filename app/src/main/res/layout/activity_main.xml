@@ -66,18 +66,33 @@
             android:layout_height="match_parent" />
     </RadioGroup>
 
-    <TextView
-        android:id="@+id/tv_delete"
+    <LinearLayout
+        android:id="@+id/ll_delete"
         android:visibility="gone"
+        android:orientation="vertical"
         android:clickable="true"
         android:background="@color/colorSilver"
-        android:text="删除"
-        android:drawableTop="@mipmap/ic_launcher"
         android:gravity="center"
         android:layout_alignTop="@id/rg_main"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:src="@mipmap/delete"
+            android:padding="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_delete"
+            android:padding="2dp"
+            android:text="删除"
+            android:textColor="@color/colorTuoManBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/fl_blank"
         android:background="@color/colorAlpha"

@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/iv_logo"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/tuoman_logo_3x"
         android:layout_gravity="center"
         android:layout_weight="2"
         android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
             android:id="@+id/tv_login_pwd"
             android:layout_weight="1"
             android:hint="请输入密码"
-            android:text="123456"
+            android:text="1234567"
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/colorText"
             android:background="@null"

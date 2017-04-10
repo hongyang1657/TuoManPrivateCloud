@@ -46,7 +46,7 @@
         android:background="@color/colorBlueShade"
         android:layout_margin="12dp"
         android:layout_width="match_parent"
-        android:layout_height="1dp" />
+        android:layout_height="1px" />
 
     <TextView
         android:text="月产量(件)："

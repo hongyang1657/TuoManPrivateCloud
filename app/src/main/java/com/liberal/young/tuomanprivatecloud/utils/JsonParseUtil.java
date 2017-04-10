@@ -3,6 +3,7 @@ package com.liberal.young.tuomanprivatecloud.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
+import com.liberal.young.tuomanprivatecloud.bean.MachineResponse;
 
 /**
  *
@@ -22,5 +23,12 @@ public class JsonParseUtil {
         Gson gson = builder.create();
         JsonResponse jsonResponse = gson.fromJson(json,JsonResponse.class);
         return jsonResponse;
+    }
+
+    public MachineResponse parseMachineSearchJson(){
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        MachineResponse machineResponse = gson.fromJson(json,MachineResponse.class);
+        return machineResponse;
     }
 }
