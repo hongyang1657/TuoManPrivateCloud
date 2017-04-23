@@ -11,6 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusToMonthChart;
+import com.liberal.young.tuomanprivatecloud.utils.L;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,28 +40,64 @@ public class MonthYieldFragment extends Fragment{
     private ColumnChartView columnChartView;
     private ColumnChartData data;
     private TextView tvMonthYield;
-    private int[] temp = {100,200,100,60,130};
-    private int[] runTimeOnMonth = {120,130,153,100,90};
+    private int[] temp = {0,0,0,0,0};
+    private int[] runTimeOnMonth = {0,0,0,0,0};
+    private int pointNum;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.month_yield_fgm_layout,container,false);
+        EventBus.getDefault().register(this);
         initView(view);
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    private boolean isShowingDate1 = false;
     private void initView(View view) {
         columnChartView = (ColumnChartView) view.findViewById(R.id.colume_chart);
         tvMonthYield = (TextView) view.findViewById(R.id.tv_month_yield);
-        initChart();
+
     }
 
+
+    private List<String> monthDateList;
+    private List<Integer> monthYieldList;    //产量
+    private List<Integer> monthVoltageList;  //运行时间（秒）
+    @Subscribe
+    public void onEventMainThread(MyEventBusToMonthChart event) {
+        monthDateList = event.getMonthDateList();
+        monthYieldList = event.getMonthYieldList();
+        monthVoltageList = event.getMonthVoltageList();
+        L.i("月11111："+monthDateList.get(0)+monthVoltageList.get(0)+monthYieldList.get(0));
+        pointNum = monthDateList.size();
+        if (pointNum<=5){
+            for (int i=0;i<pointNum;i++){
+                temp[4-i] = monthYieldList.get(i);
+                runTimeOnMonth[4-i] = monthVoltageList.get(i)/60;   //换算分钟
+                //data[4-i] = monthDateList.get(i);
+            }
+        }else {
+
+        }
+        initChart();
+        tvMonthYield.setText(temp[4]+" 件");
+    }
+
+
+    private Column column;
+    private Column column1;
     private void initChart(){
         columnChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(columnChartView.getMaximumViewport());
-        v.top = 260;
-        v.right = 10;
+        v.top = 500;
+        v.right = 15;
         v.bottom = 0;
         columnChartView.setZoomEnabled(true);
         columnChartView.setZoomType(ZoomType.HORIZONTAL);
@@ -72,6 +113,7 @@ public class MonthYieldFragment extends Fragment{
         List<Column> columns = new ArrayList<Column>();
         List<SubcolumnValue> values = null;
         List<SubcolumnValue> values1 = null;
+        List<SubcolumnValue> valuesBlank = null;
         List<AxisValue> mvalues = new ArrayList<>();
 
         for (int i = 0; i <= 250; i += 50) {
@@ -83,15 +125,23 @@ public class MonthYieldFragment extends Fragment{
         for (int i = 0; i < temp.length; ++i) {
             values = new ArrayList<>();
             values1 = new ArrayList<>();
+            valuesBlank = new ArrayList<>();
             values.add(new SubcolumnValue(temp[i], getResources().getColor(R.color.colorTuomanRed)));
             values1.add(new SubcolumnValue(runTimeOnMonth[i],getResources().getColor(R.color.colorBlueShade)));
-            Column column = new Column(values);
-            Column column1 = new Column(values1);
+            valuesBlank.add(new SubcolumnValue(runTimeOnMonth[i],getResources().getColor(R.color.colorTuoManBack)));
+            column = new Column(values);
+            column1 = new Column(values1);
+            Column c = new Column(valuesBlank);
 
-            //column.setHasLabels(hasLabels);
-            //column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+
+
+            column.setHasLabels(true);
+            column1.setHasLabels(true);
+            column.setHasLabelsOnlyForSelected(true);
+            column1.setHasLabelsOnlyForSelected(true);
             columns.add(column);
             columns.add(column1);
+            columns.add(c);
         }
         data = new ColumnChartData(columns);
             Axis axisX = new Axis();
@@ -103,18 +153,18 @@ public class MonthYieldFragment extends Fragment{
             axisX.setMaxLabelChars(3);
             Axis axisY = new Axis().setHasLines(false);
             axisY.setMaxLabelChars(3);//max label length, for example 60
-            axisY.setTextColor(Color.BLACK);
+            axisY.setTextColor(getResources().getColor(R.color.colorAlpha));
             axisY.setTextSize(10);
             List<AxisValue> Yvalues = new ArrayList<>();
             for (int i = 0; i <=260; i += 50) {
                 AxisValue value = new AxisValue(i);
-                String label = i + "";
+                String label = "";
                 value.setLabel(label);
                 Yvalues.add(value);
             }
             axisY.setValues(Yvalues);
-                axisX.setName("时间");
-                axisY.setName("温度");
+                axisX.setName("");
+                axisY.setName("");
             data.setAxisXBottom(axisX);
             data.setAxisYLeft(axisY);
 //设置条形上面的label颜色

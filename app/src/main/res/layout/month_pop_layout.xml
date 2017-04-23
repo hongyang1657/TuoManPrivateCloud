@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorLoginBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_pop_1"
+                android:clickable="true"
+                android:text="1月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_2"
+                android:clickable="true"
+                android:text="2月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_3"
+                android:clickable="true"
+                android:text="3月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_4"
+                android:clickable="true"
+                android:text="4月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_5"
+                android:clickable="true"
+                android:text="5月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_6"
+                android:clickable="true"
+                android:text="6月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_7"
+                android:clickable="true"
+                android:text="7月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_8"
+                android:clickable="true"
+                android:text="8月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_9"
+                android:clickable="true"
+                android:text="9月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_10"
+                android:clickable="true"
+                android:text="10月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_11"
+                android:clickable="true"
+                android:text="11月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:id="@+id/tv_pop_12"
+                android:clickable="true"
+                android:text="12月"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:background="@color/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

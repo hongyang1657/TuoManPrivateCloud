@@ -59,7 +59,7 @@ public class WorkerInfoActivity extends BaseActivity {
         ivTitleLeft.setImageResource(R.mipmap.back);
         tvWorkerName.setText(getIntent().getStringExtra("workerName"));
         tvWorkerPhone.setText(getIntent().getStringExtra("workerPhone"));
-
+        tvWorkerNumber.setText(getIntent().getIntExtra("workerNum",000)+"");
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_reset_worker_pwd})

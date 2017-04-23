@@ -30,6 +30,7 @@ import com.liberal.young.tuomanprivatecloud.activity.LoginActivity;
 import com.liberal.young.tuomanprivatecloud.activity.ManageClientActivity;
 import com.liberal.young.tuomanprivatecloud.activity.ModifiPwdActivity;
 import com.liberal.young.tuomanprivatecloud.activity.SettingActivity;
+import com.liberal.young.tuomanprivatecloud.activity.UserHelpActivity;
 import com.liberal.young.tuomanprivatecloud.utils.CircleTransformPicasso;
 import com.liberal.young.tuomanprivatecloud.utils.FileImageUploadUtil;
 import com.liberal.young.tuomanprivatecloud.utils.ImgUtils;
@@ -99,6 +100,11 @@ public class MineFragment extends Fragment {
     private Intent openCameraIntent;
     private WaitingDialog dialog;
 
+    private String username;
+    private String userHeadUrl;
+    private String userLimits;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,26 +117,33 @@ public class MineFragment extends Fragment {
 
     private void initView(View view) {
         application = (MyApplication) getActivity().getApplication();
+        username = application.getUsername();
+        userHeadUrl = application.getUserHeadUrl();
+        userLimits = application.getUserLimits();
         dialog = new WaitingDialog(getActivity(),application,"",false);
         ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
         ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         tvUserManagement = (TextView) view.findViewById(R.id.tv_user_management);
         tvHehe = (TextView) view.findViewById(R.id.tv_hehe);
+        tvAdmin = (TextView) view.findViewById(R.id.tv_admin);
+        tvId = (TextView) view.findViewById(R.id.tv_id);
         ivMineAccount = (ImageView) view.findViewById(R.id.iv_mine_account);
         ivTitleLeft.setVisibility(View.GONE);
         ivTitleRight.setVisibility(View.GONE);
         tvTitle.setText("我的");
         tvTitle.setTextColor(getResources().getColor(R.color.colorBlueShade));
-        L.i("head"+application.getUserHeadUrl());
+        tvAdmin.setText(username);
+        tvId.setText("ID:"+application.getCompanyId());
 
-        if (!application.getUserHeadUrl().equals("")){
-            Picasso.with(getActivity()).load(application.getUserHeadUrl()).transform(new CircleTransformPicasso())
+        if (!userHeadUrl.equals("")){
+            Picasso.with(getActivity()).load(userHeadUrl).transform(new CircleTransformPicasso())
+                    .resize(200,200)
                     .placeholder(R.mipmap.head_big)
                     .error(R.mipmap.head_big).into(ivMineAccount);
         }
 
-        String userLimits = application.getUserLimits();
+
         if (userLimits==null){
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginInformation",MODE_PRIVATE);
             userLimits = sharedPreferences.getString("userLimits","");
@@ -166,6 +179,8 @@ public class MineFragment extends Fragment {
                 startActivity(intent2);
                 break;
             case R.id.tv_user_help:
+                Intent in = new Intent(getActivity(), UserHelpActivity.class);
+                startActivity(in);
                 break;
             case R.id.tv_user_setting:
                 Intent intent1 = new Intent(getActivity(), SettingActivity.class);

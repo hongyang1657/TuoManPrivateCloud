@@ -10,7 +10,7 @@
         layout="@layout/title_layout" />
 
     <LinearLayout
-        android:layout_weight="1"
+        android:layout_weight="1.2"
         android:orientation="vertical"
         android:gravity="center"
         android:background="@color/colorTuoManBack"
@@ -35,7 +35,7 @@
     <RelativeLayout
         android:id="@+id/rl_machine_switch"
         android:layout_weight="3"
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@color/colorSilver"
         android:gravity="center"
         android:layout_width="match_parent"
@@ -65,7 +65,7 @@
         android:gravity="center"
         android:layout_weight="3"
         android:background="@color/colorTuoManBack"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 

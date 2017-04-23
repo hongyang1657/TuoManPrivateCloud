@@ -32,7 +32,7 @@ public class MyApplication extends Application{
     private String accessToken;
     private String username;
     private String userHeadUrl;
-    private int companyId;
+    private long companyId;
     private Context context;
     private int width;
     private int height;
@@ -99,11 +99,11 @@ public class MyApplication extends Application{
         this.userHeadUrl = userHeadUrl;
     }
 
-    public int getCompanyId() {
+    public long getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(int companyId) {
+    public void setCompanyId(long companyId) {
         this.companyId = companyId;
     }
 

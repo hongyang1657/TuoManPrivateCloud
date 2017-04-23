@@ -117,7 +117,7 @@ public class AddClientSecondActivity extends BaseActivity {
         }else if (!clientPwd.equals(clientPwdCheck)){
             Toast.makeText(this, "确认密码不正确，请重新输入", Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(this, " "+clientName+" "+clientPhoneNumber+" "+clientPwd, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, " "+clientName+" "+clientPhoneNumber+" "+clientPwd, Toast.LENGTH_SHORT).show();
             if (userLimit.equals("1")||userLimit.equals("2")){
                 doAddClientHttp(4);
             }else if (userLimit.equals("3")||userLimit.equals("4")){

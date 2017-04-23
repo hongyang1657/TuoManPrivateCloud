@@ -1,6 +1,7 @@
 package com.liberal.young.tuomanprivatecloud.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,14 +24,20 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
     private Context context;
     private LayoutInflater inflater;
     private List<String> machineNameList;
+    private List<Integer> machineStatus;       //机床开关状态
+    private List<Boolean> machineLinkStatus;    //机床连接状态
+    private List<Boolean> selectList;
+    private List<Integer> machineForeCast; //标准产量
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
     private boolean isBatching = false;
-    private List<Boolean> selectList;
 
-    public MachineRecyclerAdapter(Context context, List<String> machineNameList) {
+    public MachineRecyclerAdapter(Context context, List<String> machineNameList,List<Integer> machineStatus,List<Boolean> machineLinkStatus,List<Integer> machineForeCast) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.machineNameList = machineNameList;
+        this.machineStatus = machineStatus;
+        this.machineLinkStatus = machineLinkStatus;
+        this.machineForeCast = machineForeCast;
     }
 
     @Override
@@ -42,6 +51,7 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
     @Override
     public void onBindViewHolder(MachineViewHolder holder, int position) {
         holder.tvMachine.setText(machineNameList.get(position));
+        holder.tvStandardYield.setText(""+machineForeCast.get(position));
         if (isBatching){
             holder.ivSelectMachine.setVisibility(View.VISIBLE);
             holder.tvIsMachineOn.setVisibility(View.GONE);
@@ -55,6 +65,17 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
         }else {
             holder.ivSelectMachine.setVisibility(View.GONE);
             holder.tvIsMachineOn.setVisibility(View.VISIBLE);
+            if (machineStatus.size()!=0){
+                if (machineStatus.get(position)==1){
+                    holder.tvIsMachineOn.setText("已开启");
+                    holder.tvIsMachineOn.setTextColor(context.getColor(R.color.colorBlueShade));
+                    holder.ivMachine.setImageResource(R.mipmap.machine_on);
+                }else if (machineStatus.get(position)==0){
+                    holder.tvIsMachineOn.setText("已关闭");
+                    holder.tvIsMachineOn.setTextColor(context.getColor(R.color.colorText));
+                    holder.ivMachine.setImageResource(R.mipmap.machine_off);
+                }
+            }
         }
 
         holder.itemView.setTag(position);          //设置item点击传出的数据

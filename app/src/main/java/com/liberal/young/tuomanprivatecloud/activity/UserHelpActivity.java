@@ -1,13 +1,12 @@
 package com.liberal.young.tuomanprivatecloud.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,23 +17,26 @@ import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * Created by Administrator on 2017/3/21.
+ * Created by Administrator-12:28 on 2017/4/22.
+ * Description:
+ * Blog：www.qiuchengjia.cn
+ * Author: Young_H
  */
-
-public class ModifiPwdActivity extends BaseActivity {
+public class UserHelpActivity extends Activity {
 
 
     @BindView(R.id.iv_title_left)
@@ -51,62 +53,49 @@ public class ModifiPwdActivity extends BaseActivity {
     LinearLayout llTitleRight;
     @BindView(R.id.tv_title)
     TextView tvTitle;
-    @BindView(R.id.et_first)
-    EditText etFirst;
-    @BindView(R.id.et_second)
-    EditText etSecond;
-    @BindView(R.id.et_third)
-    EditText etThird;
-    @BindView(R.id.bt_up)
-    Button btUp;
-    @BindView(R.id.rl_add_enter)
-    RelativeLayout rlAddEnter;
+    @BindView(R.id.et_user_help)
+    EditText etUserHelp;
+    @BindView(R.id.tv_send_user_help)
+    TextView tvSendUserHelp;
+
     private MyApplication application;
     private WaitingDialog waitingDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.modifi_pwd_layout);
+        setContentView(R.layout.user_help_layout);
         ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
         application = (MyApplication) getApplication();
-        tvTitle.setText("修改密码");
-        ivTitleRight.setVisibility(View.GONE);
-        ivTitleLeft.setImageResource(R.mipmap.back);
         waitingDialog = new WaitingDialog(this,application,"",false);
+        tvTitle.setText("帮助反馈");
+        ivTitleLeft.setImageResource(R.mipmap.back);
+        ivTitleRight.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.iv_title_left, R.id.bt_up})
+    @OnClick({R.id.iv_title_left, R.id.tv_send_user_help})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_title_left:
                 finish();
                 break;
-            case R.id.bt_up:
-                String oldPassword = etFirst.getText().toString();
-                String newPassword = etSecond.getText().toString();
-                String enterPassword = etThird.getText().toString();
-                if (oldPassword.equals("") || newPassword.equals("") || enterPassword.equals("")) {
-                    Toast.makeText(this, "密码不能为空,请重新输入", Toast.LENGTH_SHORT).show();
-                } else if (!newPassword.equals(enterPassword)) {
-                    Toast.makeText(this, "确定密码不正确,请重新输入", Toast.LENGTH_SHORT).show();
-                } else {
-                    changePassword(oldPassword, newPassword);
-                }
+            case R.id.tv_send_user_help:
+                waitingDialog.waiting();
+                dohttpSendHelpMsg();
                 break;
         }
     }
 
-    //修改密码
-    private void changePassword(String oldPassword, String newPassword) {
-        waitingDialog.waiting();
+    private void dohttpSendHelpMsg(){
+        String msg = etUserHelp.getText().toString();
+
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.changePassword("updatePassword", "", oldPassword, newPassword, "", application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.createSuggest(application.getCompanyId()
+                ,msg,application.getAccessToken()));
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
@@ -115,10 +104,11 @@ public class ModifiPwdActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("hy_debug_message", "onFailure: " + e.toString());
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Toast.makeText(UserHelpActivity.this, "操作失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
                         waitingDialog.stopWaiting();
                     }
                 });
@@ -127,18 +117,17 @@ public class ModifiPwdActivity extends BaseActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
-                Log.i("hy_debug_message", "onResponse: " + res);
+                Log.i("hy_debug_message", "onResponse提交意见: "+res);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         waitingDialog.stopWaiting();
-                        if (JsonUtils.getCode(res) == 0) {
-                            //修改密码成功
-                            Toast.makeText(ModifiPwdActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
+                        if (JsonUtils.getCode(res)==0){    //请求成功
+                            Toast.makeText(UserHelpActivity.this, "提交成功！感谢您的意见反馈，我们会收到意见并及时处理！", Toast.LENGTH_LONG).show();
                             finish();
-                        } else {
-                            Toast.makeText(ModifiPwdActivity.this, "错误：" + JsonUtils.getMsg(res), Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(UserHelpActivity.this, "操作失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

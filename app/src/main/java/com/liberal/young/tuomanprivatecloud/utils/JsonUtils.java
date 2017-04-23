@@ -117,7 +117,7 @@ public class JsonUtils {
     }
 
     //发送验证码
-    public static String sendCode(String username,String token){
+    public static String sendCode(String username){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
 
@@ -180,7 +180,7 @@ public class JsonUtils {
      * @param token         the token
      * @return the string
      */
-    public static String updateMachine(int machineId,int userTop,String closeTime,String operableStart,String operableEnd,String token){
+    public static String updateMachine(int machineId,int userTop,String closeTime,String operableStart,String operableEnd,long forecast,String token){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
 
@@ -190,6 +190,7 @@ public class JsonUtils {
             data.put("closeTime",closeTime);
             data.put("operableStart",operableStart);
             data.put("operableEnd",operableEnd);
+            data.put("forecast",forecast);
 
             object.put("method","updateMachine");
             object.put("version","1.0");      //版本号
@@ -207,7 +208,7 @@ public class JsonUtils {
 
 
     /**
-     * 根据公司分页查找机床
+     * 根据公司或员工分页查找机床
      * Page by company string.
      *
      * @param companyId the company id
@@ -216,7 +217,7 @@ public class JsonUtils {
      * @param token     the token
      * @return the string
      */
-    public static String pageByCompany(int companyId,int pageNum,int pageSize,String token){
+    public static String pageByCompany(String method,long companyId,int pageNum,int pageSize,String token){
         JSONObject data = new JSONObject();
         JSONObject object = new JSONObject();
 
@@ -226,7 +227,7 @@ public class JsonUtils {
             data.put("pageSize",pageSize);
 
 
-            object.put("method","pageByCompany");
+            object.put("method",method);
             object.put("version","1.0");      //版本号
             object.put("client",2);        //表示android端
             object.put("time",getTimeStamp());
@@ -237,40 +238,6 @@ public class JsonUtils {
             e.printStackTrace();
         }
         L.i("根据公司分页查找机床json："+object.toString());
-        return object.toString();
-    }
-
-
-    /**
-     * 按操作工查找生产线
-     * Page by staff string.
-     *
-     * @param companyId the company id
-     * @param pageNum   the page num
-     * @param pageSize  the page size
-     * @param token     the token
-     * @return the string
-     */
-    public static String pageByStaff(int companyId,int pageNum,int pageSize,String token){
-        JSONObject data = new JSONObject();
-        JSONObject object = new JSONObject();
-
-        try {
-            data.put("pageNum",pageNum);
-            data.put("pageSize",pageSize);
-
-
-            object.put("method","pageByStaff");
-            object.put("version","1.0");      //版本号
-            object.put("client",2);        //表示android端
-            object.put("time",getTimeStamp());
-            object.put("token",token);
-            object.put("data",data);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        L.i("按操作工查找生产线json："+object.toString());
         return object.toString();
     }
 
@@ -305,6 +272,203 @@ public class JsonUtils {
             e.printStackTrace();
         }
         L.i("按操作工查找生产线json："+object.toString());
+        return object.toString();
+    }
+
+
+    //------------机床开关机-----------
+    public static String switchMachine(int[] machineIds,int status,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+
+        try {
+            for (int i=0;i<machineIds.length;i++){
+                array.put(i,machineIds[i]);
+            }
+
+            data.put("machineIds",array);
+            data.put("status",status);
+
+
+            object.put("method","status");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("开关机床json："+object.toString());
+        return object.toString();
+    }
+
+
+    //----------------获取产量信息--------------------
+    public static String getYieldData(String method,int machineId,String month,String year,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("month",month);
+            data.put("machineId",machineId);
+            data.put("year",year);
+
+            object.put("method",method);
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("请求产量json："+object.toString());
+        return object.toString();
+    }
+
+
+    //绑定操作工
+    public static String bindStaff(int machineId,int userId,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("userId",userId);
+            data.put("machineId",machineId);
+
+            object.put("method","bindStaff");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("绑定操作工json："+object.toString());
+        return object.toString();
+    }
+
+    //------------------绑定机床（添加设备）-----------------------
+    public static String bindMachine(String name,String workshop,String mac,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("name",name);
+            data.put("workshop",workshop);
+            data.put("mac",mac);
+
+            object.put("method","bind");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("绑定机器json："+object.toString());
+        return object.toString();
+    }
+
+
+    //查找公司下的车间
+    public static String findWorkshops(long companyId,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("companyId",companyId);
+
+            object.put("method","findWorkshops");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("查找公司下的车间json："+object.toString());
+        return object.toString();
+    }
+
+    //获取表格数据（公司产量数据）
+    public static String getCompanyData(long companyId,String month,String workshop,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("companyId",companyId);
+            data.put("month",month);
+            data.put("workshop",workshop);
+
+            object.put("method","companyData");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("获取表格数据json："+object.toString());
+        return object.toString();
+    }
+
+
+    //意见反馈createSuggest
+    public static String createSuggest(long userId,String description,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("userId",userId);
+            data.put("description",description);
+
+            object.put("method","createSuggest");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("意见反馈json："+object.toString());
+        return object.toString();
+    }
+
+
+    //添加设备的时候用于让服务器识别设备的接口
+    public static String getLinkStatus(String mac,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("mac",mac);
+
+            object.put("method","linkStatus");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("getLinkStatus_json："+object.toString());
         return object.toString();
     }
 

@@ -120,7 +120,8 @@ public class LaunchActivity extends BaseActivity {
             finish();
         }else {
             OkHttpClient client = new OkHttpClient();
-            RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.login("","","login",accessToken));
+            RequestBody body = RequestBody.create(MyConstant.JSON,
+                    JsonUtils.login(sharedPreferences.getString("username",""),"","tokenLogin",accessToken));
             Request request = new Request.Builder()
                     .url(MyConstant.SERVER_URL)
                     .post(body)
@@ -144,13 +145,19 @@ public class LaunchActivity extends BaseActivity {
                         @Override
                         public void run() {
                             Log.i("hy_debug_message", "onResponse: "+res);
-                            Toast.makeText(LaunchActivity.this, res, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(LaunchActivity.this, res, Toast.LENGTH_SHORT).show();
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
                                 application.setUsername(JsonUtils.getUsername(res));
                                 application.setUserHeadUrl(JsonUtils.getHeadUrl(res));
                                 application.setCompanyId(JsonUtils.getCompanyId(res));
+
+                                //用户token存在本地
+                                SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
+                                sharedPreferences.edit().putString("username",JsonUtils.getUsername(res))
+                                        .putString("accessToken",JsonUtils.getToken(res)).apply();
+
                                 Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

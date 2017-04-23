@@ -12,8 +12,9 @@ public class MyConstant {
     public static final int TITLE_TYPE_TEXT = 1;
     public static final int TITLE_TYPE_IMG = 2;
 
-    public static final String SERVER_URL = "http://115.29.172.223:8080/machine/api";  //服务器地址
-    public static final String UPLOAD_PHOTO_URL = "http://115.29.172.223:8080/machine/logo";  //上传图片地址
+    //public static final String SERVER_URL = "http://115.29.172.223:8080/machine/api";  //服务器地址
+    public static final String SERVER_URL = "http://101.37.84.212:8080/machine/api";  //服务器地址
+    public static final String UPLOAD_PHOTO_URL = "http://101.37.84.212:8080/machine/logo";  //上传图片地址
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 }

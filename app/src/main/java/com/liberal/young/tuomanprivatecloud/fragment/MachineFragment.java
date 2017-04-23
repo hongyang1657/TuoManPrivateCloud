@@ -24,15 +24,20 @@ import com.liberal.young.tuomanprivatecloud.activity.ConnectWifiActivity;
 import com.liberal.young.tuomanprivatecloud.activity.WarmUpActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
 import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
+import com.liberal.young.tuomanprivatecloud.bean.MachineResponse;
 import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
 import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 import com.liberal.young.tuomanprivatecloud.zxing.activity.CaptureActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,13 +84,18 @@ public class MachineFragment extends Fragment {
 
 
     private List<String> detailMachineList = new ArrayList<>();
+    private List<Integer> machineStatus = new ArrayList<>();
+    private List<Boolean> machineLinkStatus = new ArrayList<>();
+    private List<Integer> machineForeCast = new ArrayList<>();  //标准产量
+    private List<Integer> machineId = new ArrayList<>(); //机床id
     private MachineRecyclerAdapter adapter;
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
     private boolean isBatching = false;        //是否正在批量处理
-    private int itemNum = 20;
+    private int itemNum = 100;
     private OkHttpClient client;
     private WaitingDialog waitingDialog;
     private MyApplication application;
+    private String limit;
 
 
     public MachineFragment() {
@@ -110,7 +120,9 @@ public class MachineFragment extends Fragment {
     @Subscribe
     public void onEventMainThread(MyEventBusMachineFragment event) {
         if (event.isEnterToStart()){
-            Toast.makeText(getActivity(), "打开选中的机器", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "打开选中的机器", Toast.LENGTH_SHORT).show();
+            dohttpTurnOnMachine(1);
+
         }
     }
 
@@ -125,18 +137,20 @@ public class MachineFragment extends Fragment {
         waitingDialog = new WaitingDialog(getActivity(),application,"",false);
         waitingDialog.waiting();
         tvTitle.setText("自动线");
-
-        doHttpSearchMachine();
-        for (int i = 0; i < itemNum; i++) {
-            detailMachineList.add(i, "机床" + i);
+        limit = application.getUserLimits();
+        if (limit.equals("5")){
+            doHttpSearchMachine("pageByStaff");         //按操作工查找生产线
+        }else {
+            doHttpSearchMachine("pageByCompany");       //按公司查找生产线
         }
+
         rvMachineList = (RecyclerView) view.findViewById(R.id.rv_machine_list);
         rvMachineList.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        adapter = new MachineRecyclerAdapter(getActivity(), detailMachineList);
+        adapter = new MachineRecyclerAdapter(getActivity(), detailMachineList,machineStatus,machineLinkStatus,machineForeCast);
         adapter.setOnItemClickListener(new MachineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (isBatching){
+                if (isBatching){                          //在批量处理
                     if (!selectList.get(position)) {
                         selectList.set(position, true);
                     } else {
@@ -145,6 +159,11 @@ public class MachineFragment extends Fragment {
                     adapter.selectItemToBatch(selectList);
                 }else {
                     Intent intent = new Intent(getActivity(), WarmUpActivity.class);
+                    intent.putExtra("machineStatus",machineStatus.get(position));
+                    intent.putExtra("detailMachineName",detailMachineList.get(position));
+                    intent.putExtra("machineId",machineId.get(position));
+                    intent.putExtra("position",position);
+                    intent.putExtra("res",res);
                     startActivity(intent);
                 }
             }
@@ -190,6 +209,7 @@ public class MachineFragment extends Fragment {
             View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_layout, null);
             TextView tv1 = (TextView) contentView.findViewById(R.id.tv_pop_1);
             TextView tv2 = (TextView) contentView.findViewById(R.id.tv_pop_2);
+            tv2.setVisibility(View.GONE);
             tv1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -223,8 +243,15 @@ public class MachineFragment extends Fragment {
     }
 
     private int dataLength;
-    private void doHttpSearchMachine(){
-        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany(application.getCompanyId(),1,itemNum,application.getAccessToken()));
+    private String res;
+    private void doHttpSearchMachine(String method){
+        detailMachineList = new ArrayList<>();
+        machineStatus = new ArrayList<>();
+        machineLinkStatus = new ArrayList<>();
+        machineForeCast = new ArrayList<>();  //标准产量
+        machineId = new ArrayList<>(); //机床id
+
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany(method,application.getCompanyId(),1,itemNum,application.getAccessToken()));
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
@@ -244,6 +271,71 @@ public class MachineFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                res = response.body().string();
+                Log.i("hy_debug_message", "onResponse机床: "+res);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                        JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+                        MachineResponse machineResponse = jsonParseUtil.parseMachineSearchJson();
+                        dataLength = machineResponse.getResult().size();
+
+                        for (int i = 0; i< dataLength; i++){
+                            detailMachineList.add(i,machineResponse.getResult().get(i).getWorkshop()+
+                            machineResponse.getResult().get(i).getName());
+                            machineStatus.add(i,machineResponse.getResult().get(i).getStatus());
+                            machineLinkStatus.add(i,machineResponse.getResult().get(i).isLinkStatus());
+                            machineForeCast.add(i,machineResponse.getResult().get(i).getForecast());
+                            machineId.add(i,machineResponse.getResult().get(i).getId());
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+    }
+
+
+    //开关机床的网络请求(这里只能开机床)
+    private void dohttpTurnOnMachine(final int status){
+        List<Integer> selectMachineIdList = new ArrayList<>();
+        for (int i=0;i<itemNum;i++){
+            if (selectList.get(i)){
+                selectMachineIdList.add(machineId.get(i));
+            }
+        }
+
+        int[] machineIds = new int[selectMachineIdList.size()];          //创造一个数组
+        L.i("machineIds长度："+machineIds.length);
+        L.i("selectMachineIdList长度："+selectMachineIdList.size());
+        for (int i=0;i<machineIds.length;i++){
+            machineIds[i] = selectMachineIdList.get(i);
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.switchMachine(machineIds,status,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(MyConstant.SERVER_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "操作失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
+                        waitingDialog.stopWaiting();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
                 Log.i("hy_debug_message", "onResponse机床: "+res);
 
@@ -251,16 +343,25 @@ public class MachineFragment extends Fragment {
                     @Override
                     public void run() {
                         waitingDialog.stopWaiting();
-                        /*JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
-                        JsonResponse jsonResponse = jsonParseUtil.parsePageSearchJson();
-                        dataLength = jsonResponse.getResult().size();
-
-                        for (int i = 0; i< dataLength; i++){
-                            clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
-                            clientId.add(i,jsonResponse.getResult().get(i).getId());
+                        if (JsonUtils.getCode(res)==0){    //请求成功
+                            Toast.makeText(getActivity(), "操作成功！！！", Toast.LENGTH_SHORT).show();
+                            //退出批量模式
+                            EventBus.getDefault().post(new MyEventBusMachineFragment(false,false));
+                            isBatching = false;
+                            adapter.batchProcessing(isBatching);
+                            tvTitleLeft.setVisibility(View.GONE);
+                            tvTitleRight.setVisibility(View.GONE);
+                            ivTitleLeft.setVisibility(View.VISIBLE);
+                            ivTitleRight.setVisibility(View.VISIBLE);
+                            //这里要刷新一下界面
+                            if (limit.equals("5")){
+                                doHttpSearchMachine("pageByStaff");         //按操作工查找生产线
+                            }else {
+                                doHttpSearchMachine("pageByCompany");       //按公司查找生产线
+                            }
+                        }else {
+                            Toast.makeText(getActivity(), "操作失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
                         }
-                        adapter.notifyDataSetChanged();*/
                     }
                 });
             }

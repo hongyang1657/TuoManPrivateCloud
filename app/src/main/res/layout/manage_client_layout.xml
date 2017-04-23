@@ -8,13 +8,20 @@
     <include android:id="@+id/title_manage"
         layout="@layout/title_layout"/>
 
-    <ListView
-        android:id="@+id/lv_manage_client"
-        android:divider="@color/colorAlpha"
-        android:dividerHeight="10dp"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_manage_client_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </ListView>
+        <ListView
+            android:id="@+id/lv_manage_client"
+            android:divider="@color/colorAlpha"
+            android:dividerHeight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

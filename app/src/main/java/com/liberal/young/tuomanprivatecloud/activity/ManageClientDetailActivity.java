@@ -1,9 +1,7 @@
 package com.liberal.young.tuomanprivatecloud.activity;
 
 import android.app.Dialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -13,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -20,16 +19,17 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.bean.MachineResponse;
+import com.liberal.young.tuomanprivatecloud.utils.CircleTransformPicasso;
+import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
-import com.liberal.young.tuomanprivatecloud.utils.L;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
+import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -43,6 +43,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
+ * 客户信息的详情页面，可以设置每条生产线的参数
  * Created by Administrator on 2017/3/20.
  */
 
@@ -83,6 +84,12 @@ public class ManageClientDetailActivity extends BaseActivity {
     Switch swManageClientImpower;
     @BindView(R.id.ll_manage_client_impower)
     LinearLayout llManageClientImpower;
+    @BindView(R.id.et_standard_yield)
+    EditText etStandardYield;
+    @BindView(R.id.ll_manage_client_standard_yield)
+    LinearLayout llManageClientStandardYield;
+    @BindView(R.id.tv_blank)
+    TextView tvBlank;
 
     private Dialog dialogWarmTimeSlot = null;
     private Dialog dialogAutoClose = null;
@@ -95,6 +102,12 @@ public class ManageClientDetailActivity extends BaseActivity {
     private MyApplication application;
     private static int userId;
     private WaitingDialog dialog;
+    private String detailMachineName;
+    private int fromSetting = 0;
+    private boolean isImpower = false;
+    private String res;
+    private String titleName;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,27 +117,65 @@ public class ManageClientDetailActivity extends BaseActivity {
         initView();
     }
 
-    private boolean isImpower = false;
+
     private void initView() {
+        detailMachineName = getIntent().getStringExtra("detailMachineName");
         application = (MyApplication) getApplication();
         ivTitleLeft.setImageResource(R.mipmap.back);
         ivTitleRight.setVisibility(View.GONE);
-        tvTitle.setText("客户管理");
+        tvTitle.setText(detailMachineName);
         width = application.getWidth();
         height = application.getHeight();
         tvManageClientDetailName.setText(getIntent().getStringExtra("clientName"));
-        userId = getIntent().getIntExtra("id",-1);
+        Picasso.with(this).load(getIntent().getStringExtra("logo"))
+                .resize(300, 300)
+                .transform(new CircleTransformPicasso())
+                .placeholder(R.mipmap.head_big)
+                .error(R.mipmap.head_big).into(ivManageClientDetailHead);
+        int roleId = getIntent().getIntExtra("roleId", -1);
+        if (roleId == 3) {
+            swManageClientImpower.setChecked(true);
+        } else if (roleId == 4) {
+            swManageClientImpower.setChecked(false);
+        }
+        userId = getIntent().getIntExtra("id", -1);
+        fromSetting = getIntent().getIntExtra("fromSetting", 0);
         swManageClientImpower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     isImpower = true;
-                }else {
+                } else {
                     isImpower = false;
                 }
             }
         });
-        dialog = new WaitingDialog(this,application,"",false);
+        dialog = new WaitingDialog(this, application, "", false);
+        //从预热开关页面跳转过来
+        if (fromSetting == 1) {
+            titleName = getIntent().getStringExtra("titleName");
+            res = getIntent().getStringExtra("res");
+            position = getIntent().getIntExtra("position",-1);
+            JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+            MachineResponse machineResponse = jsonParseUtil.parseMachineSearchJson();
+            startTime = machineResponse.getResult().get(position).getOperableStart();
+            endTime = machineResponse.getResult().get(position).getOperableEnd();
+            int perWorkerNumber = machineResponse.getResult().get(position).getUserTop();
+            int perStandardYield = machineResponse.getResult().get(position).getForecast();
+            String autoCloseTime = machineResponse.getResult().get(position).getCloseTime();
+
+            ivManageClientDetailHead.setVisibility(View.GONE);
+            tvTitle.setText("设置");
+            llManageClientImpower.setVisibility(View.GONE);
+            llManageClientStandardYield.setVisibility(View.VISIBLE);
+            tvManageClientDetailName.setText(titleName);
+            tvBlank.setVisibility(View.VISIBLE);
+            tvManageClientSelectWarmTime.setText(startTime + " ~ " + endTime);
+            tvManageClientWorkerMaxNum.setText(perWorkerNumber + "");
+            etStandardYield.setText(perStandardYield+"");
+            tvManageClientAutoCloseTime.setText(autoCloseTime);
+
+        }
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_manage_client_detail_warm_time_slot, R.id.ll_manage_client_detail_auto_close_time, R.id.ll_manage_client_detail_worker_max_num})
@@ -286,7 +337,7 @@ public class ManageClientDetailActivity extends BaseActivity {
                 case R.id.tv_enter:
                     if (dialogWorkerMaxNum != null && dialogWorkerMaxNum.isShowing()) {
                         dialogWorkerMaxNum.dismiss();
-                        tvManageClientWorkerMaxNum.setText(workerNumber + "个");
+                        tvManageClientWorkerMaxNum.setText(workerNumber + "");
                     }
                     if (dialogAutoClose != null && dialogAutoClose.isShowing()) {
                         dialogAutoClose.dismiss();
@@ -294,7 +345,7 @@ public class ManageClientDetailActivity extends BaseActivity {
                     }
                     if (dialogWarmTimeSlot != null && dialogWarmTimeSlot.isShowing()) {
                         dialogWarmTimeSlot.dismiss();
-                        tvManageClientSelectWarmTime.setText(startTime+" ~ "+endTime);
+                        tvManageClientSelectWarmTime.setText(startTime + " ~ " + endTime);
                     }
 
                     break;
@@ -308,10 +359,11 @@ public class ManageClientDetailActivity extends BaseActivity {
     private TextView tvHintContent;
     private TextView tvCancelSave;
     private TextView tvEnterSave;
-    private void initSaveDialog(){
-        if (ExitDialog==null){
-            ExitDialog = new Dialog(this,R.style.CustomDialog);
-            view = LayoutInflater.from(this).inflate(R.layout.my_alert_dialog,null);
+
+    private void initSaveDialog() {
+        if (ExitDialog == null) {
+            ExitDialog = new Dialog(this, R.style.CustomDialog);
+            view = LayoutInflater.from(this).inflate(R.layout.my_alert_dialog, null);
             tvHintContent = (TextView) view.findViewById(R.id.tv_hint_content);
             tvCancelSave = (TextView) view.findViewById(R.id.tv_cancel);
             tvEnterSave = (TextView) view.findViewById(R.id.tv_enter);
@@ -322,7 +374,7 @@ public class ManageClientDetailActivity extends BaseActivity {
             ExitDialog.setContentView(view);
             ExitDialog.setCanceledOnTouchOutside(true);
             WindowManager.LayoutParams params = ExitDialog.getWindow().getAttributes();
-            params.width = (int) (application.getWidth()*0.9);
+            params.width = (int) (application.getWidth() * 0.9);
             Window mWindow = ExitDialog.getWindow();
             mWindow.setGravity(Gravity.CENTER);
         }
@@ -332,28 +384,33 @@ public class ManageClientDetailActivity extends BaseActivity {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.tv_cancel:
                     ExitDialog.dismiss();
+                    finish();
                     break;
                 case R.id.tv_enter:
                     //保存并返回上一activity
                     ExitDialog.dismiss();
-                    if (isImpower){
-                        doHttpSave(3);
+                    if (fromSetting == 1){
+                        doHttpUpdateMachine();
                     }else {
-                        doHttpSave(4);
+                        if (isImpower) {
+                            doHttpSave(3);
+                        } else {
+                            doHttpSave(4);
+                        }
+                        dialog.waiting();
                     }
-                    dialog.waiting();
                     break;
             }
         }
     };
 
     //修改用户权限
-    private void doHttpSave(int roleId){
+    private void doHttpSave(int roleId) {
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.updateRole(userId,roleId,application.getAccessToken()));  //注销账号
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.updateRole(userId, roleId, application.getAccessToken()));  //注销账号
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
@@ -362,7 +419,7 @@ public class ManageClientDetailActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("hy_debug_message", "onFailure:修改权限： "+e.toString());
+                Log.i("hy_debug_message", "onFailure:修改权限： " + e.toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -377,7 +434,53 @@ public class ManageClientDetailActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("hy_debug_message", "onResponse:修改权限： "+res);
+                        Log.i("hy_debug_message", "onResponse:修改权限： " + res);
+
+                        dialog.stopWaiting();
+                        finish();
+                    }
+                });
+            }
+        });
+    }
+
+    //--------------修改机床开关机时间，操作工人数等信息--------------
+    private void doHttpUpdateMachine() {
+        //获取设定好的参数
+        JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+        MachineResponse machineResponse = jsonParseUtil.parseMachineSearchJson();
+        int machineId = machineResponse.getResult().get(position).getId();
+        int userTop = Integer.parseInt(tvManageClientWorkerMaxNum.getText().toString());
+        String closeTime = tvManageClientAutoCloseTime.getText().toString();
+        long foreCast = Long.parseLong(etStandardYield.getText().toString());
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.updateMachine(machineId
+                ,userTop,closeTime,startTime,endTime,foreCast,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(MyConstant.SERVER_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure:更新机床： " + e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.stopWaiting();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("hy_debug_message", "onResponse:更新机床： " + res);
 
                         dialog.stopWaiting();
                         finish();

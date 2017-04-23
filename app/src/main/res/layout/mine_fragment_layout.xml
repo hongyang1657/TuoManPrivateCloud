@@ -43,7 +43,7 @@
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/tv_id"
-            android:text="ID:12345"
+            android:text="ID:"
             android:textColor="@color/colorText"
             android:layout_toRightOf="@id/iv_mine_account"
             android:gravity="center"

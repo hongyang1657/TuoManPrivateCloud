@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -11,16 +12,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.adapter.MachineRecyclerAdapter;
+import com.liberal.young.tuomanprivatecloud.bean.MachineResponse;
+import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
+import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
+import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * 陀曼管理员登陆后可以查看的生产线页面
@@ -46,7 +59,21 @@ public class DetailMachineListActivity extends BaseActivity {
     @BindView(R.id.rv_machine_list)
     RecyclerView rvMachineList;
 
+    private MyApplication application;
     private List<String> detailMachineList = new ArrayList<>();
+    private List<Integer> machineStatus = new ArrayList<>();
+    private List<Boolean> machineLinkStatus = new ArrayList<>();
+    private List<Integer> machineForeCast = new ArrayList<>();  //标准产量
+    private List<Integer> machineId = new ArrayList<>();  //机床id
+    private int itemNum = 50;
+    private int companyId;
+    private WaitingDialog waitingDialog;
+    private MachineRecyclerAdapter adapter;
+    private String clientName;
+    private int userId;
+    private int roleId;
+    private String logo;
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,21 +86,41 @@ public class DetailMachineListActivity extends BaseActivity {
     }
 
     private void initView() {
+        application = (MyApplication) getApplication();
+        waitingDialog = new WaitingDialog(this,application,"",false);
+        companyId = getIntent().getIntExtra("companyId",-1);
 
-        for (int i = 0; i < 20; i++) {
-            detailMachineList.add(i, "机床" + i);
-        }
+        clientName = getIntent().getStringExtra("clientName");
+        userId = getIntent().getIntExtra("id",-1);
+        roleId = getIntent().getIntExtra("roleId",-1);
+        logo = getIntent().getStringExtra("logo");
+        flag = getIntent().getIntExtra("flag",0);
+
         rvMachineList = (RecyclerView) findViewById(R.id.rv_machine_list);
         rvMachineList.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        MachineRecyclerAdapter adapter = new MachineRecyclerAdapter(this, detailMachineList);
+        adapter = new MachineRecyclerAdapter(this, detailMachineList,machineStatus,machineLinkStatus,machineForeCast);
         adapter.setOnItemClickListener(new MachineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = new Intent(DetailMachineListActivity.this, WarmUpActivity.class);
-                startActivity(intent);
+                if (flag==1){         //从管理页面跳过来的
+                    Intent intent1 = new Intent(DetailMachineListActivity.this,ManageClientDetailActivity.class);
+                    intent1.putExtra("clientName",clientName);
+                    intent1.putExtra("id",userId);
+                    intent1.putExtra("roleId",roleId);
+                    intent1.putExtra("logo",logo);
+                    intent1.putExtra("detailMachineName",detailMachineList.get(position));
+                    startActivity(intent1);
+                }else {               //从主页面跳过来的
+                    Intent intent = new Intent(DetailMachineListActivity.this, WarmUpActivity.class);
+                    intent.putExtra("machineStatus",machineStatus.get(position));
+                    intent.putExtra("detailMachineName",detailMachineList.get(position));
+                    intent.putExtra("machineId",machineId.get(position));
+                    startActivity(intent);
+                }
             }
         });
         rvMachineList.setAdapter(adapter);
+        doHttpSearchMachine();
     }
 
     @OnClick({R.id.iv_title_left, R.id.iv_title_right})
@@ -85,6 +132,56 @@ public class DetailMachineListActivity extends BaseActivity {
             case R.id.iv_title_right:
                 break;
         }
+    }
+
+    private int dataLength;
+    private void doHttpSearchMachine(){
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany("pageByCompany",companyId,1,itemNum,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(MyConstant.SERVER_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                Log.i("hy_debug_message", "onResponse机床: "+res);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        waitingDialog.stopWaiting();
+                        JsonParseUtil jsonParseUtil = new JsonParseUtil(res);
+                        MachineResponse machineResponse = jsonParseUtil.parseMachineSearchJson();
+                        dataLength = machineResponse.getResult().size();
+
+                        for (int i = 0; i< dataLength; i++){
+                            detailMachineList.add(i,machineResponse.getResult().get(i).getWorkshop()+
+                                    machineResponse.getResult().get(i).getName());
+                            machineStatus.add(i,machineResponse.getResult().get(i).getStatus());
+                            machineLinkStatus.add(i,machineResponse.getResult().get(i).isLinkStatus());
+                            machineForeCast.add(i,machineResponse.getResult().get(i).getForecast());
+                            machineId.add(i,machineResponse.getResult().get(i).getId());
+
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
 }

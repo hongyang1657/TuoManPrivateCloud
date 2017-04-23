@@ -42,7 +42,7 @@
         android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/tv_connect_num"
-        android:text="连接数：2"
+        android:text="连接数："
         android:lines="1"
         android:textSize="12sp"
         android:gravity="center"

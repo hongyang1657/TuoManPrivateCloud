@@ -11,15 +11,17 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="60dp">
 
         <TextView
             android:id="@+id/tv_switch_month"
             android:clickable="true"
             android:text="12月"
+            android:drawableRight="@mipmap/xiaojianjian_hehe"
+            android:drawablePadding="6dp"
             android:textSize="18sp"
             android:paddingRight="20dp"
-            android:paddingLeft="10dp"
+            android:paddingLeft="20dp"
             android:gravity="center"
             android:textColor="@color/colorBlueShade"
             android:layout_width="wrap_content"
@@ -29,6 +31,8 @@
             android:paddingLeft="10dp"
             android:clickable="true"
             android:text="1车间"
+            android:drawableRight="@mipmap/xiaojianjian_hehe"
+            android:drawablePadding="6dp"
             android:textSize="18sp"
             android:gravity="center"
             android:textColor="@color/colorBlueShade"
@@ -40,9 +44,10 @@
             android:layout_height="match_parent" />
         <ImageView
             android:id="@+id/iv_rank"
+            android:clickable="true"
             android:src="@mipmap/report_form_sort"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingRight="18dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
     </LinearLayout>

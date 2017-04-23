@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
-        android:text="节能运行时间（小时）："
+        android:text="节能运行时间（分钟）："
         android:textSize="14sp"
         android:padding="12dp"
         android:gravity="center"

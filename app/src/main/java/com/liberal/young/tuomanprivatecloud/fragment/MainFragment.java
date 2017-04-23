@@ -80,9 +80,12 @@ public class MainFragment extends Fragment {
 
     private ClientRecyclerAdapter adapter = null;
     private int dataLength = 0;
-    private List<String> clientNameList = new ArrayList<>();
-    private List<String> clientHeadList = new ArrayList<>();
-    private List<Integer> clientId= new ArrayList<>();
+    private List<String> clientNameList = new ArrayList<>();  //客户名
+    private List<String> clientHeadList = new ArrayList<>();   //客户头像
+    private List<Integer> clientId= new ArrayList<>();   //客户id （用于删除）
+    private List<Integer> clientCompanyId= new ArrayList<>();   //客户公司id
+    private List<Integer> clientLinkNum = new ArrayList<>();   //客户连接的机器数
+
     private boolean isOnDeleteState = false;      //是否正在删除客户
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
 
@@ -168,7 +171,7 @@ public class MainFragment extends Fragment {
                         int addpage = (totalItemCount/PAGE_ITEM_NUMBER)+1;
                         L.i("addpage"+addpage);
                         addHttpPage(addpage);
-                        adapter.getNotify(clientNameList,clientHeadList);
+                        adapter.getNotify(clientNameList,clientHeadList,clientLinkNum);
                     }
                 }
             }
@@ -184,7 +187,7 @@ public class MainFragment extends Fragment {
             }
         });
 
-        adapter = new ClientRecyclerAdapter(getActivity(), clientHeadList, clientNameList);
+        adapter = new ClientRecyclerAdapter(getActivity(), clientHeadList, clientNameList,clientLinkNum);
         adapter.setOnItemClickListener(new ClientRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -196,8 +199,9 @@ public class MainFragment extends Fragment {
                     }
                     adapter.selectItemToDelete(selectList);
                 } else {
-                    Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), DetailMachineListActivity.class);
+                    intent.putExtra("companyId",clientCompanyId.get(position));
                     startActivity(intent);
                 }
             }
@@ -304,7 +308,7 @@ public class MainFragment extends Fragment {
                 waitingDialog.waiting();
                 doHttpPageSearch();
                 L.i("直接返回");
-                adapter.getNotify(clientNameList,clientHeadList);
+                adapter.getNotify(clientNameList,clientHeadList,clientLinkNum);
                 break;
         }
     }
@@ -313,6 +317,8 @@ public class MainFragment extends Fragment {
         clientNameList = new ArrayList<>();
         clientHeadList = new ArrayList<>();
         clientId = new ArrayList<>();
+        clientCompanyId = new ArrayList<>();
+        clientLinkNum = new ArrayList<>();
 
         RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageSearch(1,PAGE_ITEM_NUMBER,"pageSearchCustomer",application.getAccessToken()));
         Request request = new Request.Builder()
@@ -347,8 +353,10 @@ public class MainFragment extends Fragment {
 
                         for (int i = 0; i< dataLength; i++){
                             clientNameList.add(i,jsonResponse.getResult().get(i).getUsername());
-                            clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
+                            clientHeadList.add(i,jsonResponse.getResult().get(i).getLogo());
                             clientId.add(i,jsonResponse.getResult().get(i).getId());
+                            clientCompanyId.add(i,jsonResponse.getResult().get(i).getCompanyId());
+                            clientLinkNum.add(i,jsonResponse.getResult().get(i).getLink());
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -395,6 +403,8 @@ public class MainFragment extends Fragment {
                             clientNameList.add(jsonResponse.getResult().get(i).getUsername());
                             clientHeadList.add(jsonResponse.getResult().get(i).getLogo());
                             clientId.add(jsonResponse.getResult().get(i).getId());
+                            clientCompanyId.add(jsonResponse.getResult().get(i).getCompanyId());
+                            clientLinkNum.add(jsonResponse.getResult().get(i).getLink());
                         }
                         adapter.notifyDataSetChanged();
                     }

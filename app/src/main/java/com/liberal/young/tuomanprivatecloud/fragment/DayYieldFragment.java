@@ -4,15 +4,28 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusFromMainFragment;
+import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusToDayChart;
+import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
+import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,6 +40,12 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/3/16.
@@ -40,37 +59,45 @@ public class DayYieldFragment extends Fragment {
     TextView tvYestodayYield;
     private LineChartView lineChartYield;
     private LineChartView lineChartRunTime;
+    private LinearLayout llCharts;
 
-    String[] data = {"1","2","3","4","5","6","7"};      // 日期 （X轴的刻度）
-    int[] yieldList = {50,42,90,33,10,74,22};        //    一周的日产量数组（Y轴的刻度）
-    int[] RunTimeList = {2,5,11,13,4,6,8};        //    一周的日产量数组（Y轴的刻度）
+    String[] data = {" "," "," "," "," "," "," "};      // 日期 （X轴的刻度）
+    int[] yieldList = {0,0,0,0,0,0,0};        //    一周的日产量数组（Y轴的刻度）
+    int[] RunTimeList = {0,0,0,0,0,0,0};        //    一周的运行时间数组（Y轴的刻度）
     private List<PointValue> mPointValues1 = new ArrayList<PointValue>();
     private List<PointValue> mPointValues2 = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
 
     private boolean isShowingDate1 = false;
     private boolean isShowingDate2 = false;
+    private int pointNum;   //有几条真实数据
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.day_yield_fgm_layout, container, false);
+        EventBus.getDefault().register(this);
         initView(view);
         ButterKnife.bind(this, view);
         return view;
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
     private void initView(View view) {
+        llCharts = (LinearLayout) view.findViewById(R.id.ll_charts);
+        tvTodayYield = (TextView) view.findViewById(R.id.tv_today_yield);
+        tvYestodayYield = (TextView) view.findViewById(R.id.tv_yestoday_yield);
         lineChartYield = (LineChartView) view.findViewById(R.id.line_chart_yield);
         lineChartRunTime = (LineChartView) view.findViewById(R.id.line_chart_run_time);
         lineChartYield.setOnClickListener(clickListener);
         lineChartRunTime.setOnClickListener(clickListener);
-        getAxisXLables();//获取x轴的标注
-        getAxisPoints();//获取坐标点
-        getAxisPoints2();
-        initLineChart(lineChartYield,mPointValues1);//初始化
-        initLineChart2(lineChartRunTime,mPointValues2);
+
     }
 
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -98,6 +125,37 @@ public class DayYieldFragment extends Fragment {
             }
         }
     };
+
+
+    private List<String> dayDateList;
+    private List<Integer> dayYieldList;    //产量
+    private List<Integer> dayVoltageList;  //运行时间（秒）
+    @Subscribe
+    public void onEventMainThread(MyEventBusToDayChart event) {
+        dayDateList = event.getDayDateList();
+        dayVoltageList = event.getDayVoltageList();
+        dayYieldList = event.getDayYieldList();
+        L.i("日11111："+dayDateList.get(0)+dayVoltageList.get(0)+dayYieldList.get(0));
+        pointNum = dayDateList.size();
+        if (pointNum<=7){
+            for (int i=0;i<pointNum;i++){
+                yieldList[6-i] = dayYieldList.get(i);
+                RunTimeList[6-i] = dayVoltageList.get(i)/60;   //换算分钟
+                data[6-i] = dayDateList.get(i).substring(5);
+            }
+        }else {
+
+        }
+        tvTodayYield.setText(yieldList[6]+"件");
+        tvYestodayYield.setText(yieldList[5]+"件");
+        getAxisXLables();//获取x轴的标注
+        getAxisPoints();//获取坐标点
+        getAxisPoints2();
+        initLineChart(lineChartYield,mPointValues1);//初始化
+        initLineChart2(lineChartRunTime,mPointValues2);
+        llCharts.setVisibility(View.VISIBLE);
+    }
+
 
     /**
      * 设置X 轴的显示
@@ -133,7 +191,7 @@ public class DayYieldFragment extends Fragment {
         line.setShape(ValueShape.SQUARE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
         line.setCubic(true);//曲线是否平滑，即是曲线还是折线
         line.setFilled(false);//是否填充曲线的面积
-        line.setHasLabels(false);//曲线的数据坐标是否加上备注
+        //line.setHasLabels(false);//曲线的数据坐标是否加上备注
         //line.setHasLabelsOnlyForSelected(true);//点击数据坐标提示数据（设置了这个line.setHasLabels(true);就无效）
         line.setHasLines(true);//是否用线显示。如果为false 则没有曲线只有点显示
         line.setHasPoints(true);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
@@ -245,7 +303,7 @@ public class DayYieldFragment extends Fragment {
 
         lineChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(lineChartView.getMaximumViewport());
-        v.top = 20;    //坐标轴
+        v.top = 20*60;    //坐标轴
         v.right = 7;
         v.bottom = 0;
         lineChartView.setZoomEnabled(true);
@@ -257,4 +315,24 @@ public class DayYieldFragment extends Fragment {
         lineChartView.setCurrentViewport(v);
 
     }
+
+    //获取时间戳 xxxx年xx月xx日
+    private void getTimeStamp(){
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH);
+        String mon;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String dayOfMon;
+        if (month<10){
+            mon = "0"+(month+1);
+        }else {
+            mon = String.valueOf(month+1);
+        }
+        if (day<10){
+            dayOfMon = "0"+day;
+        }else {
+            dayOfMon = String.valueOf(day);
+    }
+    }
+
 }

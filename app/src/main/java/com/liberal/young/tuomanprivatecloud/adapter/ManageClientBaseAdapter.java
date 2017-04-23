@@ -54,7 +54,6 @@ public class ManageClientBaseAdapter extends BaseAdapter {
             holder.ivClientHead = (ImageView) convertView.findViewById(R.id.iv_manage_client_head);
             holder.tvClientName = (TextView) convertView.findViewById(R.id.tv_manage_client_name);
             holder.tvClientPhoneNumber = (TextView) convertView.findViewById(R.id.tv_manage_client_phonenumber);
-            holder.tvClientDetail = (TextView) convertView.findViewById(R.id.tv_manage_client_detail);
             convertView.setTag(holder);
         }
         holder = (ViewHolder) convertView.getTag();

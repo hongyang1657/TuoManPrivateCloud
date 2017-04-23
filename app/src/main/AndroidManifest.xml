@@ -45,7 +45,6 @@
 
         </activity>
         <activity android:name=".activity.WarmUpActivity"/>
-        <activity android:name=".activity.TableActivity"/>
         <activity android:name=".activity.DetailMachineListActivity"/>
         <activity android:name=".activity.AddClientActivity"/>
         <activity android:name=".activity.AddClientSecondActivity"/>
@@ -58,6 +57,7 @@
         <activity android:name=".activity.SetCustomLaunchActivity"/>
         <activity android:name=".activity.WorkerInfoActivity"/>
         <activity android:name=".activity.ConnectWifiActivity"/>
+        <activity android:name=".activity.UserHelpActivity"/>
 
         <activity
             android:name=".zxing.activity.CaptureActivity"

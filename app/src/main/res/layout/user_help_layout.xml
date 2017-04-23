@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorTuoManBack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include android:id="@+id/title_help"
+        layout="@layout/title_layout"/>
+
+    <EditText
+        android:id="@+id/et_user_help"
+        android:padding="10dp"
+        android:hint="输入您的意见"
+        android:lines="10"
+        android:gravity="left|top"
+        android:layout_margin="20dp"
+        android:background="@drawable/round_corner_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_send_user_help"
+        android:text="提交"
+        android:clickable="true"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/custom_light_rg_shape"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

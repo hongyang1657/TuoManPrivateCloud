@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">陀曼私有云</string>
     <string name="et_input_type">0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="et_input_type_int">0123456789</string>
 </resources>

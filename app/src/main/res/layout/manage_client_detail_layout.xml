@@ -16,6 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp" />
     <TextView
+        android:id="@+id/tv_blank"
+        android:layout_weight="2"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+    <TextView
         android:id="@+id/tv_manage_client_detail_name"
         android:gravity="center"
         android:text="XXX公司"
@@ -28,6 +34,7 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
+
     <LinearLayout
         android:id="@+id/ll_manage_client_impower"
         android:layout_weight="1"
@@ -61,6 +68,51 @@
             android:layout_width="0dp"
             android:layout_height="match_parent" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_manage_client_standard_yield"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="1px"
+        android:background="@drawable/login_button_bg_username"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:text="设置标准产量"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:paddingLeft="16dp"
+            android:textColorHint="@color/colorText"
+            android:lines="1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <EditText
+            android:id="@+id/et_standard_yield"
+            android:layout_weight="1"
+            android:hint="请输入标准产量"
+            android:textColor="@color/colorText"
+            android:textSize="14sp"
+            android:digits="@string/et_input_type_int"
+            android:singleLine="true"
+            android:background="@null"
+            android:maxLength="8"
+            android:drawableRight="@mipmap/jiantou"
+            android:textColorHint="@color/colorText"
+            android:paddingRight="16dp"
+            android:drawablePadding="6dp"
+            android:lines="1"
+            android:gravity="center_vertical|end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/ll_manage_client_detail_warm_time_slot"
         android:layout_weight="1"
@@ -165,7 +217,7 @@
         <TextView
             android:id="@+id/tv_manage_client_worker_max_num"
             android:layout_weight="1"
-            android:text="1个"
+            android:text="1"
             android:textColor="@color/colorText"
             android:textSize="14sp"
             android:paddingRight="16dp"

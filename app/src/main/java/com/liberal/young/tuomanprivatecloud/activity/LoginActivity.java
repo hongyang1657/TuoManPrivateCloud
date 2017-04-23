@@ -115,6 +115,7 @@ public class LoginActivity extends BaseActivity {
                 //登录的网络请求
                 waitingDialog.waiting();
                 doHttpLogin(tvLoginName.getText().toString(),tvLoginPwd.getText().toString());
+
                 break;
         }
     }
@@ -215,7 +216,7 @@ public class LoginActivity extends BaseActivity {
                         @Override
                         public void run() {
                             Log.i("hy_debug_message", "onResponse: "+res);
-                            Toast.makeText(LoginActivity.this, res, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(LoginActivity.this, res, Toast.LENGTH_SHORT).show();
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
@@ -224,7 +225,8 @@ public class LoginActivity extends BaseActivity {
                                 application.setCompanyId(JsonUtils.getCompanyId(res));
                                 //用户token存在本地
                                 SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);
-                                sharedPreferences.edit().putString("accessToken",JsonUtils.getToken(res)).commit();
+                                sharedPreferences.edit().putString("username",JsonUtils.getUsername(res))
+                                        .putString("accessToken",JsonUtils.getToken(res)).apply();
 
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
@@ -244,7 +246,7 @@ public class LoginActivity extends BaseActivity {
     //发送验证码
     private void sendCode(String username){
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.sendCode(username,application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON,JsonUtils.sendCode(username));
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)

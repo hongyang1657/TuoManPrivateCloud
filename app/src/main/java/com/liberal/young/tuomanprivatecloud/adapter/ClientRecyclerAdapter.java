@@ -25,14 +25,16 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     private LayoutInflater inflater;
     private List<String> clientNameList;
     private List<String> clientHeadList;
+    private List<Integer> clientLinkNum;
     private boolean toDeleteClient = false;
     private List<Boolean> selectList;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public ClientRecyclerAdapter(Context context,List<String> clientHeadList, List<String> clientNameList) {
+    public ClientRecyclerAdapter(Context context,List<String> clientHeadList, List<String> clientNameList,List<Integer> clientLinkNum) {
         inflater = LayoutInflater.from(context);
         this.clientHeadList = clientHeadList;
         this.clientNameList = clientNameList;
+        this.clientLinkNum = clientLinkNum;
         this.context = context;
     }
 
@@ -47,6 +49,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     @Override
     public void onBindViewHolder(ClientViewHolder holder, int position) {
         holder.tvClientName.setText(clientNameList.get(position));
+        holder.tvConnectNum.setText("连接数:"+clientLinkNum.get(position));
         Picasso.with(context).load(clientHeadList.get(position))
                 .transform(new CircleTransformPicasso())
                 .placeholder(R.mipmap.head)
@@ -108,9 +111,10 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
         notifyItemRemoved(position);
     }
 
-    public void getNotify(List<String> clientNameList,List<String> clientHeadList){
+    public void getNotify(List<String> clientNameList,List<String> clientHeadList,List<Integer> clientLinkNum){
         this.clientHeadList = clientHeadList;
         this.clientNameList = clientNameList;
+        this.clientLinkNum = clientLinkNum;
         notifyDataSetChanged();
     }
 
