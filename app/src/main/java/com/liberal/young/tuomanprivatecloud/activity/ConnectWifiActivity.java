@@ -1,6 +1,8 @@
 package com.liberal.young.tuomanprivatecloud.activity;
 
 import android.app.Dialog;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -88,6 +90,13 @@ public class ConnectWifiActivity extends BaseActivity {
         ivTitleRight.setImageResource(R.mipmap.wifi_help);
         tvTitle.setText("智能配置");
         waitingDialog = new WaitingDialog(this, application,"正在连接，请稍后",false);
+        WifiManager wifiMgr = (WifiManager) getSystemService(this.WIFI_SERVICE);
+        int wifiState = wifiMgr.getWifiState();
+        WifiInfo info = wifiMgr.getConnectionInfo();
+        String wifiId = info != null ? info.getSSID() : null;
+        int lenth = wifiId.length();
+        wifiId = wifiId.substring(1,lenth-1);
+        etFirst.setText(wifiId);
     }
 
     @OnClick({R.id.iv_title_left, R.id.bt_up, R.id.iv_title_right})

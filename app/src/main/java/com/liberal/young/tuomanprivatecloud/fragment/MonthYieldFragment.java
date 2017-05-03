@@ -40,6 +40,7 @@ public class MonthYieldFragment extends Fragment{
     private ColumnChartView columnChartView;
     private ColumnChartData data;
     private TextView tvMonthYield;
+    private TextView tvMonth;
     private int[] temp = {0,0,0,0,0};
     private int[] runTimeOnMonth = {0,0,0,0,0};
     private int pointNum;
@@ -63,7 +64,7 @@ public class MonthYieldFragment extends Fragment{
     private void initView(View view) {
         columnChartView = (ColumnChartView) view.findViewById(R.id.colume_chart);
         tvMonthYield = (TextView) view.findViewById(R.id.tv_month_yield);
-
+        tvMonth = (TextView) view.findViewById(R.id.tv_which_month);
     }
 
 
@@ -75,12 +76,12 @@ public class MonthYieldFragment extends Fragment{
         monthDateList = event.getMonthDateList();
         monthYieldList = event.getMonthYieldList();
         monthVoltageList = event.getMonthVoltageList();
-        L.i("月11111："+monthDateList.get(0)+monthVoltageList.get(0)+monthYieldList.get(0));
         pointNum = monthDateList.size();
+        L.i("月11111："+monthDateList.get(pointNum-1)+monthVoltageList.get(pointNum-1)+monthYieldList.get(pointNum-1));
         if (pointNum<=5){
             for (int i=0;i<pointNum;i++){
-                temp[4-i] = monthYieldList.get(i);
-                runTimeOnMonth[4-i] = monthVoltageList.get(i)/60;   //换算分钟
+                temp[4-i] = monthYieldList.get(pointNum-1-i);
+                runTimeOnMonth[4-i] = monthVoltageList.get(pointNum-1-i)/60;   //换算分钟
                 //data[4-i] = monthDateList.get(i);
             }
         }else {
@@ -88,6 +89,8 @@ public class MonthYieldFragment extends Fragment{
         }
         initChart();
         tvMonthYield.setText(temp[4]+" 件");
+
+        tvMonth.setText(monthDateList.get(pointNum-1).substring(5,7)+"月");
     }
 
 

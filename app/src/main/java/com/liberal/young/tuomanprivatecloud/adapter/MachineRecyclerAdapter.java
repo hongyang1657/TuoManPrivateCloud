@@ -130,4 +130,12 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
         this.selectList = selectList;
         notifyDataSetChanged();
     }
+
+    public void notifyData(List<String> machineNameList,List<Integer> machineStatus,List<Boolean> machineLinkStatus,List<Integer> machineForeCast){
+        this.machineNameList = machineNameList;
+        this.machineStatus = machineStatus;
+        this.machineLinkStatus = machineLinkStatus;
+        this.machineForeCast = machineForeCast;
+        notifyDataSetChanged();
+    }
 }

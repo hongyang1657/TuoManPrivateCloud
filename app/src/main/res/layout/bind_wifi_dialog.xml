@@ -16,7 +16,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:text="添加机床信息"
+            android:text="请先断电并重启一下设备。待指示灯常量时，添加下列机床信息"
             android:layout_weight="1"
             android:textSize="18sp"
             android:gravity="center"

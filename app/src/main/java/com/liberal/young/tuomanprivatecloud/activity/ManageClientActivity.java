@@ -2,6 +2,8 @@ package com.liberal.young.tuomanprivatecloud.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -77,10 +79,11 @@ public class ManageClientActivity extends BaseActivity {
     private MyApplication application;
 
     private boolean isScrollToBottom;
-    private static final int PAGE_ITEM_NUMBER = 15;      //一页加载的item数
+    private static final int PAGE_ITEM_NUMBER = 100;      //一页加载的item数
     private WaitingDialog waitingDialog;
     private static final int FromMineActivity = -1;
     private static int machineId = -1;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
@@ -92,6 +95,7 @@ public class ManageClientActivity extends BaseActivity {
     }
 
     private void initView() {
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_manage_client_activity);
         ivTitleLeft.setImageResource(R.mipmap.back);
         ivTitleRight.setImageResource(R.mipmap.add_title);
         application = (MyApplication) getApplication();
@@ -139,7 +143,22 @@ public class ManageClientActivity extends BaseActivity {
             }
         });
         lvManageClient.setAdapter(adapter);
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (userLimit.equals("1")||userLimit.equals("2")){
+                    doHttpPageSearch("pageSearchCustomer");
+                }else if (userLimit.equals("3")||userLimit.equals("4")){
+                    doHttpPageSearch("pageSearchUser");
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
     }
 
     @OnClick({R.id.iv_title_left, R.id.iv_title_right})

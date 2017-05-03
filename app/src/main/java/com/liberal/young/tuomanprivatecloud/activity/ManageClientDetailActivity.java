@@ -174,6 +174,10 @@ public class ManageClientDetailActivity extends BaseActivity {
             tvManageClientWorkerMaxNum.setText(perWorkerNumber + "");
             etStandardYield.setText(perStandardYield+"");
             tvManageClientAutoCloseTime.setText(autoCloseTime);
+        }else {
+            tvManageClientWorkerMaxNum.setText(getIntent().getIntExtra("userTop",0)+"");
+            tvManageClientAutoCloseTime.setText(getIntent().getStringExtra("closeTime"));
+            tvManageClientSelectWarmTime.setText(getIntent().getStringExtra("operableStart")+ " ~ " +getIntent().getStringExtra("operableEnd"));
 
         }
     }

@@ -33,6 +33,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,6 +89,8 @@ public class WarmUpActivity extends BaseActivity {
     private String titleName;
     private int position;
     private String userLimits;
+    private String operableStart;
+    private String operableEnd;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -106,6 +109,10 @@ public class WarmUpActivity extends BaseActivity {
         machineId = getIntent().getIntExtra("machineId",-1);
         position = getIntent().getIntExtra("position",-1);
         res = getIntent().getStringExtra("res");
+        operableStart = getIntent().getStringExtra("operableStart");
+        operableEnd = getIntent().getStringExtra("operableEnd");
+        L.i("operableStart"+operableStart);
+        L.i("operableEnd"+operableEnd);
         ivTitleLeft.setImageResource(R.mipmap.back);
         application = (MyApplication) getApplication();
         waitingDialog = new WaitingDialog(this,application,"",false);
@@ -183,12 +190,24 @@ public class WarmUpActivity extends BaseActivity {
             tvEnter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //发开关机床指令
-                    if (machineStatus==0){
-                        dohttpSwitchMachine(1);   //开启设备
-                    }else if (machineStatus==1){
-                        dohttpSwitchMachine(0);   //关闭设备
+                    //获取当前时间
+                    Calendar calendar = Calendar.getInstance();
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                    int min = calendar.get(Calendar.MINUTE);
+                    int currentTime = hour*60+min;
+                    L.i("currentTime:"+currentTime);
+                    L.i("可遇热时间段:"+turnOperableTimeToInt(operableStart)+"----"+turnOperableTimeToInt(operableEnd));
+                    if (currentTime>=turnOperableTimeToInt(operableStart)&&currentTime<=turnOperableTimeToInt(operableEnd)){
+                        //发开关机床指令
+                        if (machineStatus==0){
+                            dohttpSwitchMachine(1);   //开启设备
+                        }else if (machineStatus==1){
+                            dohttpSwitchMachine(0);   //关闭设备
+                        }
+                    }else {
+                        Toast.makeText(WarmUpActivity.this, "不在可预热开启时间段", Toast.LENGTH_SHORT).show();
                     }
+                    
                     enterDialog.dismiss();
                 }
             });
@@ -312,5 +331,19 @@ public class WarmUpActivity extends BaseActivity {
                 });
             }
         });
+    }
+
+    private int turnOperableTimeToInt(String operableTime){
+        String hour = operableTime.substring(0,2);
+        String min = operableTime.substring(3,5);
+        if (hour.substring(0,1).equals("0")){
+            hour = hour.substring(1,2);
+        }
+        if (min.substring(0,1).equals("0")){
+            min = min.substring(1,2);
+        }
+        int h = Integer.parseInt(hour);
+        int m = Integer.parseInt(min);
+        return h*60+m;
     }
 }

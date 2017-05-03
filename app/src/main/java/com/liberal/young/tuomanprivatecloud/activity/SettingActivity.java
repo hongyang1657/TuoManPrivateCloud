@@ -107,11 +107,11 @@ public class SettingActivity extends BaseActivity {
         ivTitleRight.setVisibility(View.GONE);
         tvTitle.setText("设置");
         ivTitleLeft.setImageResource(R.mipmap.back);
-        if (userLimits.equals("1") || userLimits.equals("2")|| userLimits.equals("4")|| userLimits.equals("5")) {
+        /*if (userLimits.equals("1") || userLimits.equals("2")|| userLimits.equals("4")|| userLimits.equals("5")) {
             llCustomSetting.setVisibility(View.GONE);
         }else if (userLimits.equals("3")){
             llCustomSetting.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     @OnClick({R.id.iv_title_left, R.id.ll_setting_warm_time_zone, R.id.ll_setting_auto_close, R.id.ll_setting_worker_num, R.id.ll_custom_launch_page, R.id.ll_unbind_phone, R.id.ll_app_promotion, R.id.ll_logout})

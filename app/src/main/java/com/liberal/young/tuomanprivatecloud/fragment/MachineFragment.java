@@ -3,7 +3,9 @@ package com.liberal.young.tuomanprivatecloud.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -82,12 +84,16 @@ public class MachineFragment extends Fragment {
     @BindView(R.id.ll_machine_line_title)
     LinearLayout llMachineLineTitle;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     private List<String> detailMachineList = new ArrayList<>();
     private List<Integer> machineStatus = new ArrayList<>();
     private List<Boolean> machineLinkStatus = new ArrayList<>();
     private List<Integer> machineForeCast = new ArrayList<>();  //标准产量
     private List<Integer> machineId = new ArrayList<>(); //机床id
+    private List<String> operableStartList = new ArrayList<>();  //预热可操作时间start
+    private List<String> operableEndList = new ArrayList<>();  //预热可操作时间end
     private MachineRecyclerAdapter adapter;
     private List<Boolean> selectList = null;      //用于选中删除客户的数组
     private boolean isBatching = false;        //是否正在批量处理
@@ -131,6 +137,7 @@ public class MachineFragment extends Fragment {
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
         ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_main_fragment);
         ivTitleRight.setImageResource(R.mipmap.more_title);
         ivTitleLeft.setImageResource(R.mipmap.add_title);
         client = new OkHttpClient();
@@ -143,6 +150,24 @@ public class MachineFragment extends Fragment {
         }else {
             doHttpSearchMachine("pageByCompany");       //按公司查找生产线
         }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (limit.equals("5")){
+                    doHttpSearchMachine("pageByStaff");         //按操作工查找生产线
+                }else {
+                    doHttpSearchMachine("pageByCompany");       //按公司查找生产线
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                },500);
+
+            }
+        });
 
         rvMachineList = (RecyclerView) view.findViewById(R.id.rv_machine_list);
         rvMachineList.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
@@ -164,6 +189,8 @@ public class MachineFragment extends Fragment {
                     intent.putExtra("machineId",machineId.get(position));
                     intent.putExtra("position",position);
                     intent.putExtra("res",res);
+                    intent.putExtra("operableStart",operableStartList.get(position));
+                    intent.putExtra("operableEnd",operableEndList.get(position));
                     startActivity(intent);
                 }
             }
@@ -250,6 +277,8 @@ public class MachineFragment extends Fragment {
         machineLinkStatus = new ArrayList<>();
         machineForeCast = new ArrayList<>();  //标准产量
         machineId = new ArrayList<>(); //机床id
+        operableStartList = new ArrayList<>();  //预热可操作时间start
+        operableEndList = new ArrayList<>();  //预热可操作时间end
 
         RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany(method,application.getCompanyId(),1,itemNum,application.getAccessToken()));
         Request request = new Request.Builder()
@@ -289,8 +318,10 @@ public class MachineFragment extends Fragment {
                             machineLinkStatus.add(i,machineResponse.getResult().get(i).isLinkStatus());
                             machineForeCast.add(i,machineResponse.getResult().get(i).getForecast());
                             machineId.add(i,machineResponse.getResult().get(i).getId());
+                            operableStartList.add(i,machineResponse.getResult().get(i).getOperableStart());
+                            operableEndList.add(i,machineResponse.getResult().get(i).getOperableEnd());
                         }
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyData(detailMachineList,machineStatus,machineLinkStatus,machineForeCast);
                     }
                 });
             }

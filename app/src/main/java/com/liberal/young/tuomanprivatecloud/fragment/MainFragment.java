@@ -3,7 +3,9 @@ package com.liberal.young.tuomanprivatecloud.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -96,6 +98,8 @@ public class MainFragment extends Fragment {
     private OkHttpClient client;
     private WaitingDialog waitingDialog;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     public MainFragment() {
 
     }
@@ -120,6 +124,7 @@ public class MainFragment extends Fragment {
         client = new OkHttpClient();
         application = (MyApplication) getActivity().getApplication();
         llMachineLineTitle = (LinearLayout) view.findViewById(R.id.ll_machine_line_title);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_main_fragment);
         ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
         ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
         tvTitleLeft = (TextView) view.findViewById(R.id.tv_title_left);
@@ -207,6 +212,20 @@ public class MainFragment extends Fragment {
             }
         });
         rvClientList.setAdapter(adapter);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                doHttpPageSearch();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                },500);
+
+            }
+        });
 
     }
 

@@ -19,11 +19,13 @@ import java.util.List;
 public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRecyclerAdapter.LineViewHolder>implements View.OnClickListener{
     private LayoutInflater inflater;
     private List<String> lineList;
+    private List<Integer> lineTotalList;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public ProducLineRecyclerAdapter(Context context,List<String> lineList) {
+    public ProducLineRecyclerAdapter(Context context,List<String> lineList,List<Integer> lineTotalList) {
         inflater = LayoutInflater.from(context);
         this.lineList = lineList;
+        this.lineTotalList = lineTotalList;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     public void onBindViewHolder(LineViewHolder holder, int position) {
         holder.tvProducLine.setText(lineList.get(position));
         holder.tvPercent.setText("99%");
-        holder.tvYield.setText("100");
+        //holder.tvYield.setText(lineTotalList.get(position));
         holder.itemView.setTag(lineList.get(position));
     }
 
@@ -75,5 +77,11 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
 
     public void setOnItemClickListener(ProducLineRecyclerAdapter.OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
+    }
+
+    public void notifyLineDate(List<String> lineList,List<Integer> lineTotalList){
+        this.lineList = lineList;
+        this.lineTotalList = lineTotalList;
+        notifyDataSetChanged();
     }
 }

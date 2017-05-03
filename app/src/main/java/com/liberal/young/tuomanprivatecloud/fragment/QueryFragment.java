@@ -11,29 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.adapter.DataTitleRecyclerAdapter;
 import com.liberal.young.tuomanprivatecloud.adapter.ProducLineRecyclerAdapter;
+import com.liberal.young.tuomanprivatecloud.adapter.TotalHomeAdapter;
 import com.liberal.young.tuomanprivatecloud.adapter.WorkShopBaseAdapter;
-import com.liberal.young.tuomanprivatecloud.bean.MachineResponse;
-import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
-import com.liberal.young.tuomanprivatecloud.utils.JsonParseUtil;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.view.MyFormScrollView;
 import com.liberal.young.tuomanprivatecloud.view.ScrollViewListener;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +53,7 @@ import okhttp3.Response;
  * Created by Administrator on 2017/3/10.
  */
 
-public class QueryFragment extends Fragment implements ScrollViewListener{
+public class QueryFragment extends Fragment implements ScrollViewListener {
 
 
     @BindView(R.id.tv_switch_month)
@@ -76,20 +72,28 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     RecyclerView rvFormsProductionLine;
     @BindView(R.id.rv_recycler)
     RecyclerView rvRecycler;
+    @BindView(R.id.rv_recycler_total)
+    RecyclerView rvRecyclerTotal;
     private MyFormScrollView svForms;
 
     private HomeAdapter mAdapter;
-    private List<String> mDatas;      //填充的数据数组
+    private TotalHomeAdapter mAdapterTotal;
+    private List<Integer> mTotalDatas;
+    private List<Integer> mDatas;      //填充的数据数组
     private List<String> lineList;   //生产线数组
+    private List<Integer> lineTotalList = new ArrayList<>();     //月总产量
     private List<Integer> lineForecast = new ArrayList<>();
     private List<String> dateList;   //日期数组
-    private int linesNum = 7;    //生产线数量
-    private int dayDate = 7;    //dayOfMonth
+    private int linesNum = 1;    //生产线数量
+    private int dayDate = 31;    //dayOfMonth
     private MyApplication application;
     private List<String> workShopList = new ArrayList<>();
     private Calendar calendar;
     private String currentSelectMonth;
     private String currentSelectWorkshop;
+
+    private ProducLineRecyclerAdapter lineAdapter;
+    private DataTitleRecyclerAdapter adapter;
 
     public QueryFragment() {
 
@@ -102,26 +106,32 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         initData();
         initView(view);
         ButterKnife.bind(this, view);
-        syncScroll(rvFormsTitle,rvRecycler);  //两个横向的RecyclerView联动
+        syncScroll(rvFormsTitle, rvRecycler,rvRecyclerTotal);  //两个横向的RecyclerView联动
         return view;
     }
 
     private void initData() {
         mDatas = new ArrayList<>();
-        for (int i = 0; i < linesNum*dayDate; i++) {
-            mDatas.add("" +i);
+        for (int i = 0; i < (linesNum) * dayDate; i++) {
+            mDatas.add(0);
+        }
+        mTotalDatas = new ArrayList<>();
+        for (int i = 0; i < dayDate; i++) {
+            mTotalDatas.add(0);
         }
         lineList = new ArrayList<>();
-        for (int i = 0; i < linesNum; i++) {
-            if (i==0){
+        for (int i = 0; i < linesNum+1; i++) {
+            if (i == 0) {
                 lineList.add("全线");
-            }else {
+                lineTotalList.add(0);
+            } else {
                 lineList.add(i + "号线");
+                lineTotalList.add(i);
             }
         }
         dateList = new ArrayList<>();
-        for (int i = 1;i <= dayDate; i++){
-            dateList.add(i+"日");
+        for (int i = 1; i <= dayDate; i++) {
+            dateList.add(i + "日");
         }
 
     }
@@ -136,29 +146,38 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         currentSelectMonth = getYearMonth();
 
         tvSwitchMonth.setText(getMonth());
-        if (!application.getUserLimits().equals("1")){
+        if (!application.getUserLimits().equals("1")) {
             doHttpSearchWorkShop();
         }
 
-        //三个RecyclerView
+        //全线数据
+        mAdapterTotal = new TotalHomeAdapter(getActivity(),mTotalDatas);
+        rvRecyclerTotal = (RecyclerView) view.findViewById(R.id.rv_recycler_total);
+        rvRecyclerTotal.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+        rvRecyclerTotal.setAdapter(mAdapterTotal);
+
+        //各条生产线数据
+        mAdapter = new HomeAdapter();
         rvRecycler = (RecyclerView) view.findViewById(R.id.rv_recycler);
         rvRecycler.setLayoutManager(new StaggeredGridLayoutManager(linesNum, StaggeredGridLayoutManager.HORIZONTAL));
-        rvRecycler.setAdapter(mAdapter = new HomeAdapter());
+        rvRecycler.setAdapter(mAdapter);
 
+        //月产量数据
         rvFormsProductionLine = (RecyclerView) view.findViewById(R.id.rv_forms_production_line);
-        rvFormsProductionLine.setLayoutManager(new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL));
-        ProducLineRecyclerAdapter lineAdapter = new ProducLineRecyclerAdapter(getActivity(),lineList);
+        rvFormsProductionLine.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+        lineAdapter = new ProducLineRecyclerAdapter(getActivity(), lineList,lineTotalList);
         lineAdapter.setOnItemClickListener(new ProducLineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, String data) {
-                
+
             }
         });
         rvFormsProductionLine.setAdapter(lineAdapter);
 
+
         rvFormsTitle = (RecyclerView) view.findViewById(R.id.rv_forms_title);
-        rvFormsTitle.setLayoutManager(new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL));
-        DataTitleRecyclerAdapter adapter = new DataTitleRecyclerAdapter(getActivity(),dateList);
+        rvFormsTitle.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+        adapter = new DataTitleRecyclerAdapter(getActivity(), dateList);
         adapter.setOnItemClickListener(new DataTitleRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, String data) {
@@ -186,7 +205,6 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     }
 
 
-
     class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.FormsViewHolder> {
 
         @Override
@@ -199,11 +217,11 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
 
         @Override
         public void onBindViewHolder(FormsViewHolder holder, int position) {
-            holder.tvYield.setText(mDatas.get(position));
+            holder.tvYield.setText(mDatas.get(position)+"");
             holder.tvPercent.setText("" + position);
-            if (position+1>linesNum*(dayDate-1)){
+            if (position + 1 > linesNum * (dayDate - 1)) {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
-            }else {
+            } else {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
             }
         }
@@ -227,15 +245,20 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
                 tvPercent = (TextView) view.findViewById(R.id.tv_yield_percent);
             }
         }
+
+        public void notifyMDate(){
+
+        }
     }
 
 
-    private void syncScroll(final RecyclerView topRecycler, final RecyclerView bottomRecycler) {
+    private void syncScroll(final RecyclerView topRecycler, final RecyclerView bottomRecycler,final RecyclerView totalRecycler) {
         topRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
                     bottomRecycler.scrollBy(dx, dy);
+                    totalRecycler.scrollBy(dx,dy);
                 }
             }
         });
@@ -245,21 +268,32 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
                     topRecycler.scrollBy(dx, dy);
+                    totalRecycler.scrollBy(dx,dy);
                 }
             }
         });
 
+        totalRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
+                    bottomRecycler.scrollBy(dx, dy);
+                    topRecycler.scrollBy(dx, dy);
+                }
+            }
+        });
     }
 
     //自定义的滑动监听接口
     @Override
     public void onScrollChanged(MyFormScrollView scrollView, int x, int y, int oldx, int oldy) {
-        Log.i("result", "onScrollChanged。。。ScrollView的监听: "+"----y:"+y+"  oldy:"+oldy);
-        rvFormsProductionLine.scrollBy(x,y-oldy);
+        Log.i("result", "onScrollChanged。。。ScrollView的监听: " + "----y:" + y + "  oldy:" + oldy);
+        rvFormsProductionLine.scrollBy(x, y - oldy);
     }
 
 
     private PopupWindow popWnd = null;
+
     private void initMonthPopWindow() {
         if (popWnd == null) {
             View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.month_pop_layout, null);
@@ -291,7 +325,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
             popWnd = new PopupWindow(getActivity());
             popWnd.setOutsideTouchable(true);
             popWnd.setContentView(contentView);
-            popWnd.setWidth(application.getWidth()/5);
+            popWnd.setWidth(application.getWidth() / 5);
             popWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
@@ -302,66 +336,66 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         @Override
         public void onClick(View v) {
             popWnd.dismiss();
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.tv_pop_1:
                     tvSwitchMonth.setText("1月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-01";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-01";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_2:
                     tvSwitchMonth.setText("2月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-02";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-02";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_3:
                     tvSwitchMonth.setText("3月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-03";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-03";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_4:
                     tvSwitchMonth.setText("4月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-04";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-04";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_5:
                     tvSwitchMonth.setText("5月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-05";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-05";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_6:
                     tvSwitchMonth.setText("6月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-06";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-06";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_7:
                     tvSwitchMonth.setText("7月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-07";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-07";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_8:
                     tvSwitchMonth.setText("8月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-08";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-08";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_9:
                     tvSwitchMonth.setText("9月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-09";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-09";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_10:
                     tvSwitchMonth.setText("10月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-10";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-10";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_11:
                     tvSwitchMonth.setText("11月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-11";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-11";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
                 case R.id.tv_pop_12:
                     tvSwitchMonth.setText("12月");
-                    currentSelectMonth = calendar.get(Calendar.YEAR)+"-12";
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    currentSelectMonth = calendar.get(Calendar.YEAR) + "-12";
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                     break;
             }
         }
@@ -369,9 +403,10 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
 
     //选择车间
     private PopupWindow workshopPopWnd = null;
+
     private void initWorkshopPopWindow() {
         if (workshopPopWnd == null) {
-            WorkShopBaseAdapter adapter = new WorkShopBaseAdapter(workShopList,getActivity());
+            WorkShopBaseAdapter adapter = new WorkShopBaseAdapter(workShopList, getActivity());
             View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.work_shop_pop_layout, null);
             ListView listView = (ListView) contentView.findViewById(R.id.lv_workshop);
             listView.setAdapter(adapter);
@@ -381,7 +416,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
                     currentSelectWorkshop = workShopList.get(position);
                     tvSwitchWorkshop.setText(currentSelectWorkshop);
                     workshopPopWnd.dismiss();
-                    doHttpGetCompanyData(currentSelectMonth,currentSelectWorkshop);
+                    doHttpGetCompanyData(currentSelectMonth, currentSelectWorkshop);
                 }
             });
 
@@ -389,17 +424,17 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
             workshopPopWnd = new PopupWindow(getActivity());
             workshopPopWnd.setOutsideTouchable(true);
             workshopPopWnd.setContentView(contentView);
-            workshopPopWnd.setWidth(application.getWidth()/4);
+            workshopPopWnd.setWidth(application.getWidth() / 4);
             workshopPopWnd.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         workshopPopWnd.showAsDropDown(tvSwitchWorkshop, 0, 0, Gravity.NO_GRAVITY);
     }
 
-    //查找公司下的车间
-    private void doHttpSearchWorkShop(){
+    //------------查找公司下的车间---------------
+    private void doHttpSearchWorkShop() {
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.findWorkshops(application.getCompanyId(),application.getAccessToken()));
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.findWorkshops(application.getCompanyId(), application.getAccessToken()));
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
@@ -408,7 +443,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                Log.i("hy_debug_message", "onFailure: " + e.toString());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -419,23 +454,26 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
-                Log.i("hy_debug_message", "onResponse车间: "+res);
+                Log.i("hy_debug_message", "onResponse查找车间：: " + res);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (JsonUtils.getCode(res)==0){
+                        if (JsonUtils.getCode(res) == 0) {
                             try {
                                 JSONObject jsonObject = new JSONObject(res);
                                 JSONArray array = jsonObject.getJSONArray("result");
                                 int size = array.length();
-                                if (size>0){
-                                    for (int i=0;i<size;i++){
-                                        workShopList.add(i,array.get(i).toString());
+                                if (size > 0) {
+                                    for (int i = 0; i < size; i++) {
+                                        workShopList.add(i, array.get(i).toString());
                                     }
                                     currentSelectWorkshop = workShopList.get(0);
                                     tvSwitchWorkshop.setText(workShopList.get(0));
                                     doHttpGetCompanyData(getYearMonth(),workShopList.get(0));   //初始化表格数据
+                                }else {
+                                    rvFormsProductionLine.setVisibility(View.GONE);
+                                    svForms.setVisibility(View.GONE);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -448,14 +486,14 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     }
 
     //--------------获取表格数据-----------------
-    private void doHttpGetCompanyData(String month,String workshop){
+    private void doHttpGetCompanyData(String month, String workshop) {
         lineList = new ArrayList<>();  //生产线名数组
-        dateList = new ArrayList<>();  //日期数组
+        //dateList = new ArrayList<>();  //日期数组
         mDatas = new ArrayList<>();    //数据数组
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.getCompanyData(application.getCompanyId()
-                ,month,workshop,application.getAccessToken()));
+                , month, workshop, application.getAccessToken()));
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
@@ -464,7 +502,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                Log.i("hy_debug_message", "onFailure: " + e.toString());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -476,24 +514,60 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String res = response.body().string();
-                Log.i("hy_debug_message", "onResponse表格数据: "+res);
+                Log.i("hy_debug_message", "onResponse表格数据: " + res);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (JsonUtils.getCode(res)==0){
+                        if (JsonUtils.getCode(res) == 0) {
                             try {
                                 JSONObject object = new JSONObject(res);
                                 JSONArray array = object.getJSONArray("result");
                                 linesNum = array.length();      //生产线的条数
-                                for (int i=0;i<linesNum;i++){
-                                    JSONObject obj = array.getJSONObject(i);
-                                    lineList.add(obj.getString("NAME"));
-                                    lineForecast.add(obj.getInt("FORECAST"));
+                                if(linesNum!=0){
+                                    lineList.add("全线");
+                                    for (int i = 0; i < linesNum; i++) {
+                                        JSONObject obj = array.getJSONObject(i);
+                                        lineList.add(obj.getString("NAME"));
+                                        lineForecast.add(obj.getInt("FORECAST"));
+                                    }
+                                    for (int i=0;i<dayDate;i++){
+                                        for (int n = 0; n < linesNum; n++) {
+                                            JSONObject obj = array.getJSONObject(n);
+                                            if (i<9){
+                                                mDatas.add(obj.getInt("/0"+(i+1)));
+                                            }else {
+                                                mDatas.add(obj.getInt("/"+(i+1)));
+                                            }
+                                        }
+                                    }
+                                    /*for (int i=0;i<dayDate;i++){
+                                        int total = 0;
+                                        for (int s=0;s<linesNum;s++){
+                                            total = total+mDatas.get(i);
+                                        }
+                                        while (i<)
+                                        mTotalDatas.add();
+                                    }*/
+
+
+                                    rvRecycler.setLayoutManager(new StaggeredGridLayoutManager(linesNum, StaggeredGridLayoutManager.HORIZONTAL));
+                                    rvRecycler.setAdapter(mAdapter);
+                                    rvRecycler.setVisibility(View.VISIBLE);
+                                    mAdapterTotal.notifyDate(mTotalDatas);
+                                }else {
+                                    lineList.add("全线");
+                                    rvRecycler.setVisibility(View.GONE);
                                 }
+                                L.i("sdasd"+mDatas.size());
+
+                                lineAdapter.notifyLineDate(lineList,lineTotalList);
+                                adapter.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }else {      //没有数据
+                            rvRecycler.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -502,44 +576,43 @@ public class QueryFragment extends Fragment implements ScrollViewListener{
     }
 
 
-
     //获取当月
-    private String getMonth(){
+    private String getMonth() {
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH);
         String mon;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         String dayOfMon;
 
-        mon = String.valueOf(month+1);
+        mon = String.valueOf(month + 1);
 
-        if (day<10){
-            dayOfMon = "0"+day;
-        }else {
+        if (day < 10) {
+            dayOfMon = "0" + day;
+        } else {
             dayOfMon = String.valueOf(day);
         }
-        return mon+"月";
+        return mon + "月";
     }
 
-    private String getYearMonth(){
+    private String getYearMonth() {
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH);
         String mon;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         String dayOfMon;
 
-        if (month<10){
-            mon = "0"+(month+1);
-        }else {
-            mon = String.valueOf(month+1);
+        if (month < 10) {
+            mon = "0" + (month + 1);
+        } else {
+            mon = String.valueOf(month + 1);
         }
 
 
-        if (day<10){
-            dayOfMon = "0"+day;
-        }else {
+        if (day < 10) {
+            dayOfMon = "0" + day;
+        } else {
             dayOfMon = String.valueOf(day);
         }
-        return calendar.get(Calendar.YEAR)+"-"+mon;
+        return calendar.get(Calendar.YEAR) + "-" + mon;
     }
 }

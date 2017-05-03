@@ -139,9 +139,9 @@ public class DayYieldFragment extends Fragment {
         pointNum = dayDateList.size();
         if (pointNum<=7){
             for (int i=0;i<pointNum;i++){
-                yieldList[6-i] = dayYieldList.get(i);
-                RunTimeList[6-i] = dayVoltageList.get(i)/60;   //换算分钟
-                data[6-i] = dayDateList.get(i).substring(5);
+                yieldList[6-i] = dayYieldList.get(pointNum-1-i);
+                RunTimeList[6-i] = dayVoltageList.get(pointNum-1-i)/60;   //换算分钟
+                data[6-i] = dayDateList.get(pointNum-1-i).substring(5);
             }
         }else {
 

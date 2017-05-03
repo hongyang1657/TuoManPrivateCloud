@@ -2,6 +2,8 @@ package com.liberal.young.tuomanprivatecloud.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -65,6 +67,11 @@ public class DetailMachineListActivity extends BaseActivity {
     private List<Boolean> machineLinkStatus = new ArrayList<>();
     private List<Integer> machineForeCast = new ArrayList<>();  //标准产量
     private List<Integer> machineId = new ArrayList<>();  //机床id
+    private List<Integer> userTopList = new ArrayList<>(); //操作工上限
+    private List<String> closeTimeList = new ArrayList<>();   //自动关闭时间
+    private List<String> operableStartList = new ArrayList<>();  //预热可操作时间start
+    private List<String> operableEndList = new ArrayList<>();  //预热可操作时间end
+
     private int itemNum = 50;
     private int companyId;
     private WaitingDialog waitingDialog;
@@ -74,6 +81,7 @@ public class DetailMachineListActivity extends BaseActivity {
     private int roleId;
     private String logo;
     private int flag = 0;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +94,7 @@ public class DetailMachineListActivity extends BaseActivity {
     }
 
     private void initView() {
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_detail_machine_activity);
         application = (MyApplication) getApplication();
         waitingDialog = new WaitingDialog(this,application,"",false);
         companyId = getIntent().getIntExtra("companyId",-1);
@@ -109,18 +118,36 @@ public class DetailMachineListActivity extends BaseActivity {
                     intent1.putExtra("roleId",roleId);
                     intent1.putExtra("logo",logo);
                     intent1.putExtra("detailMachineName",detailMachineList.get(position));
+                    intent1.putExtra("userTop",userTopList.get(position));
+                    intent1.putExtra("closeTime",closeTimeList.get(position));
+                    intent1.putExtra("operableStart",operableStartList.get(position));
+                    intent1.putExtra("operableEnd",operableEndList.get(position));
                     startActivity(intent1);
                 }else {               //从主页面跳过来的
                     Intent intent = new Intent(DetailMachineListActivity.this, WarmUpActivity.class);
                     intent.putExtra("machineStatus",machineStatus.get(position));
                     intent.putExtra("detailMachineName",detailMachineList.get(position));
                     intent.putExtra("machineId",machineId.get(position));
+                    intent.putExtra("operableStart",operableStartList.get(position));
+                    intent.putExtra("operableEnd",operableEndList.get(position));
                     startActivity(intent);
                 }
             }
         });
         rvMachineList.setAdapter(adapter);
         doHttpSearchMachine();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                doHttpSearchMachine();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
     }
 
     @OnClick({R.id.iv_title_left, R.id.iv_title_right})
@@ -136,6 +163,17 @@ public class DetailMachineListActivity extends BaseActivity {
 
     private int dataLength;
     private void doHttpSearchMachine(){
+        detailMachineList = new ArrayList<>();
+        machineStatus = new ArrayList<>();
+        machineLinkStatus = new ArrayList<>();
+        machineForeCast = new ArrayList<>();  //标准产量
+        machineId = new ArrayList<>();  //机床id
+
+        userTopList = new ArrayList<>(); //操作工上限
+        closeTimeList = new ArrayList<>();   //自动关闭时间
+        operableStartList = new ArrayList<>();  //预热可操作时间start
+        operableEndList = new ArrayList<>();  //预热可操作时间end
+
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany("pageByCompany",companyId,1,itemNum,application.getAccessToken()));
         Request request = new Request.Builder()
@@ -176,8 +214,12 @@ public class DetailMachineListActivity extends BaseActivity {
                             machineForeCast.add(i,machineResponse.getResult().get(i).getForecast());
                             machineId.add(i,machineResponse.getResult().get(i).getId());
 
+                            userTopList.add(i,machineResponse.getResult().get(i).getUserTop());
+                            closeTimeList.add(i,machineResponse.getResult().get(i).getCloseTime());
+                            operableStartList.add(i,machineResponse.getResult().get(i).getOperableStart());
+                            operableEndList.add(i,machineResponse.getResult().get(i).getOperableEnd());
                         }
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyData(detailMachineList,machineStatus,machineLinkStatus,machineForeCast);
                     }
                 });
             }
