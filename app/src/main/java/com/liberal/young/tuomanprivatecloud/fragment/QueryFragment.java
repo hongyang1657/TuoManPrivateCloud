@@ -1,6 +1,7 @@
 package com.liberal.young.tuomanprivatecloud.fragment;
 
 import android.app.Fragment;
+import android.hardware.camera2.CameraDevice;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -94,6 +95,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
 
     private ProducLineRecyclerAdapter lineAdapter;
     private DataTitleRecyclerAdapter adapter;
+    private int dayOfMonth;
 
     public QueryFragment() {
 
@@ -134,6 +136,10 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
             dateList.add(i + "日");
         }
 
+        //获取当前日期
+        Calendar calendar = Calendar.getInstance();
+        dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        L.i("当前日期"+dayOfMonth);
     }
 
     private void initView(View view) {
@@ -151,7 +157,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         }
 
         //全线数据
-        mAdapterTotal = new TotalHomeAdapter(getActivity(),mTotalDatas);
+        mAdapterTotal = new TotalHomeAdapter(getActivity(),mTotalDatas,dayOfMonth);
         rvRecyclerTotal = (RecyclerView) view.findViewById(R.id.rv_recycler_total);
         rvRecyclerTotal.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
         rvRecyclerTotal.setAdapter(mAdapterTotal);
@@ -219,9 +225,14 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         public void onBindViewHolder(FormsViewHolder holder, int position) {
             holder.tvYield.setText(mDatas.get(position)+"");
             holder.tvPercent.setText("" + position);
-            if (position + 1 > linesNum * (dayDate - 1)) {
+            /*if (position + 1 > linesNum * (dayDate - 1)) {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
             } else {
+                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
+            }*/
+            if (position==dayOfMonth-1){
+                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
+            }else {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
             }
         }
@@ -560,7 +571,11 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
                                     rvRecycler.setVisibility(View.GONE);
                                 }
                                 L.i("sdasd"+mDatas.size());
+                                int num = mDatas.size()/31;   //有几条生产线
 
+                                for (int i=0+(31*(num-1));i<31*num;i++){
+
+                                }
                                 lineAdapter.notifyLineDate(lineList,lineTotalList);
                                 adapter.notifyDataSetChanged();
                             } catch (JSONException e) {

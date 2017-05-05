@@ -18,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
@@ -83,6 +84,7 @@ public class SettingActivity extends BaseActivity {
     LinearLayout llLogout;
     @BindView(R.id.ll_custom_setting)
     LinearLayout llCustomSetting;
+    private TextView tvShengji;
 
     private MyApplication application;
     private static String userLimits;
@@ -103,6 +105,13 @@ public class SettingActivity extends BaseActivity {
 
     private void initView() {
         application = (MyApplication) getApplication();
+        tvShengji = (TextView) findViewById(R.id.tv_shengji);
+        tvShengji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SettingActivity.this, "当前已经是最新版本", Toast.LENGTH_SHORT).show();
+            }
+        });
         userLimits = application.getUserLimits();
         ivTitleRight.setVisibility(View.GONE);
         tvTitle.setText("设置");

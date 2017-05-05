@@ -71,6 +71,9 @@ public class MonthYieldFragment extends Fragment{
     private List<String> monthDateList;
     private List<Integer> monthYieldList;    //产量
     private List<Integer> monthVoltageList;  //运行时间（秒）
+    private int MaxTemp;
+    private int MaxTime;
+    private int maxY;
     @Subscribe
     public void onEventMainThread(MyEventBusToMonthChart event) {
         monthDateList = event.getMonthDateList();
@@ -83,14 +86,34 @@ public class MonthYieldFragment extends Fragment{
                 temp[4-i] = monthYieldList.get(pointNum-1-i);
                 runTimeOnMonth[4-i] = monthVoltageList.get(pointNum-1-i)/60;   //换算分钟
                 //data[4-i] = monthDateList.get(i);
+
             }
+
         }else {
 
         }
-        initChart();
-        tvMonthYield.setText(temp[4]+" 件");
+        MaxTemp = getMax(temp);
+        MaxTime = getMax(runTimeOnMonth);
+        if (MaxTemp>=MaxTime){
+            maxY = MaxTemp;
+        }else {
+            maxY = MaxTime;
+        }
 
+        tvMonthYield.setText(temp[4]+" 件");
         tvMonth.setText(monthDateList.get(pointNum-1).substring(5,7)+"月");
+        initChart();
+    }
+
+
+    public static int getMax(int[] arr){
+        int max=arr[0];
+        for(int i=1;i<arr.length;i++){
+            if(arr[i]>max){
+                max=arr[i];
+            }
+        }
+        return max;
     }
 
 
@@ -99,7 +122,7 @@ public class MonthYieldFragment extends Fragment{
     private void initChart(){
         columnChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(columnChartView.getMaximumViewport());
-        v.top = 500;
+        v.top = maxY;
         v.right = 15;
         v.bottom = 0;
         columnChartView.setZoomEnabled(true);
@@ -140,8 +163,8 @@ public class MonthYieldFragment extends Fragment{
 
             column.setHasLabels(true);
             column1.setHasLabels(true);
-            column.setHasLabelsOnlyForSelected(true);
-            column1.setHasLabelsOnlyForSelected(true);
+            column.setHasLabelsOnlyForSelected(false);
+            column1.setHasLabelsOnlyForSelected(false);
             columns.add(column);
             columns.add(column1);
             columns.add(c);

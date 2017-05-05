@@ -71,6 +71,8 @@ public class DayYieldFragment extends Fragment {
     private boolean isShowingDate1 = false;
     private boolean isShowingDate2 = false;
     private int pointNum;   //有几条真实数据
+    private int maxYAxis;   //产量Y轴最大值
+    private int maxYAxisTime;  //运行时间
 
     @Nullable
     @Override
@@ -148,6 +150,13 @@ public class DayYieldFragment extends Fragment {
         }
         tvTodayYield.setText(yieldList[6]+"件");
         tvYestodayYield.setText(yieldList[5]+"件");
+        maxYAxis = getMax(yieldList);
+        maxYAxisTime = getMax(RunTimeList);
+        if (maxYAxis==0){
+            maxYAxis = 100;
+        }if (maxYAxisTime==0){
+            maxYAxisTime = 100;
+        }
         getAxisXLables();//获取x轴的标注
         getAxisPoints();//获取坐标点
         getAxisPoints2();
@@ -156,6 +165,15 @@ public class DayYieldFragment extends Fragment {
         llCharts.setVisibility(View.VISIBLE);
     }
 
+    public static int getMax(int[] arr){
+        int max=arr[0];
+        for(int i=1;i<arr.length;i++){
+            if(arr[i]>max){
+                max=arr[i];
+            }
+        }
+        return max;
+    }
 
     /**
      * 设置X 轴的显示
@@ -237,9 +255,9 @@ public class DayYieldFragment extends Fragment {
 
         lineChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(lineChartView.getMaximumViewport());
-        v.top = 100;    //坐标轴
+        v.top = maxYAxis;    //坐标轴
         v.right = 7;
-        v.bottom = 0;
+        v.bottom = -maxYAxis/10;
         lineChartView.setZoomEnabled(true);
         lineChartView.setZoomType(ZoomType.HORIZONTAL);
         lineChartView.setZoomLevel(2f, 4f, 4f);
@@ -303,9 +321,9 @@ public class DayYieldFragment extends Fragment {
 
         lineChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(lineChartView.getMaximumViewport());
-        v.top = 20*60;    //坐标轴
+        v.top = maxYAxisTime;    //坐标轴
         v.right = 7;
-        v.bottom = 0;
+        v.bottom = -maxYAxisTime/10;
         lineChartView.setZoomEnabled(true);
         lineChartView.setZoomType(ZoomType.HORIZONTAL);
         lineChartView.setZoomLevel(2f, 4f, 4f);

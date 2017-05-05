@@ -23,10 +23,12 @@ public class TotalHomeAdapter extends RecyclerView.Adapter<TotalHomeAdapter.Form
     private LayoutInflater inflater;
     private List<Integer> mTotalDatas;
     private Context context;
+    private int dayOfMonth;
 
-    public TotalHomeAdapter(Context context,List<Integer> mTotalDatas) {
+    public TotalHomeAdapter(Context context,List<Integer> mTotalDatas,int dayOfMonth) {
         this.mTotalDatas = mTotalDatas;
         this.context = context;
+        this.dayOfMonth = dayOfMonth;
         inflater = LayoutInflater.from(context);
     }
 
@@ -42,11 +44,11 @@ public class TotalHomeAdapter extends RecyclerView.Adapter<TotalHomeAdapter.Form
     public void onBindViewHolder(TotalHomeAdapter.FormsViewHolder holder, int position) {
         holder.tvYield.setText(mTotalDatas.get(position)+"");
         holder.tvPercent.setText("" + position);
-        /*if (position + 1 > linesNum * (dayDate - 1)) {
+        if (position==dayOfMonth-1){
             holder.rlItemBack.setBackground(context.getResources().getDrawable(R.drawable.round_rect_back_red));
-        } else {
+        }else {
             holder.rlItemBack.setBackground(context.getResources().getDrawable(R.drawable.round_rect_back));
-        }*/
+        }
     }
 
 

@@ -121,7 +121,7 @@ public class WarmUpActivity extends BaseActivity {
             ivYieldInquire.setImageResource(R.mipmap.yield_cycle);
             rlMachineStateLight.setVisibility(View.VISIBLE);
             rlMachineSwitch.setVisibility(View.GONE);
-            ivYieldInquire.setClickable(false);
+            ivYieldInquire.setClickable(true);      //陀曼能不能看产量
             if (machineStatus==0){          //机床为关闭状态
                 tvStateLightOpen.setVisibility(View.GONE);
                 tvStateLightClose.setVisibility(View.VISIBLE);
