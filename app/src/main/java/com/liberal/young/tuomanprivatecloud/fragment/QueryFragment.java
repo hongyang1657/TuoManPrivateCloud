@@ -96,6 +96,9 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
     private ProducLineRecyclerAdapter lineAdapter;
     private DataTitleRecyclerAdapter adapter;
     private int dayOfMonth;
+    private int[][] a = {
+            {0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0}
+    };
 
     public QueryFragment() {
 
@@ -171,7 +174,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         //月产量数据
         rvFormsProductionLine = (RecyclerView) view.findViewById(R.id.rv_forms_production_line);
         rvFormsProductionLine.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        lineAdapter = new ProducLineRecyclerAdapter(getActivity(), lineList,lineTotalList);
+        lineAdapter = new ProducLineRecyclerAdapter(getActivity(), lineList,lineTotalList,a);
         lineAdapter.setOnItemClickListener(new ProducLineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, String data) {
@@ -572,11 +575,15 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
                                 }
                                 L.i("sdasd"+mDatas.size());
                                 int num = mDatas.size()/31;   //有几条生产线
-
-                                for (int i=0+(31*(num-1));i<31*num;i++){
-
+                                a = new int[num][31];
+                                L.i("num"+num);
+                                for (int q=0;q<num;q++){
+                                    for (int i=0+(31*q);i<31*q+1;i++){
+                                        a[q][i] = mDatas.get(i);
+                                    }
                                 }
-                                lineAdapter.notifyLineDate(lineList,lineTotalList);
+
+                                lineAdapter.notifyLineDate(lineList,lineTotalList,a);
                                 adapter.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();

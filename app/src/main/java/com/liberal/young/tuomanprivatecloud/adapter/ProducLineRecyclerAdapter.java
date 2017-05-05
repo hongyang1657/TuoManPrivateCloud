@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
 import java.util.List;
 
@@ -20,11 +21,13 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     private LayoutInflater inflater;
     private List<String> lineList;
     private List<Integer> lineTotalList;
+    private int[][] a;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public ProducLineRecyclerAdapter(Context context,List<String> lineList,List<Integer> lineTotalList) {
+    public ProducLineRecyclerAdapter(Context context,List<String> lineList,List<Integer> lineTotalList,int[][] a) {
         inflater = LayoutInflater.from(context);
         this.lineList = lineList;
+        this.a = a;
         this.lineTotalList = lineTotalList;
     }
 
@@ -40,7 +43,22 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     public void onBindViewHolder(LineViewHolder holder, int position) {
         holder.tvProducLine.setText(lineList.get(position));
         holder.tvPercent.setText("99%");
-        //holder.tvYield.setText(lineTotalList.get(position));
+        if (position==0){
+            holder.tvYield.setText(lineTotalList.get(position)+"");  //总
+        }else {
+            int[] yield = new int[a[0].length];
+            /////
+            for (int i=0;i<a[0].length;i++){
+                yield[i] = a[position][i];
+            }
+            //求和
+            int sum = 0;
+            for (int i=0;i<yield.length;i++){
+                sum = sum+yield[i];
+            }
+
+            holder.tvYield.setText(sum+"");
+        }
         holder.itemView.setTag(lineList.get(position));
     }
 
@@ -79,9 +97,10 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
         this.mOnItemClickListener = listener;
     }
 
-    public void notifyLineDate(List<String> lineList,List<Integer> lineTotalList){
+    public void notifyLineDate(List<String> lineList,List<Integer> lineTotalList,int[][] a){
         this.lineList = lineList;
         this.lineTotalList = lineTotalList;
+        this.a = a;
         notifyDataSetChanged();
     }
 }
