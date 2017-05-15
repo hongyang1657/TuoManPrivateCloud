@@ -58,6 +58,8 @@
         <activity android:name=".activity.WorkerInfoActivity"/>
         <activity android:name=".activity.ConnectWifiActivity"/>
         <activity android:name=".activity.UserHelpActivity"/>
+        <activity android:name=".activity.ChejianActivity"/>
+        <activity android:name=".activity.AutoLineActivity"/>
 
         <activity
             android:name=".zxing.activity.CaptureActivity"

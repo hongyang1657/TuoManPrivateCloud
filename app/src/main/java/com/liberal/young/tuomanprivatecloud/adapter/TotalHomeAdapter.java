@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.R;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 
 import java.util.List;
 
@@ -22,28 +23,47 @@ public class TotalHomeAdapter extends RecyclerView.Adapter<TotalHomeAdapter.Form
 
     private LayoutInflater inflater;
     private List<Integer> mTotalDatas;
+    private List<Integer> mDatas;
+    private List<Integer> lineForecast;
     private Context context;
     private int dayOfMonth;
 
-    public TotalHomeAdapter(Context context,List<Integer> mTotalDatas,int dayOfMonth) {
+    public TotalHomeAdapter(Context context,List<Integer> mTotalDatas,int dayOfMonth,List<Integer> mDatas,List<Integer> lineForecast) {
         this.mTotalDatas = mTotalDatas;
         this.context = context;
         this.dayOfMonth = dayOfMonth;
+        this.mDatas = mDatas;
+        this.lineForecast = lineForecast;
         inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public TotalHomeAdapter.FormsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        TotalHomeAdapter.FormsViewHolder holder = new TotalHomeAdapter.FormsViewHolder(LayoutInflater.from(context)
+    public FormsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        FormsViewHolder holder = new FormsViewHolder(LayoutInflater.from(context)
                 .inflate(R.layout.report_forms_item, parent, false));
 
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(TotalHomeAdapter.FormsViewHolder holder, int position) {
-        holder.tvYield.setText(mTotalDatas.get(position)+"");
-        holder.tvPercent.setText("" + position);
+    public void onBindViewHolder(FormsViewHolder holder, int position) {
+        int[] s = new int[31];
+        for (int i=0;i<mDatas.size();i = i+(mDatas.size()/31)){
+            int sum = 0;
+            for (int n=i;n<i+(mDatas.size()/31);n++){
+                sum = sum+mDatas.get(n);
+                //L.i(i+"----"+n+"summmm"+sum);
+                s[n/(mDatas.size()/31)] = sum;
+            }
+        }
+        int sumFC = 0;
+        for (int i=0;i<lineForecast.size();i++){
+            sumFC = sumFC+lineForecast.get(i);
+        }
+        double a = (double) s[position]/(double) sumFC;
+
+        holder.tvYield.setText(s[position]+"");
+        holder.tvPercent.setText((int)(a*100)+"%");
         if (position==dayOfMonth-1){
             holder.rlItemBack.setBackground(context.getResources().getDrawable(R.drawable.round_rect_back_red));
         }else {
@@ -71,8 +91,10 @@ public class TotalHomeAdapter extends RecyclerView.Adapter<TotalHomeAdapter.Form
         }
     }
 
-    public void notifyDate(List<Integer> mTotalDatas){
+    public void notifyDate(List<Integer> mTotalDatas,List<Integer> mDatas,List<Integer> lineForecast){
         this.mTotalDatas = mTotalDatas;
+        this.mDatas = mDatas;
+        this.lineForecast = lineForecast;
         notifyDataSetChanged();
     }
 

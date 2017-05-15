@@ -21,14 +21,16 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     private LayoutInflater inflater;
     private List<String> lineList;
     private List<Integer> lineTotalList;
-    private int[][] a;
+    private List<Integer> mDatas;
+    private List<Integer> lineForecast;
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
-    public ProducLineRecyclerAdapter(Context context,List<String> lineList,List<Integer> lineTotalList,int[][] a) {
+    public ProducLineRecyclerAdapter(Context context,List<String> lineList,List<Integer> lineTotalList,List<Integer> mDatas,List<Integer> lineForecast) {
         inflater = LayoutInflater.from(context);
         this.lineList = lineList;
-        this.a = a;
+        this.mDatas = mDatas;
         this.lineTotalList = lineTotalList;
+        this.lineForecast = lineForecast;
     }
 
     @Override
@@ -42,21 +44,24 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     @Override
     public void onBindViewHolder(LineViewHolder holder, int position) {
         holder.tvProducLine.setText(lineList.get(position));
-        holder.tvPercent.setText("99%");
+        //holder.tvPercent.setText("99%");
         if (position==0){
-            holder.tvYield.setText(lineTotalList.get(position)+"");  //总
-        }else {
-            int[] yield = new int[a[0].length];
-            /////
-            for (int i=0;i<a[0].length;i++){
-                yield[i] = a[position][i];
-            }
-            //求和
             int sum = 0;
-            for (int i=0;i<yield.length;i++){
-                sum = sum+yield[i];
+            for (int i=0;i<mDatas.size();i++){
+                sum = sum+mDatas.get(i);
             }
+            holder.tvYield.setText(sum+"");  //总
+        }else {
 
+            int sum = 0;
+            /*for (int i=0+(31*(position-1));i<31*(position);i++){
+                sum = sum+mDatas.get(i);
+                L.i(i+"aaaaaaaaaaa"+mDatas.get(i));
+            }*/
+            for (int i=position-1;i<mDatas.size();i = i+mDatas.size()/31){
+                sum = sum+mDatas.get(i);
+                //L.i(i+"asdfw"+mDatas.get(i));
+            }
             holder.tvYield.setText(sum+"");
         }
         holder.itemView.setTag(lineList.get(position));
@@ -90,17 +95,18 @@ public class ProducLineRecyclerAdapter extends RecyclerView.Adapter<ProducLineRe
     }
 
     public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , String data);
+        void onItemClick(View view, String data);
     }
 
-    public void setOnItemClickListener(ProducLineRecyclerAdapter.OnRecyclerViewItemClickListener listener) {
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
 
-    public void notifyLineDate(List<String> lineList,List<Integer> lineTotalList,int[][] a){
+    public void notifyLineDate(List<String> lineList,List<Integer> lineTotalList,List<Integer> mDatas,List<Integer> lineForecast){
         this.lineList = lineList;
         this.lineTotalList = lineTotalList;
-        this.a = a;
+        this.mDatas = mDatas;
+        this.lineForecast = lineForecast;
         notifyDataSetChanged();
     }
 }

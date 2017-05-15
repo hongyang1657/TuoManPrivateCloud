@@ -43,6 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent" />
         <ImageView
+            android:visibility="gone"
             android:id="@+id/iv_rank"
             android:clickable="true"
             android:src="@mipmap/report_form_sort"
@@ -61,7 +62,7 @@
         android:textSize="18sp"
         android:textColor="@color/colorWhite"
         android:layout_below="@id/ll_title_forms"
-        android:layout_width="80dp"
+        android:layout_width="86dp"
         android:layout_height="wrap_content" />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_forms_title"

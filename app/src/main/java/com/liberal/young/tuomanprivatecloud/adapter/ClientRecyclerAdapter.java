@@ -136,7 +136,7 @@ public class ClientRecyclerAdapter extends RecyclerView.Adapter<ClientRecyclerAd
     }
 
     public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , int position);
+        void onItemClick(View view, int position);
     }
 
     public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {

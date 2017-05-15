@@ -63,10 +63,10 @@ public class DataTitleRecyclerAdapter extends RecyclerView.Adapter<DataTitleRecy
     }
 
     public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , String data);
+        void onItemClick(View view, String data);
     }
 
-    public void setOnItemClickListener(DataTitleRecyclerAdapter.OnRecyclerViewItemClickListener listener) {
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
 }

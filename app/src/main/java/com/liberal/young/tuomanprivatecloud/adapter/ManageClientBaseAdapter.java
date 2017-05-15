@@ -65,6 +65,7 @@ public class ManageClientBaseAdapter extends BaseAdapter {
     public void getDataNotify(List<String> mClientNameList,List<String> mClientPhoneList){
         this.mClientNameList = mClientNameList;
         this.mClientPhoneList = mClientPhoneList;
+        notifyDataSetChanged();
     }
 
     class ViewHolder{

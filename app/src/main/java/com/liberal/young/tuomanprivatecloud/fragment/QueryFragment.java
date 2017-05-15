@@ -97,7 +97,8 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
     private DataTitleRecyclerAdapter adapter;
     private int dayOfMonth;
     private int[][] a = {
-            {0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0}
+            {1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10}
+
     };
 
     public QueryFragment() {
@@ -116,6 +117,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
     }
 
     private void initData() {
+        lineForecast = new ArrayList<>();
         mDatas = new ArrayList<>();
         for (int i = 0; i < (linesNum) * dayDate; i++) {
             mDatas.add(0);
@@ -129,9 +131,11 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
             if (i == 0) {
                 lineList.add("全线");
                 lineTotalList.add(0);
+                lineForecast.add(100);
             } else {
                 lineList.add(i + "号线");
                 lineTotalList.add(i);
+                lineForecast.add(100);
             }
         }
         dateList = new ArrayList<>();
@@ -139,10 +143,11 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
             dateList.add(i + "日");
         }
 
+
         //获取当前日期
         Calendar calendar = Calendar.getInstance();
         dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        L.i("当前日期"+dayOfMonth);
+        //L.i("当前日期"+dayOfMonth);
     }
 
     private void initView(View view) {
@@ -155,12 +160,12 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         currentSelectMonth = getYearMonth();
 
         tvSwitchMonth.setText(getMonth());
-        if (!application.getUserLimits().equals("1")) {
+        if (!"1".equals(application.getUserLimits())) {
             doHttpSearchWorkShop();
         }
 
         //全线数据
-        mAdapterTotal = new TotalHomeAdapter(getActivity(),mTotalDatas,dayOfMonth);
+        mAdapterTotal = new TotalHomeAdapter(getActivity(),mTotalDatas,dayOfMonth,mDatas,lineForecast);
         rvRecyclerTotal = (RecyclerView) view.findViewById(R.id.rv_recycler_total);
         rvRecyclerTotal.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
         rvRecyclerTotal.setAdapter(mAdapterTotal);
@@ -174,7 +179,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         //月产量数据
         rvFormsProductionLine = (RecyclerView) view.findViewById(R.id.rv_forms_production_line);
         rvFormsProductionLine.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        lineAdapter = new ProducLineRecyclerAdapter(getActivity(), lineList,lineTotalList,a);
+        lineAdapter = new ProducLineRecyclerAdapter(getActivity(), lineList,lineTotalList,mDatas,lineForecast);
         lineAdapter.setOnItemClickListener(new ProducLineRecyclerAdapter.OnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View view, String data) {
@@ -227,17 +232,19 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         @Override
         public void onBindViewHolder(FormsViewHolder holder, int position) {
             holder.tvYield.setText(mDatas.get(position)+"");
-            holder.tvPercent.setText("" + position);
+            double a = (double)(mDatas.get(position))/(double)(lineForecast.get(position%linesNum));
+            holder.tvPercent.setText((int) (a*100)+"%");
             /*if (position + 1 > linesNum * (dayDate - 1)) {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
             } else {
                 holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
             }*/
-            if (position==dayOfMonth-1){
-                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
-            }else {
-                holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
-            }
+
+                if (position+1<=(dayOfMonth-1)*linesNum+linesNum&&position+1>(dayOfMonth-1)*linesNum){
+                    holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back_red));
+                }else {
+                    holder.rlItemBack.setBackground(getResources().getDrawable(R.drawable.round_rect_back));
+                }
         }
 
 
@@ -301,7 +308,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
     //自定义的滑动监听接口
     @Override
     public void onScrollChanged(MyFormScrollView scrollView, int x, int y, int oldx, int oldy) {
-        Log.i("result", "onScrollChanged。。。ScrollView的监听: " + "----y:" + y + "  oldy:" + oldy);
+        //Log.i("result", "onScrollChanged。。。ScrollView的监听: " + "----y:" + y + "  oldy:" + oldy);
         rvFormsProductionLine.scrollBy(x, y - oldy);
     }
 
@@ -504,6 +511,7 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
         lineList = new ArrayList<>();  //生产线名数组
         //dateList = new ArrayList<>();  //日期数组
         mDatas = new ArrayList<>();    //数据数组
+        lineForecast = new ArrayList<>();
 
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.getCompanyData(application.getCompanyId()
@@ -555,36 +563,22 @@ public class QueryFragment extends Fragment implements ScrollViewListener {
                                             }
                                         }
                                     }
-                                    /*for (int i=0;i<dayDate;i++){
-                                        int total = 0;
-                                        for (int s=0;s<linesNum;s++){
-                                            total = total+mDatas.get(i);
-                                        }
-                                        while (i<)
-                                        mTotalDatas.add();
-                                    }*/
 
 
                                     rvRecycler.setLayoutManager(new StaggeredGridLayoutManager(linesNum, StaggeredGridLayoutManager.HORIZONTAL));
                                     rvRecycler.setAdapter(mAdapter);
                                     rvRecycler.setVisibility(View.VISIBLE);
-                                    mAdapterTotal.notifyDate(mTotalDatas);
+                                    mAdapterTotal.notifyDate(mTotalDatas,mDatas,lineForecast);
                                 }else {
                                     lineList.add("全线");
                                     rvRecycler.setVisibility(View.GONE);
                                 }
-                                L.i("sdasd"+mDatas.size());
-                                int num = mDatas.size()/31;   //有几条生产线
-                                a = new int[num][31];
-                                L.i("num"+num);
-                                for (int q=0;q<num;q++){
-                                    for (int i=0+(31*q);i<31*q+1;i++){
-                                        a[q][i] = mDatas.get(i);
-                                    }
-                                }
+                                //L.i("sdasd"+mDatas.size());
 
-                                lineAdapter.notifyLineDate(lineList,lineTotalList,a);
+                                lineAdapter.notifyLineDate(lineList,lineTotalList,mDatas,lineForecast);
                                 adapter.notifyDataSetChanged();
+                                rvFormsTitle.scrollToPosition(0);
+                                rvRecyclerTotal.scrollToPosition(0);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

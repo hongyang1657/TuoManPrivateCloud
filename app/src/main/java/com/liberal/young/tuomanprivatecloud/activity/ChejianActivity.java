@@ -1,15 +1,12 @@
-package com.liberal.young.tuomanprivatecloud.fragment;
+package com.liberal.young.tuomanprivatecloud.activity;
 
-import android.app.Fragment;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,17 +15,13 @@ import android.widget.TextView;
 
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
-import com.liberal.young.tuomanprivatecloud.activity.AutoLineActivity;
-import com.liberal.young.tuomanprivatecloud.activity.ChejianActivity;
-import com.liberal.young.tuomanprivatecloud.activity.DetailMachineListActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.ChejianBaseAdapter;
-import com.liberal.young.tuomanprivatecloud.bean.eventBus.MyEventBusMachineFragment;
+import com.liberal.young.tuomanprivatecloud.adapter.ManageClientBaseAdapter;
 import com.liberal.young.tuomanprivatecloud.utils.JsonUtils;
+import com.liberal.young.tuomanprivatecloud.utils.L;
 import com.liberal.young.tuomanprivatecloud.utils.MyConstant;
 import com.liberal.young.tuomanprivatecloud.utils.WaitingDialog;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +32,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -46,13 +40,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-/**
- * 陀曼的客户登录后加载的生产线界面
- * <p>
- * Created by Administrator on 2017/3/14.
- */
+public class ChejianActivity extends BaseActivity {
 
-public class MachineFragment extends Fragment {
     @BindView(R.id.iv_title_left)
     ImageView ivTitleLeft;
     @BindView(R.id.tv_title_left)
@@ -71,9 +60,6 @@ public class MachineFragment extends Fragment {
     ListView lvManageClient;
     @BindView(R.id.swipe_manage_client_activity)
     SwipeRefreshLayout swipeManageClientActivity;
-
-
-
     private MyApplication application;
     private int companyId = -1;
     private WaitingDialog waitingDialog;
@@ -82,52 +68,35 @@ public class MachineFragment extends Fragment {
     private ChejianBaseAdapter adapter;
 
 
-    public MachineFragment() {
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.manage_client_layout, container, false);
-
-        initView(view);
-        ButterKnife.bind(this, view);
-        return view;
-    }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.manage_client_layout);
+        ButterKnife.bind(this);
+        initView();
     }
 
-
-
-
-    private void initView(View view) {
-        lvManageClient = (ListView) view.findViewById(R.id.lv_manage_client);
-        ivTitleLeft = (ImageView) view.findViewById(R.id.iv_title_left);
-        ivTitleRight = (ImageView) view.findViewById(R.id.iv_title_right);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
-
-        application = (MyApplication) getActivity().getApplication();
-        swipeManageClientActivity = (SwipeRefreshLayout) view.findViewById(R.id.swipe_manage_client_activity);
-        companyId = (int) application.getCompanyId();
+    private void initView() {
+        application = (MyApplication) getApplication();
+        swipeManageClientActivity = (SwipeRefreshLayout) findViewById(R.id.swipe_manage_client_activity);
+        companyId = getIntent().getIntExtra("companyId",-1);
         tvTitle.setText("车间列表");
-        ivTitleLeft.setVisibility(View.GONE);
+        ivTitleLeft.setVisibility(View.VISIBLE);
         ivTitleRight.setVisibility(View.GONE);
         ivTitleLeft.setImageResource(R.mipmap.back);
-        waitingDialog = new WaitingDialog(getActivity(), application, "", false);
+        waitingDialog = new WaitingDialog(this,application,"",false);
         userLimit = application.getUserLimits();
         lvManageClient.setOnItemClickListener(itemClickListener);
         doHttpSearchWorkShop();
-        adapter = new ChejianBaseAdapter(getActivity(), workShopList);
+        adapter = new ChejianBaseAdapter(this,workShopList);
         lvManageClient.setAdapter(adapter);
         swipeManageClientActivity.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (userLimit.equals("1") || userLimit.equals("2")) {
+                if (userLimit.equals("1")||userLimit.equals("2")){
                     doHttpSearchWorkShop();
-                } else if (userLimit.equals("3") || userLimit.equals("4")) {
+                }else if (userLimit.equals("3")||userLimit.equals("4")){
 
                 }
                 new Handler().postDelayed(new Runnable() {
@@ -144,19 +113,15 @@ public class MachineFragment extends Fragment {
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (userLimit.equals("1") || userLimit.equals("2")) {       //管理端
+            if (userLimit.equals("1")||userLimit.equals("2")){       //管理端
                 //跳转下一页面的
-                Intent intent = new Intent(getActivity(), DetailMachineListActivity.class);
-                intent.putExtra("companyId", companyId);
-                intent.putExtra("workshop", workShopList.get(position));
-                intent.putExtra("haha", 1);
+                Intent intent = new Intent(ChejianActivity.this, DetailMachineListActivity.class);
+                intent.putExtra("companyId",companyId);
+                intent.putExtra("workshop",workShopList.get(position));
+                intent.putExtra("haha",1);
                 startActivity(intent);
-            } else if (userLimit.equals("3") || userLimit.equals("4")) {      //用户端
-                Intent intent = new Intent(getActivity(), AutoLineActivity.class);
-                intent.putExtra("companyId", companyId);
-                intent.putExtra("workshop", workShopList.get(position));
-                intent.putExtra("haha", 1);
-                startActivity(intent);
+            }else if (userLimit.equals("3")||userLimit.equals("4")){      //用户端
+
             }
         }
     };
@@ -176,7 +141,7 @@ public class MachineFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("hy_debug_message", "onFailure: " + e.toString());
-                getActivity().runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                     }
@@ -188,7 +153,7 @@ public class MachineFragment extends Fragment {
                 final String res = response.body().string();
                 Log.i("hy_debug_message", "onResponse查找车间：: " + res);
 
-                getActivity().runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (JsonUtils.getCode(res) == 0) {
@@ -213,8 +178,8 @@ public class MachineFragment extends Fragment {
         });
     }
 
-
-
-
-
+    @OnClick(R.id.iv_title_left)
+    public void onClick() {
+        finish();
+    }
 }

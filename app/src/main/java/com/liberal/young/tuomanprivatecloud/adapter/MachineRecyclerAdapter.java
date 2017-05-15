@@ -113,10 +113,10 @@ public class MachineRecyclerAdapter extends RecyclerView.Adapter<MachineRecycler
     }
 
     public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , int position);
+        void onItemClick(View view, int position);
     }
 
-    public void setOnItemClickListener(MachineRecyclerAdapter.OnRecyclerViewItemClickListener listener) {
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
 

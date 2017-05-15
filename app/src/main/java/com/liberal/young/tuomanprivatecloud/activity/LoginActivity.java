@@ -220,6 +220,7 @@ public class LoginActivity extends BaseActivity {
                             if (JsonUtils.getCode(res)==0){        //登录操作成功
                                 application.setUserLimits(String.valueOf(JsonUtils.getRole(res)));    //获取账号的权限等级
                                 application.setAccessToken(JsonUtils.getToken(res));     //获取accessToken
+                                application.setId(JsonUtils.getId(res));
                                 application.setUsername(JsonUtils.getUsername(res));
                                 application.setUserHeadUrl(JsonUtils.getHeadUrl(res));
                                 application.setCompanyId(JsonUtils.getCompanyId(res));

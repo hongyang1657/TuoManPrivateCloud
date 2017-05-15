@@ -255,9 +255,9 @@ public class DayYieldFragment extends Fragment {
 
         lineChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(lineChartView.getMaximumViewport());
-        v.top = maxYAxis;    //坐标轴
+        v.top = (float) (maxYAxis*1.1);    //坐标轴
         v.right = 7;
-        v.bottom = -maxYAxis/10;
+        v.bottom = -maxYAxis/15;
         lineChartView.setZoomEnabled(true);
         lineChartView.setZoomType(ZoomType.HORIZONTAL);
         lineChartView.setZoomLevel(2f, 4f, 4f);
@@ -321,7 +321,7 @@ public class DayYieldFragment extends Fragment {
 
         lineChartView.setViewportCalculationEnabled(false);
         Viewport v = new Viewport(lineChartView.getMaximumViewport());
-        v.top = maxYAxisTime;    //坐标轴
+        v.top = (float)(maxYAxisTime*1.1);    //坐标轴
         v.right = 7;
         v.bottom = -maxYAxisTime/10;
         lineChartView.setZoomEnabled(true);

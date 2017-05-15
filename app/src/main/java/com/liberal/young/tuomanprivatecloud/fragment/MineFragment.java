@@ -136,7 +136,7 @@ public class MineFragment extends Fragment {
         tvAdmin.setText(username);
         tvId.setText("ID:"+application.getCompanyId());
 
-        if (!userHeadUrl.equals("")){
+        if (!"".equals(userHeadUrl)){
             Picasso.with(getActivity()).load(userHeadUrl).transform(new CircleTransformPicasso())
                     .resize(200,200)
                     .placeholder(R.mipmap.head_big)

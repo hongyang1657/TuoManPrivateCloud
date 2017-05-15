@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -143,6 +144,7 @@ public class SettingActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.ll_unbind_phone:
+                initEnterDialog();
                 break;
             case R.id.ll_app_promotion:
                 break;
@@ -428,5 +430,80 @@ public class SettingActivity extends BaseActivity {
         }
 
         return strHour + ":" + strMin;
+    }
+
+    private Dialog enterDialog = null;
+    private void initEnterDialog() {
+        if (enterDialog == null) {
+            enterDialog = new Dialog(this, R.style.CustomDialog);
+            View view = LayoutInflater.from(this).inflate(R.layout.my_alert_dialog, null);
+            TextView tvHintContent = (TextView) view.findViewById(R.id.tv_hint_content);
+            TextView tvCancel = (TextView) view.findViewById(R.id.tv_cancel);
+            TextView tvEnter = (TextView) view.findViewById(R.id.tv_enter);
+            final EditText etPassword = (EditText) view.findViewById(R.id.et_password);
+            final EditText etContent = (EditText) view.findViewById(R.id.et_content);
+            etContent.setVisibility(View.VISIBLE);
+            etPassword.setVisibility(View.VISIBLE);
+            tvHintContent.setText("输入需要绑定的手机号：");
+            tvCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    enterDialog.dismiss();
+                }
+            });
+            tvEnter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doHttpUpdateUser(etContent.getText().toString(),etPassword.getText().toString());
+
+                }
+            });
+
+            enterDialog.setContentView(view);
+            enterDialog.setCanceledOnTouchOutside(true);
+            WindowManager.LayoutParams params = enterDialog.getWindow().getAttributes();
+            L.i(application.getWidth() + "");
+            params.width = (int) (application.getWidth() * 0.9);
+            Window mWindow = enterDialog.getWindow();
+            mWindow.setGravity(Gravity.CENTER);
+        }
+        enterDialog.show();
+    }
+
+    private void doHttpUpdateUser(String phone,String password){
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.updateUser(application.getId(),password,phone,application.getAccessToken()));
+        Request request = new Request.Builder()
+                .url(MyConstant.SERVER_URL)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("hy_debug_message", "onFailure: "+e.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                Log.i("hy_debug_message", "onResponse: "+res);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        enterDialog.dismiss();
+                        Toast.makeText(SettingActivity.this, "绑定手机号成功", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 }

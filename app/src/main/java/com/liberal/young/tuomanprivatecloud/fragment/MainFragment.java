@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.liberal.young.tuomanprivatecloud.MyApplication;
 import com.liberal.young.tuomanprivatecloud.R;
 import com.liberal.young.tuomanprivatecloud.activity.AddClientActivity;
+import com.liberal.young.tuomanprivatecloud.activity.ChejianActivity;
 import com.liberal.young.tuomanprivatecloud.activity.DetailMachineListActivity;
 import com.liberal.young.tuomanprivatecloud.adapter.ClientRecyclerAdapter;
 import com.liberal.young.tuomanprivatecloud.bean.JsonResponse;
@@ -205,7 +206,7 @@ public class MainFragment extends Fragment {
                     adapter.selectItemToDelete(selectList);
                 } else {
                     //Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getActivity(), DetailMachineListActivity.class);
+                    Intent intent = new Intent(getActivity(), ChejianActivity.class);
                     intent.putExtra("companyId",clientCompanyId.get(position));
                     startActivity(intent);
                 }

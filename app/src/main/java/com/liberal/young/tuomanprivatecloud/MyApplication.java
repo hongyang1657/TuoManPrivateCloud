@@ -33,6 +33,16 @@ public class MyApplication extends Application{
     private String username;
     private String userHeadUrl;
     private long companyId;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private int id;
     private Context context;
     private int width;
     private int height;

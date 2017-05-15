@@ -276,6 +276,31 @@ public class JsonUtils {
     }
 
 
+    //更新用户
+    public static String updateUser(int id,String password,String phone,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("id",id);
+            data.put("password",password);
+            data.put("phone",phone);
+
+            object.put("method","updateUser");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("更新用户json："+object.toString());
+        return object.toString();
+    }
+
+
     //------------机床开关机-----------
     public static String switchMachine(int[] machineIds,int status,String token){
         JSONObject data = new JSONObject();
@@ -412,6 +437,31 @@ public class JsonUtils {
             data.put("workshop",workshop);
 
             object.put("method","companyData");
+            object.put("version","1.0");      //版本号
+            object.put("client",2);        //表示android端
+            object.put("time",getTimeStamp());
+            object.put("token",token);
+            object.put("data",data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        L.i("获取表格数据json："+object.toString());
+        return object.toString();
+    }
+
+    //按车间查找
+    public static String getPageByWorkshop(int companyId,String workshop,int pageNum,int pageSize,String token){
+        JSONObject data = new JSONObject();
+        JSONObject object = new JSONObject();
+
+        try {
+            data.put("companyId",companyId);
+            data.put("workshop",workshop);
+            data.put("pageNum",pageNum);
+            data.put("pageSize",pageSize);
+
+            object.put("method","pageByWorkshop");
             object.put("version","1.0");      //版本号
             object.put("client",2);        //表示android端
             object.put("time",getTimeStamp());
@@ -574,6 +624,21 @@ public class JsonUtils {
             object = new JSONObject(result);
             objResult = object.getJSONObject("result");
             companyId = objResult.getInt("companyId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return companyId;
+    }
+
+    public static int getId(String result){
+        String token = null;
+        JSONObject object = null;
+        JSONObject objResult = null;
+        int companyId = -1;
+        try {
+            object = new JSONObject(result);
+            objResult = object.getJSONObject("result");
+            companyId = objResult.getInt("id");
         } catch (JSONException e) {
             e.printStackTrace();
         }

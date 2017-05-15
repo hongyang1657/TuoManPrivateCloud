@@ -65,6 +65,7 @@ public class ManageClientActivity extends BaseActivity {
 
     private static final int ADD_WORKER = 1;
     private static final int ADD_CLIENT = 2;
+    private static final int DELETE_WOKER = 3;
     private ManageClientBaseAdapter adapter;
     private List<String> mClientNameList = new ArrayList<>();
     private List<String> mClientPhoneList = new ArrayList<>();
@@ -109,11 +110,11 @@ public class ManageClientActivity extends BaseActivity {
         }
 
         if (userLimit.equals("1")||userLimit.equals("2")){
-            doHttpPageSearch("pageSearchCustomer");
+            doHttpPageSearch("pageSearchCustomer",1);
             tvTitle.setText("客户列表");
 
         }else if (userLimit.equals("3")||userLimit.equals("4")){
-            doHttpPageSearch("pageSearchUser");
+            doHttpPageSearch("pageSearchUser",2);
             tvTitle.setText("操作工管理");
         }
 
@@ -147,9 +148,10 @@ public class ManageClientActivity extends BaseActivity {
             @Override
             public void onRefresh() {
                 if (userLimit.equals("1")||userLimit.equals("2")){
-                    doHttpPageSearch("pageSearchCustomer");
+                    doHttpPageSearch("pageSearchCustomer",1);
                 }else if (userLimit.equals("3")||userLimit.equals("4")){
-                    doHttpPageSearch("pageSearchUser");
+                    doHttpPageSearch("pageSearchUser",2);
+                    L.i("刷新1111111111111111111111111111111111");
                 }
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -203,7 +205,7 @@ public class ManageClientActivity extends BaseActivity {
                     intent.putExtra("workerName",mClientNameList.get(position));
                     intent.putExtra("workerPhone",mClientPhoneList.get(position));
                     intent.putExtra("workerNum",mUserIdList.get(position));
-                    startActivity(intent);
+                    startActivityForResult(intent,DELETE_WOKER);
                 }
 
             }
@@ -215,10 +217,13 @@ public class ManageClientActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case ADD_WORKER:
-                doHttpPageSearch("pageSearchUser");
+                doHttpPageSearch("pageSearchUser",2);
                 break;
             case ADD_CLIENT:
-                doHttpPageSearch("pageSearchCustomer");
+                doHttpPageSearch("pageSearchCustomer",1);
+                break;
+            case DELETE_WOKER:
+                doHttpPageSearch("pageSearchUser",2);
                 break;
             default:
                 break;
@@ -228,7 +233,7 @@ public class ManageClientActivity extends BaseActivity {
 
     private JsonResponse jsonResponse;
     private JsonParseUtil jsonParseUtil;
-    private void doHttpPageSearch(String methed){
+    private void doHttpPageSearch(String methed, final int type){
         waitingDialog.waiting();
         mClientNameList = new ArrayList<>();
         mClientPhoneList = new ArrayList<>();
@@ -278,7 +283,9 @@ public class ManageClientActivity extends BaseActivity {
                                 mClientRoleIdList.add(i,jsonResponse.getResult().get(i).getRoleId());
                                 clientCompanyId.add(i,jsonResponse.getResult().get(i).getCompanyId());
                             }
-                            adapter.notifyDataSetChanged();
+
+                            adapter.getDataNotify(mClientNameList,mClientPhoneList);
+
                         }else {
                             Toast.makeText(ManageClientActivity.this, "错误:"+res, Toast.LENGTH_SHORT).show();
                         }
@@ -388,4 +395,6 @@ public class ManageClientActivity extends BaseActivity {
             }
         });
     }
+
+
 }

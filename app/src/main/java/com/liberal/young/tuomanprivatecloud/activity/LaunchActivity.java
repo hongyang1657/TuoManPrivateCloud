@@ -152,6 +152,7 @@ public class LaunchActivity extends BaseActivity {
                                 application.setUsername(JsonUtils.getUsername(res));
                                 application.setUserHeadUrl(JsonUtils.getHeadUrl(res));
                                 application.setCompanyId(JsonUtils.getCompanyId(res));
+                                application.setId(JsonUtils.getId(res));
 
                                 //用户token存在本地
                                 SharedPreferences sharedPreferences = getSharedPreferences("LoginInformation",MODE_PRIVATE);

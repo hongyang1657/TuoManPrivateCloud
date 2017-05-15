@@ -82,6 +82,8 @@ public class DetailMachineListActivity extends BaseActivity {
     private String logo;
     private int flag = 0;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String workshop;
+    private int haha = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +100,14 @@ public class DetailMachineListActivity extends BaseActivity {
         application = (MyApplication) getApplication();
         waitingDialog = new WaitingDialog(this,application,"",false);
         companyId = getIntent().getIntExtra("companyId",-1);
+        workshop = getIntent().getStringExtra("workshop");
 
         clientName = getIntent().getStringExtra("clientName");
         userId = getIntent().getIntExtra("id",-1);
         roleId = getIntent().getIntExtra("roleId",-1);
         logo = getIntent().getStringExtra("logo");
         flag = getIntent().getIntExtra("flag",0);
+        haha = getIntent().getIntExtra("haha",0);
 
         rvMachineList = (RecyclerView) findViewById(R.id.rv_machine_list);
         rvMachineList.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
@@ -175,7 +179,12 @@ public class DetailMachineListActivity extends BaseActivity {
         operableEndList = new ArrayList<>();  //预热可操作时间end
 
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany("pageByCompany",companyId,1,itemNum,application.getAccessToken()));
+        RequestBody body;
+        if (haha==1){
+            body = RequestBody.create(MyConstant.JSON, JsonUtils.getPageByWorkshop(companyId,workshop,1,100,application.getAccessToken()));
+        }else {
+            body = RequestBody.create(MyConstant.JSON, JsonUtils.pageByCompany("pageByCompany",companyId,1,itemNum,application.getAccessToken()));
+        }
         Request request = new Request.Builder()
                 .url(MyConstant.SERVER_URL)
                 .post(body)
